@@ -1,0 +1,97 @@
+[
+  {
+    "title": "UnReflectAnything",
+    "description": "RGB-only highlight removal by rendering synthetic specular supervision",
+    "link": "https://alberto-rota.github.io/UnReflectAnything/",
+    "tag": "research",
+    "thumbnail": "/unreflect.png",
+    "icon": "/unreflect_icon.png",
+    "actions": [
+      { "label": "Project Page", "href": "https://alberto-rota.github.io/UnReflectAnything/", "icon": "Target" },
+      { "label": "GitHub",  "href": "https://github.com/alberto-rota/UnReflectAnything", "icon": "Github" },
+      { "label": "Paper",  "href": "https://doi.org/10.48550/arXiv.2512.09583", "icon": "Newspaper" }
+    ],
+    "borderColor": "#a99dec"
+  },
+  {
+    "title": "STEVE [ICRA 2023]",
+    "description": "Surgical Training Enhanced Virtual Environment",
+    "link": "#",
+    "tag": "research",
+    "thumbnail": "/icra.png",
+    "actions": [
+      { "label": "GitHub",  "href": "https://github.com/alberto-rota/STEVE", "icon": "Github" },
+      { "label": "Paper",  "href": "https://doi.org/10.1109/ICRA57147.2024.10610411", "icon": "Newspaper" }
+    ],
+
+    "icon": "/steve_icon.png",
+    "borderColor": "#78dce8"
+  },
+  {
+    "title": "Match",
+    "description": "Self-Supervised Contrastive Embedding Adaptation for Endoscopic Image Matching",
+    "link": "https://arxiv.org/abs/2512.10379",
+    "tag": "research",
+    "thumbnail": "/match.png",
+    "icon": "/match.png",
+    "borderColor": "#a9dc76"
+  },
+  {
+    "title": "muVES",
+    "description": "An algorithm to automate the morphological and topological analysis of 3D images of microvascular networks",
+    "actions": [
+      { "label": "GitHub",  "href": "https://github.com/alberto-rota/muVES", "icon": "Github" },
+      { "label": "Paper",  "href": "https://doi.org/10.1002/btm2.10557", "icon": "Newspaper" }
+    ],
+    "tag": "research",
+    "thumbnail": "/muves.png",
+    "icon": "/muves.png",
+    "borderColor": "#78dce8"
+  },
+  {
+    "title": "Surgical AR Review",
+    "description": "[MDPI Actuators] Recent advancements in augmented reality for robotic applications: A survey",
+    "link": "https://doi.org/10.3390/act12080323",
+    "tag": "research",
+    "thumbnail": "/review.png",
+    "icon": "/review.png",
+    "borderColor": "#fc9867"
+  },
+  {
+    "title": "GroundControl",
+    "description": "Rich visualization and monitoring of system metrics in the terminal.",
+    "link": "https://github.com/alberto-rota/ground-control",
+    "actions": [
+      { "label": "GitHub",  "href": "https://github.com/alberto-rota/ground-control", "icon": "Github" },
+      { "label": "pip install",  "href": "https://pypi.org/project/ground-control-tui/", "icon": "Download" }
+    ],
+
+    "tag": "open-source",
+    "thumbnail": "/groundcontrol.png",
+    "borderColor": "#ffd866"
+  },
+  {
+    "title": "DaSSHboard",
+    "description": "A stylish dashboard for quickly connecting to SSH hosts with customizable settings",
+    "actions": [
+      { "label": "GitHub",  "href": "https://github.com/alberto-rota/DaSSHboard", "icon": "Github" },
+      { "label": "Install for VSC",  "href": "https://marketplace.visualstudio.com/items?itemName=AlbertoRota.dasshboard", "icon": "Download" }
+    ],
+    "tag": "open-source",
+    "thumbnail": "/dasshboard.png",
+    "icon": "/dasshboard_icon.png",
+    "borderColor": "#fc9867"
+  },
+  {
+    "title": "MedView",
+    "description": "A medical image viewer for NIfTI and DICOM formats",
+    "actions": [
+      { "label": "GitHub",  "href": "https://github.com/FrancescaFati/MedView", "icon": "Github" },
+      { "label": "Install for VSC",  "href": "https://marketplace.visualstudio.com/items?itemName=FrancescaFati.MedView", "icon": "Download" }
+    ],
+    "tag": "open-source",
+    "thumbnail": "/medview.png",
+    "icon": "/medview_icon.png",
+    "borderColor": "#ff6188"
+  }
+]
