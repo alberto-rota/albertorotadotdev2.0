@@ -72,6 +72,15 @@ export type HeroParallaxProduct = {
   link: string;
   thumbnail: string;
   /**
+   * Optional aspect ratio for the product card, overriding auto-detection.
+   *
+   * Examples:
+   * - "16 / 9"
+   * - "1077 / 1296"
+   * - 1.7777778
+   */
+  aspectRatio?: string | number;
+  /**
    * Optional product icon used in the hover title pill (section stage).
    * If omitted/empty, the title occupies the full width.
    *
@@ -713,9 +722,15 @@ export const ProductCard = ({
    */
   isHeaderVisible?: boolean;
 }) => {
-  const [aspectRatio, setAspectRatio] = React.useState<string>(
-    () => aspectRatioCache.get(product.thumbnail) ?? "1 / 1"
-  );
+  const [aspectRatio, setAspectRatio] = React.useState<string>(() => {
+    if (typeof product.aspectRatio === "string" && product.aspectRatio.trim()) {
+      return product.aspectRatio.trim();
+    }
+    if (typeof product.aspectRatio === "number" && Number.isFinite(product.aspectRatio)) {
+      return String(product.aspectRatio);
+    }
+    return aspectRatioCache.get(product.thumbnail) ?? "1 / 1";
+  });
   const [descHeightPx, setDescHeightPx] = React.useState<number>(64);
   const descRef = React.useRef<HTMLDivElement | null>(null);
   const rafRef = React.useRef<number | null>(null);
@@ -750,6 +765,16 @@ export const ProductCard = ({
     "dark:focus-visible:ring-white/40";
 
   React.useEffect(() => {
+    // If a per-product aspect ratio is provided, always prefer it (no auto-detection).
+    if (typeof product.aspectRatio === "string" && product.aspectRatio.trim()) {
+      setAspectRatio(product.aspectRatio.trim());
+      return;
+    }
+    if (typeof product.aspectRatio === "number" && Number.isFinite(product.aspectRatio)) {
+      setAspectRatio(String(product.aspectRatio));
+      return;
+    }
+
     const cached = aspectRatioCache.get(product.thumbnail);
     if (cached) {
       setAspectRatio(cached);
@@ -772,7 +797,7 @@ export const ProductCard = ({
     return () => {
       cancelled = true;
     };
-  }, [product.thumbnail]);
+  }, [product.thumbnail, product.aspectRatio]);
 
   React.useEffect(() => {
     if (!revealDescription) return;

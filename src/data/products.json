@@ -5,6 +5,7 @@
     "link": "https://alberto-rota.github.io/UnReflectAnything/",
     "tag": "research",
     "thumbnail": "/unreflect.png",
+    "aspectRatio": "1077 / 1296",
     "icon": "/unreflect_icon.png",
     "actions": [
       { "label": "Project Page", "href": "https://alberto-rota.github.io/UnReflectAnything/", "icon": "Target" },
@@ -19,6 +20,7 @@
     "link": "#",
     "tag": "research",
     "thumbnail": "/icra.png",
+    "aspectRatio": "1010 / 1313",
     "actions": [
       { "label": "GitHub",  "href": "https://github.com/alberto-rota/STEVE", "icon": "Github" },
       { "label": "Paper",  "href": "https://doi.org/10.1109/ICRA57147.2024.10610411", "icon": "Newspaper" }
@@ -33,6 +35,7 @@
     "link": "https://arxiv.org/abs/2512.10379",
     "tag": "research",
     "thumbnail": "/match.png",
+    "aspectRatio": "1011 / 1311",
     "icon": "/match.png",
     "borderColor": "#a9dc76"
   },
@@ -45,6 +48,7 @@
     ],
     "tag": "research",
     "thumbnail": "/muves.png",
+    "aspectRatio": "1013 / 1311",
     "icon": "/muves.png",
     "borderColor": "#78dce8"
   },
@@ -54,6 +58,7 @@
     "link": "https://doi.org/10.3390/act12080323",
     "tag": "research",
     "thumbnail": "/review.png",
+    "aspectRatio": "925 / 1313",
     "icon": "/review.png",
     "borderColor": "#fc9867"
   },
@@ -68,6 +73,7 @@
 
     "tag": "open-source",
     "thumbnail": "/groundcontrol.png",
+    "aspectRatio": "2299 / 1122",
     "borderColor": "#ffd866"
   },
   {
@@ -79,6 +85,7 @@
     ],
     "tag": "open-source",
     "thumbnail": "/dasshboard.png",
+    "aspectRatio": "1849 / 1122",
     "icon": "/dasshboard_icon.png",
     "borderColor": "#fc9867"
   },
@@ -91,6 +98,7 @@
     ],
     "tag": "open-source",
     "thumbnail": "/medview.png",
+    "aspectRatio": "2113 / 1566",
     "icon": "/medview_icon.png",
     "borderColor": "#ff6188"
   }
