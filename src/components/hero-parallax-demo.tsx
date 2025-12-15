@@ -21,7 +21,7 @@ export const products = productsData as {
     icon: string;
     ariaLabel?: string;
   }>;
-  tag?: "research" | "open-source" | "resources";
+  tag?: "links" | "research" | "open-source" | "resources";
   row?: 1 | 2 | 3; // deprecated; kept for older data
   position?: number;
 }[];
