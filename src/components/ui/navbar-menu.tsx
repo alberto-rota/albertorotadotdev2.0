@@ -13,7 +13,36 @@ const transition: Transition = {
   stiffness: 100,
   restDelta: 0.001,
   restSpeed: 0.001,
-};
+} satisfies import("motion/react").Transition;
+
+function useIsCoarsePointer() {
+  const [isCoarse, setIsCoarse] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia?.("(hover: none), (pointer: coarse)");
+    if (!mq) return;
+
+    const update = () => setIsCoarse(Boolean(mq.matches));
+    update();
+
+    // Safari < 14 uses addListener/removeListener.
+    if (mq.addEventListener) {
+      mq.addEventListener("change", update);
+    } else {
+      mq.addListener(update);
+    }
+    return () => {
+      if (mq.removeEventListener) {
+        mq.removeEventListener("change", update);
+      } else {
+        mq.removeListener(update);
+      }
+    };
+  }, []);
+
+  return isCoarse;
+}
 
 export const MenuItem = ({
   setActive,
@@ -22,22 +51,36 @@ export const MenuItem = ({
   children,
   onClick,
 }: {
-  setActive: (item: string) => void;
+  setActive: (item: string | null) => void;
   active: string | null;
   item: string;
   children?: React.ReactNode;
   onClick?: () => void;
 }) => {
+  const isCoarsePointer = useIsCoarsePointer();
+
   return (
-    <div onMouseEnter={() => setActive(item)} className="relative ">
+    <div
+      onPointerEnter={(e) => {
+        // Hover UX only for true mouse pointers.
+        if (isCoarsePointer) return;
+        if ((e as React.PointerEvent).pointerType === "mouse") setActive(item);
+      }}
+      className="relative"
+    >
       <motion.p
         transition={{ duration: 0.3 }}
-        onClick={onClick}
-        className="cursor-pointer text-black hover:opacity-[0.9] dark:text-white"
+        onClick={() => {
+          // On touch devices, hover menus are not discoverable/reliable; treat the top-level
+          // item as a direct action (scroll / navigate) and keep dropdowns desktop-only.
+          if (onClick) onClick();
+          if (isCoarsePointer) setActive(null);
+        }}
+        className="cursor-pointer select-none touch-manipulation text-black hover:opacity-[0.9] dark:text-white"
       >
         {item}
       </motion.p>
-      {active !== null && (
+      {!isCoarsePointer && active !== null && (
         <motion.div
           initial={{ opacity: 0, scale: 0.85, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -72,10 +115,14 @@ export const Menu = ({
   setActive: (item: string | null) => void;
   children: React.ReactNode;
 }) => {
+  const isCoarsePointer = useIsCoarsePointer();
   return (
     <nav
-      onMouseLeave={() => setActive(null)} // resets the state
-      className="relative rounded-full border border-transparent dark:bg-black dark:border-white/20 bg-white shadow-input flex justify-center space-x-4 px-8 py-6 "
+      onPointerLeave={(e) => {
+        if (isCoarsePointer) return;
+        if ((e as React.PointerEvent).pointerType === "mouse") setActive(null);
+      }} // resets the state (desktop hover only)
+      className="relative rounded-full border border-transparent dark:bg-black dark:border-white/20 bg-white shadow-input flex justify-center space-x-2 md:space-x-4 px-4 md:px-8 py-3 md:py-6"
     >
       {children}
     </nav>

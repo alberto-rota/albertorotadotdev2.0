@@ -125,6 +125,35 @@ function isPngIcon(v: unknown): v is string {
   return typeof v === "string" && v.toLowerCase().endsWith(".png");
 }
 
+function useIsCoarsePointer() {
+  const [isCoarse, setIsCoarse] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia?.("(hover: none), (pointer: coarse)");
+    if (!mq) return;
+
+    const update = () => setIsCoarse(Boolean(mq.matches));
+    update();
+
+    // Safari < 14 uses addListener/removeListener.
+    if (mq.addEventListener) {
+      mq.addEventListener("change", update);
+    } else {
+      mq.addListener(update);
+    }
+    return () => {
+      if (mq.removeEventListener) {
+        mq.removeEventListener("change", update);
+      } else {
+        mq.removeListener(update);
+      }
+    };
+  }, []);
+
+  return isCoarse;
+}
+
 function renderIcon(
   icon: string | undefined,
   {
@@ -158,6 +187,79 @@ function renderIcon(
 
   if (!Icon) return null;
   return <Icon className={className} aria-hidden={true} width={size} height={size} />;
+}
+
+type DragAxisLock = "none" | "h" | "v";
+function useDragToScrollMotionValue(opts: {
+  mv: MotionValue<number>;
+  maxPx: number;
+  enabled: boolean;
+}) {
+  const { mv, maxPx, enabled } = opts;
+  const stateRef = React.useRef<{
+    pointerId: number | null;
+    lastX: number;
+    lastY: number;
+    lock: DragAxisLock;
+  }>({ pointerId: null, lastX: 0, lastY: 0, lock: "none" });
+
+  const onPointerDown = React.useCallback(
+    (e: React.PointerEvent) => {
+      if (!enabled) return;
+      if (e.pointerType !== "touch" && e.pointerType !== "pen") return;
+
+      stateRef.current.pointerId = e.pointerId;
+      stateRef.current.lastX = e.clientX;
+      stateRef.current.lastY = e.clientY;
+      stateRef.current.lock = "none";
+      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    },
+    [enabled]
+  );
+
+  const onPointerMove = React.useCallback(
+    (e: React.PointerEvent) => {
+      if (!enabled) return;
+      if (stateRef.current.pointerId !== e.pointerId) return;
+
+      const dx = e.clientX - stateRef.current.lastX;
+      const dy = e.clientY - stateRef.current.lastY;
+
+      if (stateRef.current.lock === "none") {
+        // Decide intent after a small slop so vertical scroll remains natural.
+        const slop = 6;
+        if (Math.abs(dx) + Math.abs(dy) < slop) return;
+        stateRef.current.lock = Math.abs(dx) > Math.abs(dy) * 1.15 ? "h" : "v";
+      }
+
+      if (stateRef.current.lock === "h") {
+        // We own horizontal pan -> prevent browser from treating it as navigation/scroll.
+        e.preventDefault();
+        mv.set(clampNumber(mv.get() + dx, -maxPx, maxPx));
+      }
+
+      stateRef.current.lastX = e.clientX;
+      stateRef.current.lastY = e.clientY;
+    },
+    [enabled, maxPx, mv]
+  );
+
+  const stop = React.useCallback(
+    (e: React.PointerEvent) => {
+      if (!enabled) return;
+      if (stateRef.current.pointerId !== e.pointerId) return;
+      stateRef.current.pointerId = null;
+      stateRef.current.lock = "none";
+      try {
+        (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+      } catch {
+        // Ignore (capture might already be released).
+      }
+    },
+    [enabled]
+  );
+
+  return { onPointerDown, onPointerMove, onPointerUp: stop, onPointerCancel: stop };
 }
 
 export type HeroParallaxProduct = {
@@ -212,11 +314,26 @@ export type HeroParallaxProduct = {
    * Which section to render this product into.
    *
    * Expected values match the section ids in this component:
+   * - "links"
    * - "research"
    * - "open-source"
    * - "resources"
    */
-  tag?: "research" | "open-source" | "resources";
+  tag?: "links" | "research" | "open-source" | "resources";
+  /**
+   * Optional thumbnail *display* sizing overrides.
+   *
+   * The rows are horizontally stacked, so a fixed height per section is desired,
+   * while the width can vary per product.
+   *
+   * Recommended usage:
+   * - Set `thumbHeightPx` once on (at least) one product per `tag` to define the
+   *   common height for that entire section.
+   * - Optionally set `thumbWidthPx` per product to force a specific width.
+   * - Otherwise, width is derived from `aspectRatio` (or auto-detected).
+   */
+  thumbHeightPx?: number;
+  thumbWidthPx?: number;
   /**
    * Legacy row-based placement (deprecated).
    * Kept only for backwards compatibility; prefer `tag`.
@@ -241,10 +358,11 @@ function arrangeProducts(products: HeroParallaxProduct[]) {
       withIdx.tag === "open-source" ||
       withIdx.tag === "resources"
     ) {
-      const tagToRowIdx: Record<
+      type RowTag = Extract<
         NonNullable<HeroParallaxProduct["tag"]>,
-        number
-      > = {
+        "research" | "open-source" | "resources"
+      >;
+      const tagToRowIdx: Record<RowTag, number> = {
         research: 0,
         "open-source": 1,
         resources: 2,
@@ -288,7 +406,43 @@ export const HeroParallax = ({
 }: {
   products: HeroParallaxProduct[];
 }) => {
-  const { firstRow, secondRow, thirdRow } = arrangeProducts(products);
+  const isCoarsePointer = useIsCoarsePointer();
+  const DEFAULT_THUMB_HEIGHT_PX = isCoarsePointer ? 240 : 420;
+
+  const linksRow = React.useMemo(
+    () => products.filter((p) => p.tag === "links"),
+    [products]
+  );
+  const otherProducts = React.useMemo(
+    () => products.filter((p) => p.tag !== "links"),
+    [products]
+  );
+  const { firstRow, secondRow, thirdRow } = arrangeProducts(otherProducts);
+
+  // Section-level default thumbnail heights, inferred from the first product that sets it.
+  // This makes it easy to keep the same height for all products in a tag without duplication.
+  const tagThumbHeightPx = React.useMemo(() => {
+    const map: Partial<Record<NonNullable<HeroParallaxProduct["tag"]>, number>> = {};
+    for (const p of products) {
+      if (!p.tag) continue;
+      if (typeof p.thumbHeightPx !== "number" || !Number.isFinite(p.thumbHeightPx)) continue;
+      if (map[p.tag] == null) map[p.tag] = p.thumbHeightPx;
+    }
+    return map;
+  }, [products]);
+
+  const getDisplayHeightPx = React.useCallback(
+    (p: HeroParallaxProduct) => {
+      const fromTag = p.tag ? tagThumbHeightPx[p.tag] : undefined;
+      const fromSelf =
+        typeof p.thumbHeightPx === "number" && Number.isFinite(p.thumbHeightPx)
+          ? p.thumbHeightPx
+          : undefined;
+      return fromTag ?? fromSelf ?? DEFAULT_THUMB_HEIGHT_PX;
+    },
+    [tagThumbHeightPx, DEFAULT_THUMB_HEIGHT_PX]
+  );
+
   const ref = React.useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -304,12 +458,15 @@ export const HeroParallax = ({
   const MAX_ROW_SCROLL_PX = 2000;
 
   // Per-row horizontal scroll offsets (driven by wheel/trackpad while hovering a row).
+  const row0Ref = React.useRef<HTMLDivElement | null>(null);
   const row1Ref = React.useRef<HTMLDivElement | null>(null);
   const row2Ref = React.useRef<HTMLDivElement | null>(null);
   const row3Ref = React.useRef<HTMLDivElement | null>(null);
+  const row0ScrollRaw = useMotionValue(0);
   const row1ScrollRaw = useMotionValue(0);
   const row2ScrollRaw = useMotionValue(0);
   const row3ScrollRaw = useMotionValue(0);
+  const row0Scroll = useSpring(row0ScrollRaw, { stiffness: 250, damping: 35 });
   const row1Scroll = useSpring(row1ScrollRaw, { stiffness: 250, damping: 35 });
   const row2Scroll = useSpring(row2ScrollRaw, { stiffness: 250, damping: 35 });
   const row3Scroll = useSpring(row3ScrollRaw, { stiffness: 250, damping: 35 });
@@ -358,6 +515,31 @@ export const HeroParallax = ({
     [translateX, row3Scroll],
     (latest: number[]) => (latest[0] ?? 0) + (latest[1] ?? 0)
   );
+  const row0Translate = useTransform(
+    [translateXReverse, row0Scroll],
+    (latest: number[]) => ((latest[0] ?? 0) + 1000) + (latest[1] ?? 0)
+  );
+
+  const row0Drag = useDragToScrollMotionValue({
+    mv: row0ScrollRaw,
+    maxPx: MAX_ROW_SCROLL_PX,
+    enabled: isCoarsePointer,
+  });
+  const row1Drag = useDragToScrollMotionValue({
+    mv: row1ScrollRaw,
+    maxPx: MAX_ROW_SCROLL_PX,
+    enabled: isCoarsePointer,
+  });
+  const row2Drag = useDragToScrollMotionValue({
+    mv: row2ScrollRaw,
+    maxPx: MAX_ROW_SCROLL_PX,
+    enabled: isCoarsePointer,
+  });
+  const row3Drag = useDragToScrollMotionValue({
+    mv: row3ScrollRaw,
+    maxPx: MAX_ROW_SCROLL_PX,
+    enabled: isCoarsePointer,
+  });
 
   const rotateX = useSpring(
     useTransform(scrollYProgress, [0, 0.2], [15, 0]),
@@ -372,7 +554,8 @@ export const HeroParallax = ({
     springConfig
   );
   const translateY = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [-700, 500]),
+    // Start the parallax stage a bit higher on initial load.
+    useTransform(scrollYProgress, [0, 0.2], [-900, 500]),
     springConfig
   );
 
@@ -411,6 +594,7 @@ export const HeroParallax = ({
     };
 
     const cleanups = [
+      attach(row0Ref.current, row0ScrollRaw),
       attach(row1Ref.current, row1ScrollRaw),
       attach(row2Ref.current, row2ScrollRaw),
       attach(row3Ref.current, row3ScrollRaw),
@@ -419,11 +603,13 @@ export const HeroParallax = ({
     return () => {
       cleanups.forEach((fn) => fn());
     };
-  }, [row1ScrollRaw, row2ScrollRaw, row3ScrollRaw]);
+  }, [row0ScrollRaw, row1ScrollRaw, row2ScrollRaw, row3ScrollRaw]);
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+    // Edge auto-scroll is a desktop affordance; keep it off on touch devices.
+    if (window.matchMedia?.("(hover: none), (pointer: coarse)")?.matches) return;
 
     const EDGE_PX = 300;
     const MAX_SPEED_PX_PER_S = 1000;
@@ -526,7 +712,7 @@ export const HeroParallax = ({
   return (
     <div
       ref={ref}
-      className="min-h-[220vh] sm:min-h-[260vh] lg:h-[300vh] pt-20 sm:pt-28 lg:py-40 overflow-hidden antialiased relative flex flex-col self-auto perspective-[1000px] transform-3d"
+      className="h-[260vh] sm:h-[320vh] md:h-[400vh] py-16 md:py-40 overflow-hidden antialiased relative flex flex-col self-auto perspective-[1000px] transform-3d"
     >
       <Header showScrollCue={showScrollCue} />
       <motion.div
@@ -538,6 +724,36 @@ export const HeroParallax = ({
         }}
         className="relative z-0"
       >
+        <section aria-label="Links" className="mb-20">
+          <motion.div
+            ref={row0Ref}
+            {...row0Drag}
+            onPointerEnter={() => {
+              hoveredRowRef.current.mv = row0ScrollRaw;
+            }}
+            onPointerLeave={() => {
+              if (hoveredRowRef.current.mv === row0ScrollRaw) {
+                hoveredRowRef.current.mv = null;
+              }
+            }}
+            className="flex flex-row space-x-10 md:space-x-20 touch-pan-y"
+          >
+            {linksRow.map((product, idx) => (
+              <ProductCard
+                product={product}
+                translate={row0Translate}
+                displayHeightPx={getDisplayHeightPx(product)}
+                scrollToId="links"
+                centerOnClickMv={row0ScrollRaw}
+                maxRowScrollPx={MAX_ROW_SCROLL_PX}
+                isHeaderVisible={isHeaderVisible}
+                isCoarsePointer={isCoarsePointer}
+                key={`${product.title}-${product.thumbnail}-${product.link}-${idx}`}
+              />
+            ))}
+          </motion.div>
+        </section>
+
         <section aria-label="Research" className="mb-20">
           <div id="research" className="scroll-mt-40 px-4 mb-6">
             <span className="text-3xl sm:text-5xl font-extrabold text-black dark:text-white">
@@ -546,6 +762,7 @@ export const HeroParallax = ({
           </div>
           <motion.div
             ref={row1Ref}
+            {...row1Drag}
             onPointerEnter={() => {
               if (isCoarsePointer) return;
               hoveredRowRef.current.mv = row1ScrollRaw;
@@ -556,19 +773,18 @@ export const HeroParallax = ({
                 hoveredRowRef.current.mv = null;
               }
             }}
-            {...row1Drag}
-            style={{ touchAction: isCoarsePointer ? "pan-y" : "auto" }}
-            className="flex flex-row-reverse space-x-reverse space-x-6 sm:space-x-10 lg:space-x-20 px-4"
+            className="flex flex-row-reverse space-x-reverse space-x-10 md:space-x-20 touch-pan-y"
           >
             {firstRow.map((product, idx) => (
               <ProductCard
                 product={product}
                 translate={row1Translate}
+                displayHeightPx={getDisplayHeightPx(product)}
                 scrollToId="research"
                 centerOnClickMv={row1ScrollRaw}
                 maxRowScrollPx={MAX_ROW_SCROLL_PX}
                 isHeaderVisible={isHeaderVisible}
-                isTouch={isCoarsePointer}
+                isCoarsePointer={isCoarsePointer}
                 key={`${product.title}-${product.thumbnail}-${product.link}-${idx}`}
               />
             ))}
@@ -583,6 +799,7 @@ export const HeroParallax = ({
           </div>
           <motion.div
             ref={row2Ref}
+            {...row2Drag}
             onPointerEnter={() => {
               if (isCoarsePointer) return;
               hoveredRowRef.current.mv = row2ScrollRaw;
@@ -593,19 +810,18 @@ export const HeroParallax = ({
                 hoveredRowRef.current.mv = null;
               }
             }}
-            {...row2Drag}
-            style={{ touchAction: isCoarsePointer ? "pan-y" : "auto" }}
-            className="flex flex-row space-x-6 sm:space-x-10 lg:space-x-20 px-4"
+            className="flex flex-row space-x-10 md:space-x-20 touch-pan-y"
           >
             {secondRow.map((product, idx) => (
               <ProductCard
                 product={product}
                 translate={row2Translate}
+                displayHeightPx={getDisplayHeightPx(product)}
                 scrollToId="open-source"
                 centerOnClickMv={row2ScrollRaw}
                 maxRowScrollPx={MAX_ROW_SCROLL_PX}
                 isHeaderVisible={isHeaderVisible}
-                isTouch={isCoarsePointer}
+                isCoarsePointer={isCoarsePointer}
                 key={`${product.title}-${product.thumbnail}-${product.link}-${idx}`}
               />
             ))}
@@ -620,6 +836,7 @@ export const HeroParallax = ({
           </div>
           <motion.div
             ref={row3Ref}
+            {...row3Drag}
             onPointerEnter={() => {
               if (isCoarsePointer) return;
               hoveredRowRef.current.mv = row3ScrollRaw;
@@ -630,19 +847,18 @@ export const HeroParallax = ({
                 hoveredRowRef.current.mv = null;
               }
             }}
-            {...row3Drag}
-            style={{ touchAction: isCoarsePointer ? "pan-y" : "auto" }}
-            className="flex flex-row-reverse space-x-reverse space-x-6 sm:space-x-10 lg:space-x-20 px-4"
+            className="flex flex-row-reverse space-x-reverse space-x-10 md:space-x-20 touch-pan-y"
           >
             {thirdRow.map((product, idx) => (
               <ProductCard
                 product={product}
                 translate={row3Translate}
+                displayHeightPx={getDisplayHeightPx(product)}
                 scrollToId="resources"
                 centerOnClickMv={row3ScrollRaw}
                 maxRowScrollPx={MAX_ROW_SCROLL_PX}
                 isHeaderVisible={isHeaderVisible}
-                isTouch={isCoarsePointer}
+                isCoarsePointer={isCoarsePointer}
                 key={`${product.title}-${product.thumbnail}-${product.link}-${idx}`}
               />
             ))}
@@ -747,6 +963,7 @@ export const Header = ({ showScrollCue }: { showScrollCue: boolean }) => {
           Alberto
         </h1>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        
           <button
             type="button"
             onClick={() => scrollTo("research")}
@@ -823,14 +1040,17 @@ export const Header = ({ showScrollCue }: { showScrollCue: boolean }) => {
 export const ProductCard = ({
   product,
   translate,
+  displayHeightPx,
   scrollToId,
   centerOnClickMv,
   maxRowScrollPx,
   isHeaderVisible,
-  isTouch,
+  isCoarsePointer,
 }: {
   product: HeroParallaxProduct;
   translate: MotionValue<number>;
+  /** Target rendered card height in px (width is derived from AR or optional override). */
+  displayHeightPx: number;
   /**
    * Optional in-page anchor id to scroll to when the page is at the very top
    * (i.e. when the Hero header is visible).
@@ -850,10 +1070,8 @@ export const ProductCard = ({
    * to `product.link`.
    */
   isHeaderVisible?: boolean;
-  /**
-   * Enables touch-friendly rendering (no hover assumptions).
-   */
-  isTouch?: boolean;
+  /** If true, avoid hover-only UI and show touch-safe affordances. */
+  isCoarsePointer?: boolean;
 }) => {
   const [aspectRatio, setAspectRatio] = React.useState<string>(() => {
     if (typeof product.aspectRatio === "string" && product.aspectRatio.trim()) {
@@ -867,17 +1085,18 @@ export const ProductCard = ({
   const [descHeightPx, setDescHeightPx] = React.useState<number>(64);
   const descRef = React.useRef<HTMLDivElement | null>(null);
   const rafRef = React.useRef<number | null>(null);
-  const touch = Boolean(isTouch);
-  const hoverEnabled = !isHeaderVisible && !touch;
-  const touchStage = !isHeaderVisible && touch;
+  const isTouch = Boolean(isCoarsePointer);
+  const hoverEnabled = !isHeaderVisible && !isTouch;
   const topStageBorderEnabled = Boolean(isHeaderVisible);
   const topStageHoverBorderColor = (product.borderColor?.trim() || "#ffffff") as string;
   const descriptionText = product.description?.trim() ?? "";
-  const revealDescription = hoverEnabled && descriptionText.length > 0;
-  const actions =
-    !isHeaderVisible && Array.isArray(product.actions)
-      ? product.actions.filter((a) => Boolean(a?.href && a?.icon))
-      : [];
+  const revealDescription = (hoverEnabled || (!isHeaderVisible && isTouch)) && descriptionText.length > 0;
+  const actions = Array.isArray(product.actions)
+    ? product.actions.filter((a) => Boolean(a?.href && a?.icon))
+    : [];
+
+  const sectionStageTouch = !isHeaderVisible && isTouch;
+  const topStageTouch = Boolean(isHeaderVisible) && isTouch;
 
   type RevealVarsStyle = React.CSSProperties & {
     ["--desc-reveal"]?: string;
@@ -1043,10 +1262,23 @@ export const ProductCard = ({
 
   return (
     <motion.div
-      style={{
-        x: translate,
-        aspectRatio,
-      }}
+      style={(() => {
+        const widthPx =
+          typeof product.thumbWidthPx === "number" && Number.isFinite(product.thumbWidthPx)
+            ? product.thumbWidthPx
+            : undefined;
+        return widthPx != null
+          ? {
+              x: translate,
+              width: widthPx,
+              height: displayHeightPx,
+            }
+          : {
+              x: translate,
+              height: displayHeightPx,
+              aspectRatio,
+            };
+      })()}
       whileHover={
         hoverEnabled
           ? {
@@ -1055,7 +1287,12 @@ export const ProductCard = ({
           : undefined
       }
       key={product.title}
-      className="group/product w-[78vw] max-w-88 sm:w-96 lg:w-120 relative shrink-0 overflow-hidden rounded-2xl"
+      className={
+        "group/product relative shrink-0 " +
+        // Allow the always-visible description on touch to extend below the image.
+        (sectionStageTouch ? "overflow-visible" : "overflow-hidden") +
+        " rounded-2xl"
+      }
     >
       <div className="block w-full h-full relative group-hover/product:shadow-2xl">
         {/**
@@ -1066,7 +1303,7 @@ export const ProductCard = ({
         <div
           className={[
             "relative grid w-full h-full transition-transform duration-300 ease-out",
-            revealDescription ? "group-hover/product:-translate-y-(--desc-reveal)" : "",
+            hoverEnabled && revealDescription ? "group-hover/product:-translate-y-(--desc-reveal)" : "",
           ].join(" ")}
           style={
             revealDescription
@@ -1081,14 +1318,14 @@ export const ProductCard = ({
                 }
           }
         >
-          {/* Primary click target (kept as a real link for semantics). */}
-          <a
-            href={product.link}
-            onClick={onProductClick}
-            aria-label={product.title}
-            className="absolute inset-0 z-20 rounded-2xl touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"
-          />
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full overflow-hidden rounded-2xl">
+            {/* Primary click target (kept as a real link for semantics). */}
+            <a
+              href={product.link}
+              onClick={onProductClick}
+              aria-label={product.title}
+              className="absolute inset-0 z-20 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"
+            />
             <NextImage
               src={product.thumbnail}
               alt={product.title}
@@ -1103,13 +1340,23 @@ export const ProductCard = ({
             {topStageBorderEnabled ? (
               <div
                 style={topStageBorderStyle}
-                className="absolute inset-0 rounded-2xl border-2 border-transparent transition-colors duration-200 ease-out group-hover/product:border-(--top-stage-hover-border-color) pointer-events-none"
+                className={[
+                  "absolute inset-0 rounded-2xl border-2 transition-colors duration-200 ease-out pointer-events-none",
+                  topStageTouch
+                    ? "border-(--top-stage-hover-border-color)"
+                    : "border-transparent group-hover/product:border-(--top-stage-hover-border-color)",
+                ].join(" ")}
               />
             ) : null}
 
             {/* Top stage (header visible): show centered title on hover. */}
             {topStageBorderEnabled ? (
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/product:opacity-100 transition-opacity duration-200 ease-out pointer-events-none">
+              <div
+                className={[
+                  "absolute inset-0 flex items-center justify-center transition-opacity duration-200 ease-out pointer-events-none",
+                  topStageTouch ? "opacity-100" : "opacity-0 group-hover/product:opacity-100",
+                ].join(" ")}
+              >
                 <div className="rounded-xl bg-black/45 px-4 py-2 backdrop-blur-sm">
                   <span className="text-white text-base md:text-lg font-semibold leading-tight">
                     {product.title}
@@ -1119,20 +1366,19 @@ export const ProductCard = ({
             ) : null}
 
             {/* Lighter overlay + icon/title (only in section stage). */}
-            {hoverEnabled || touchStage ? (
+            {hoverEnabled || sectionStageTouch ? (
               <>
                 <div
                   className={[
                     "absolute inset-0 h-full w-full bg-black pointer-events-none transition-opacity duration-200 ease-out",
-                    hoverEnabled ? "opacity-0 group-hover/product:opacity-35" : "opacity-35",
+                    sectionStageTouch ? "opacity-25" : "opacity-0 group-hover/product:opacity-35",
                   ].join(" ")}
-                />
-                {/* Title label (touch encourages always-visible affordance) */}
+                ></div>
+                {/* Title label (non-interactive) */}
                 <div
                   className={[
-                    "absolute bottom-4 left-4 right-4 transition-opacity duration-200 ease-out",
-                    hoverEnabled ? "opacity-0 group-hover/product:opacity-100 pointer-events-none" : "opacity-100 pointer-events-auto",
-                    "z-30",
+                    "absolute bottom-4 left-4 right-4 transition-opacity duration-200 ease-out pointer-events-none",
+                    sectionStageTouch ? "opacity-100" : "opacity-0 group-hover/product:opacity-100",
                   ].join(" ")}
                 >
                   <div className="w-full rounded-xl bg-black/50 px-3 py-2 backdrop-blur-sm">
@@ -1185,8 +1431,15 @@ export const ProductCard = ({
                 </div>
 
                 {/* Action buttons overlay (interactive; section stage only). */}
-                {hoverEnabled && actions.length > 0 ? (
-                  <div className="absolute inset-0 z-30 flex items-center justify-center opacity-0 group-hover/product:opacity-100 transition-opacity duration-200 ease-out pointer-events-none group-hover/product:pointer-events-auto">
+                {actions.length > 0 && (hoverEnabled || sectionStageTouch) ? (
+                  <div
+                    className={[
+                      "absolute inset-0 z-30 flex items-center justify-center transition-opacity duration-200 ease-out",
+                      sectionStageTouch
+                        ? "opacity-100 pointer-events-auto"
+                        : "opacity-0 group-hover/product:opacity-100 pointer-events-none group-hover/product:pointer-events-auto",
+                    ].join(" ")}
+                  >
                     <div className="w-[90%] max-w-[90%]">
                       <div className="flex flex-wrap items-center justify-center gap-2">
                         {actions.map((action, i) => (

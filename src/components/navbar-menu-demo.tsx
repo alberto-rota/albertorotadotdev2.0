@@ -78,6 +78,30 @@ function Navbar({ className }: { className?: string }) {
         <MenuItem
           setActive={setActive}
           active={active}
+          item="Links"
+          onClick={() => scrollTo("links")}
+        >
+          <div className="flex flex-col space-y-4 text-sm">
+            <HoveredLink
+              href="https://github.com/alberto-rota"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub
+            </HoveredLink>
+            <HoveredLink
+              href="https://www.linkedin.com/in/albe-rota/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              LinkedIn
+            </HoveredLink>
+            <HoveredLink href="/CV_Alberto_Rota.pdf">Download CV</HoveredLink>
+          </div>
+        </MenuItem>
+        <MenuItem
+          setActive={setActive}
+          active={active}
           item="Research"
           onClick={() => scrollTo("research")}
         >
