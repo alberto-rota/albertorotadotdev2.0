@@ -127,3 +127,8 @@
     @apply bg-background text-foreground font-sans;
   }
 }
+
+/* Mobile/touch ergonomics */
+html {
+  -webkit-text-size-adjust: 100%;
+}
