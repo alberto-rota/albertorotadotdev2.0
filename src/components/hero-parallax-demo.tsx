@@ -12,6 +12,7 @@ export const products = productsData as {
   description?: string;
   link: string;
   thumbnail: string;
+  aspectRatio?: string | number;
   icon?: string;
   borderColor?: string;
   actions?: Array<{
