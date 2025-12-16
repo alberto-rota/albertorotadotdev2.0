@@ -48,69 +48,13 @@ function useMediaQuery(query: string) {
 }
 
 function useIsCoarsePointer() {
-  return useMediaQuery("(pointer: coarse)");
+  // Treat touch-first / coarse-pointer devices as "coarse".
+  // Including `(hover: none)` makes this more accurate on some mobile browsers.
+  return useMediaQuery("(hover: none), (pointer: coarse)");
 }
 
 function usePrefersReducedMotion() {
   return useMediaQuery("(prefers-reduced-motion: reduce)");
-}
-
-function useDragToScrollMotionValue({
-  mv,
-  enabled,
-  maxPx,
-}: {
-  mv: MotionValue<number>;
-  enabled: boolean;
-  maxPx: number;
-}) {
-  const stateRef = React.useRef<{
-    pointerId: number | null;
-    lastX: number;
-  }>({ pointerId: null, lastX: 0 });
-
-  const end = React.useCallback((e: React.PointerEvent) => {
-    if (!enabled) return;
-    if (stateRef.current.pointerId !== e.pointerId) return;
-    stateRef.current.pointerId = null;
-  }, [enabled]);
-
-  const onPointerDown = React.useCallback(
-    (e: React.PointerEvent) => {
-      if (!enabled) return;
-      if (e.pointerType !== "touch") return;
-      stateRef.current.pointerId = e.pointerId;
-      stateRef.current.lastX = e.clientX;
-      try {
-        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-      } catch {
-        // ignore
-      }
-    },
-    [enabled]
-  );
-
-  const onPointerMove = React.useCallback(
-    (e: React.PointerEvent) => {
-      if (!enabled) return;
-      if (e.pointerType !== "touch") return;
-      if (stateRef.current.pointerId !== e.pointerId) return;
-
-      const dx = e.clientX - stateRef.current.lastX;
-      stateRef.current.lastX = e.clientX;
-      if (Math.abs(dx) < 0.25) return;
-
-      mv.set(clampNumber(mv.get() + dx, -maxPx, maxPx));
-    },
-    [enabled, maxPx, mv]
-  );
-
-  return {
-    onPointerDown,
-    onPointerMove,
-    onPointerUp: end,
-    onPointerCancel: end,
-  };
 }
 
 function horizontalDeltaFromWheelEvent(e: WheelEvent) {
@@ -123,35 +67,6 @@ function horizontalDeltaFromWheelEvent(e: WheelEvent) {
 
 function isPngIcon(v: unknown): v is string {
   return typeof v === "string" && v.toLowerCase().endsWith(".png");
-}
-
-function useIsCoarsePointer() {
-  const [isCoarse, setIsCoarse] = React.useState(false);
-
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mq = window.matchMedia?.("(hover: none), (pointer: coarse)");
-    if (!mq) return;
-
-    const update = () => setIsCoarse(Boolean(mq.matches));
-    update();
-
-    // Safari < 14 uses addListener/removeListener.
-    if (mq.addEventListener) {
-      mq.addEventListener("change", update);
-    } else {
-      mq.addListener(update);
-    }
-    return () => {
-      if (mq.removeEventListener) {
-        mq.removeEventListener("change", update);
-      } else {
-        mq.removeListener(update);
-      }
-    };
-  }, []);
-
-  return isCoarse;
 }
 
 function renderIcon(
@@ -450,7 +365,6 @@ export const HeroParallax = ({
   });
   const [isHeaderVisible, setIsHeaderVisible] = React.useState(true);
   const [showScrollCue, setShowScrollCue] = React.useState(true);
-  const isCoarsePointer = useIsCoarsePointer();
   const prefersReducedMotion = usePrefersReducedMotion();
   const reduceFancyMotion = isCoarsePointer || prefersReducedMotion;
 
@@ -470,21 +384,6 @@ export const HeroParallax = ({
   const row1Scroll = useSpring(row1ScrollRaw, { stiffness: 250, damping: 35 });
   const row2Scroll = useSpring(row2ScrollRaw, { stiffness: 250, damping: 35 });
   const row3Scroll = useSpring(row3ScrollRaw, { stiffness: 250, damping: 35 });
-  const row1Drag = useDragToScrollMotionValue({
-    mv: row1ScrollRaw,
-    enabled: isCoarsePointer,
-    maxPx: MAX_ROW_SCROLL_PX,
-  });
-  const row2Drag = useDragToScrollMotionValue({
-    mv: row2ScrollRaw,
-    enabled: isCoarsePointer,
-    maxPx: MAX_ROW_SCROLL_PX,
-  });
-  const row3Drag = useDragToScrollMotionValue({
-    mv: row3ScrollRaw,
-    enabled: isCoarsePointer,
-    maxPx: MAX_ROW_SCROLL_PX,
-  });
 
   // Mouse-at-viewport-edge auto scroll (applies to the row currently hovered).
   const hoveredRowRef = React.useRef<{
@@ -1397,7 +1296,7 @@ export const ProductCard = ({
                         </h2>
                       </div>
                     </div>
-                    {touchStage && descriptionText.length > 0 ? (
+                    {sectionStageTouch && descriptionText.length > 0 ? (
                       <p
                         className="mt-2 text-xs sm:text-sm font-normal leading-snug text-white/90 overflow-hidden [display:-webkit-box] [-webkit-line-clamp:3] [-webkit-box-orient:vertical]"
                         style={{ fontFamily: "var(--font-bbh-bogle)" }}
@@ -1405,7 +1304,7 @@ export const ProductCard = ({
                         {descriptionText}
                       </p>
                     ) : null}
-                    {touchStage && actions.length > 0 ? (
+                    {sectionStageTouch && actions.length > 0 ? (
                       <div className="mt-2 flex flex-wrap items-center gap-2">
                         {actions.map((action, i) => (
                           <a
