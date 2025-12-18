@@ -14,7 +14,7 @@
       "gapPx": 40,
       "gapMdPx": 80,
       "initialScrollPx": 0
-    },
+    },  
     "resources": {
       "gapPx": 40,
       "gapMdPx": 80,
@@ -143,7 +143,7 @@
       ],
       "tag": "open-source",
       "thumbnail": "/medview.png",
-      "aspectRatio": "1515 / 1566",
+      "aspectRatio": "1515 / 1122",
       "icon": "/medview_icon.png",
       "borderColor": "#ff6188"
     },

@@ -709,7 +709,7 @@ export const HeroParallax = ({
   return (
     <div
       ref={ref}
-      className="h-[260vh] sm:h-[320vh] md:h-[400vh] py-16 md:py-40 overflow-hidden antialiased relative flex flex-col self-auto perspective-[1000px] transform-3d"
+      className="min-h-[185vh] sm:min-h-[220vh] md:min-h-[255vh] py-14 md:py-24 overflow-hidden antialiased relative flex flex-col self-auto perspective-[1000px] transform-3d"
     >
       <Header showScrollCue={showScrollCue} />
       <motion.div
@@ -836,7 +836,7 @@ export const HeroParallax = ({
           </motion.div>
         </section>
 
-        <section aria-label="Links" className="mb-20">
+        <section aria-label="Links" className="mb-8">
           <div id="links" className="scroll-mt-40 px-4 mb-6" />
           <motion.div
             ref={row0Ref}
@@ -950,41 +950,46 @@ export const Header = ({ showScrollCue }: { showScrollCue: boolean }) => {
     "dark:focus-visible:ring-white/40";
 
   return (
-    <div className="max-w-7xl relative z-50 isolate pointer-events-auto mx-auto pt-10 md:pt-14 px-2 w-full">
-      <div className="mx-auto w-full max-w-184 text-center flex flex-col items-center">
-        <h1 className="text-3xl md:text-7xl lg:text-8xl font-bold tracking-tight dark:text-white">
+    <div className="max-w-7xl relative z-50 isolate pointer-events-none mx-auto pt-10 md:pt-14 px-2 w-full">
+      {/*
+        Preserve original layout/position, but shrink the "blocking" area:
+        - Containers are pointer-events-none (so empty space doesn't block hover).
+        - Only real visible/interactive elements are pointer-events-auto.
+      */}
+      <div className="mx-auto w-full max-w-184 text-center flex flex-col items-center pointer-events-none">
+        <h1 className="inline-block pointer-events-auto text-3xl md:text-7xl lg:text-8xl font-bold tracking-tight dark:text-white">
           Alberto
         </h1>
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3 pointer-events-none">
         
           <button
             type="button"
             onClick={() => scrollTo("research")}
-            className={pillClassName}
+            className={pillClassName + " pointer-events-auto"}
           >
             Research
           </button>
           <button
             type="button"
             onClick={() => scrollTo("open-source")}
-            className={pillClassName}
+            className={pillClassName + " pointer-events-auto"}
           >
             Open Source
           </button>
           <button
             type="button"
             onClick={() => scrollTo("resources")}
-            className={pillClassName}
+            className={pillClassName + " pointer-events-auto"}
           >
             Resources
           </button>
         </div>
-        <div className="mt-5 flex items-center justify-center gap-3">
+        <div className="mt-5 flex items-center justify-center gap-3 pointer-events-none">
           <button
             type="button"
             onClick={() => scrollTo("contact")}
             aria-label="Get in touch"
-            className={cvPillClassName}
+            className={cvPillClassName + " pointer-events-auto"}
           >
             <Send className="h-4 w-4 md:h-5 md:w-5" aria-hidden="true" />
             <span>Get in touch</span>
@@ -993,7 +998,7 @@ export const Header = ({ showScrollCue }: { showScrollCue: boolean }) => {
             href="/CV_Alberto_Rota.pdf"
             download
             aria-label="Download my CV"
-            className={cvPillClassName}
+            className={cvPillClassName + " pointer-events-auto"}
           >
             <FileDown className="h-4 w-4 md:h-5 md:w-5" aria-hidden="true" />
             <span>Download my CV</span>
@@ -1015,7 +1020,6 @@ export const Header = ({ showScrollCue }: { showScrollCue: boolean }) => {
           />
           <span className="sr-only">Scroll down</span>
         </div>
-        <p className="max-w-2xl text-base md:text-xl mt-8 dark:text-neutral-200"></p>
       </div>
     </div>
   );

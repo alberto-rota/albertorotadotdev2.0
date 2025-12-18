@@ -6,7 +6,7 @@ export default function Home() {
       <HeroParallaxDemo />
 
       <section id="contact" aria-label="Get In Contact" className="relative w-full">
-        <div className="mx-auto max-w-7xl px-4 pb-24 pt-20">
+        <div className="w-full px-4 pb-20 pt-14">
           <div className="mb-10">
             <span className="text-3xl sm:text-5xl font-extrabold text-black dark:text-white">
               Get In Touch
@@ -43,6 +43,9 @@ function ContactItem({
   href?: string;
 }) {
   const Container = href ? "a" : "div";
+  const valueClassName = href
+    ? "mt-2 text-sm md:text-base font-medium wrap-break-word"
+    : "mt-2 text-base md:text-lg font-medium wrap-break-word";
   return (
     <Container
       {...(href
@@ -63,9 +66,7 @@ function ContactItem({
       <div className="text-xs font-semibold uppercase tracking-wide opacity-70">
         {label}
       </div>
-      <div className="mt-2 text-base md:text-lg font-medium wrap-break-word">
-        {value}
-      </div>
+      <div className={valueClassName}>{value}</div>
       {href ? (
         <div className="mt-3 text-xs opacity-70 group-hover:opacity-90">
           Click to email
