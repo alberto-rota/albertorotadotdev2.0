@@ -9,7 +9,7 @@ import {
   useMotionValue,
   MotionValue,
 } from "motion/react";
-import { ArrowDown, FileDown, Github, Linkedin } from "lucide-react";
+import { ArrowDown, FileDown, Send } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 
 const aspectRatioCache = new Map<string, string>();
@@ -144,7 +144,18 @@ function useDragToScrollMotionValue(opts: {
         // Decide intent after a small slop so vertical scroll remains natural.
         const slop = 6;
         if (Math.abs(dx) + Math.abs(dy) < slop) return;
-        stateRef.current.lock = Math.abs(dx) > Math.abs(dy) * 1.15 ? "h" : "v";
+
+        // Avoid prematurely locking vertical on slightly diagonal horizontal swipes.
+        // We only lock once the intent is clear; otherwise keep accumulating deltas.
+        const H_BIAS = 1.05;
+        const V_BIAS = 1.05;
+        if (Math.abs(dx) > Math.abs(dy) * H_BIAS) {
+          stateRef.current.lock = "h";
+        } else if (Math.abs(dy) > Math.abs(dx) * V_BIAS) {
+          stateRef.current.lock = "v";
+        } else {
+          return;
+        }
       }
 
       if (stateRef.current.lock === "h") {
@@ -261,6 +272,26 @@ export type HeroParallaxProduct = {
   position?: number;
 };
 
+export type HeroParallaxSectionId = "links" | "research" | "open-source" | "resources";
+
+export type HeroParallaxSectionConfig = {
+  /**
+   * Horizontal gap between cards (px) for this section (mobile/default).
+   * Previously hardcoded as Tailwind `gap-10` (40px).
+   */
+  gapPx?: number;
+  /**
+   * Horizontal gap between cards (px) for this section at `md` breakpoint and above.
+   * Previously hardcoded as Tailwind `md:gap-20` (80px).
+   */
+  gapMdPx?: number;
+  /**
+   * Initial horizontal scroll offset (px) for this section.
+   * Positive/negative values are allowed.
+   */
+  initialScrollPx?: number;
+};
+
 function arrangeProducts(products: HeroParallaxProduct[]) {
   type WithIdx = HeroParallaxProduct & { __idx: number };
   const rows: WithIdx[][] = [[], [], []]; // [research, open-source, resources]
@@ -318,8 +349,10 @@ function arrangeProducts(products: HeroParallaxProduct[]) {
 
 export const HeroParallax = ({
   products,
+  sections,
 }: {
   products: HeroParallaxProduct[];
+  sections?: Partial<Record<HeroParallaxSectionId, HeroParallaxSectionConfig>>;
 }) => {
   const isCoarsePointer = useIsCoarsePointer();
   const DEFAULT_THUMB_HEIGHT_PX = isCoarsePointer ? 240 : 420;
@@ -366,20 +399,78 @@ export const HeroParallax = ({
   const [isHeaderVisible, setIsHeaderVisible] = React.useState(true);
   const [showScrollCue, setShowScrollCue] = React.useState(true);
   const prefersReducedMotion = usePrefersReducedMotion();
-  const reduceFancyMotion = isCoarsePointer || prefersReducedMotion;
+  // Mobile should still start in the "parallax stage" (so the initial view isn't the
+  // scrolled-down/section view), but we avoid heavy 3D rotations on coarse pointers.
+  const reduce3dMotion = isCoarsePointer || prefersReducedMotion;
 
   const springConfig = { stiffness: 300, damping: 30, bounce: 100 };
   const MAX_ROW_SCROLL_PX = 2000;
+
+  const clampFinite = React.useCallback(
+    (v: unknown, fallback: number) => {
+      const n = typeof v === "number" ? v : Number.NaN;
+      return Number.isFinite(n) ? n : fallback;
+    },
+    []
+  );
+
+  const getSectionCfg = React.useCallback(
+    (id: HeroParallaxSectionId) => {
+      const DEFAULT_GAP_PX = 40; // Tailwind `gap-10`
+      const DEFAULT_GAP_MD_PX = 80; // Tailwind `md:gap-20`
+      const cfg = sections?.[id];
+      return {
+        gapPx: clampFinite(cfg?.gapPx, DEFAULT_GAP_PX),
+        gapMdPx: clampFinite(cfg?.gapMdPx, DEFAULT_GAP_MD_PX),
+        initialScrollPx: clampNumber(
+          clampFinite(cfg?.initialScrollPx, 0),
+          -MAX_ROW_SCROLL_PX,
+          MAX_ROW_SCROLL_PX
+        ),
+      };
+    },
+    [MAX_ROW_SCROLL_PX, clampFinite, sections]
+  );
+
+  type GapVarsStyle = React.CSSProperties & {
+    ["--gap"]?: string;
+    ["--gap-md"]?: string;
+  };
+
+  const gapVars = React.useMemo(() => {
+    const links = getSectionCfg("links");
+    const research = getSectionCfg("research");
+    const openSource = getSectionCfg("open-source");
+    const resources = getSectionCfg("resources");
+    return {
+      linksStyle: { ["--gap"]: `${links.gapPx}px`, ["--gap-md"]: `${links.gapMdPx}px` } as GapVarsStyle,
+      researchStyle: { ["--gap"]: `${research.gapPx}px`, ["--gap-md"]: `${research.gapMdPx}px` } as GapVarsStyle,
+      openSourceStyle: {
+        ["--gap"]: `${openSource.gapPx}px`,
+        ["--gap-md"]: `${openSource.gapMdPx}px`,
+      } as GapVarsStyle,
+      resourcesStyle: {
+        ["--gap"]: `${resources.gapPx}px`,
+        ["--gap-md"]: `${resources.gapMdPx}px`,
+      } as GapVarsStyle,
+      initial: {
+        links: links.initialScrollPx,
+        research: research.initialScrollPx,
+        openSource: openSource.initialScrollPx,
+        resources: resources.initialScrollPx,
+      },
+    };
+  }, [getSectionCfg]);
 
   // Per-row horizontal scroll offsets (driven by wheel/trackpad while hovering a row).
   const row0Ref = React.useRef<HTMLDivElement | null>(null);
   const row1Ref = React.useRef<HTMLDivElement | null>(null);
   const row2Ref = React.useRef<HTMLDivElement | null>(null);
   const row3Ref = React.useRef<HTMLDivElement | null>(null);
-  const row0ScrollRaw = useMotionValue(0);
-  const row1ScrollRaw = useMotionValue(0);
-  const row2ScrollRaw = useMotionValue(0);
-  const row3ScrollRaw = useMotionValue(0);
+  const row0ScrollRaw = useMotionValue(gapVars.initial.links);
+  const row1ScrollRaw = useMotionValue(gapVars.initial.research);
+  const row2ScrollRaw = useMotionValue(gapVars.initial.openSource);
+  const row3ScrollRaw = useMotionValue(gapVars.initial.resources);
   const row0Scroll = useSpring(row0ScrollRaw, { stiffness: 250, damping: 35 });
   const row1Scroll = useSpring(row1ScrollRaw, { stiffness: 250, damping: 35 });
   const row2Scroll = useSpring(row2ScrollRaw, { stiffness: 250, damping: 35 });
@@ -452,9 +543,16 @@ export const HeroParallax = ({
     useTransform(scrollYProgress, [0, 0.2], [20, 0]),
     springConfig
   );
+  const mobileStartY = -600;
+  const desktopStartY = -900;
+  const mobileEndY = 350;
+  const desktopEndY = 500;
   const translateY = useSpring(
     // Start the parallax stage a bit higher on initial load.
-    useTransform(scrollYProgress, [0, 0.2], [-900, 500]),
+    useTransform(scrollYProgress, [0, 0.2], [
+      isCoarsePointer ? mobileStartY : desktopStartY,
+      isCoarsePointer ? mobileEndY : desktopEndY,
+    ]),
     springConfig
   );
 
@@ -616,43 +714,14 @@ export const HeroParallax = ({
       <Header showScrollCue={showScrollCue} />
       <motion.div
         style={{
-          rotateX: reduceFancyMotion ? 0 : rotateX,
-          rotateZ: reduceFancyMotion ? 0 : rotateZ,
-          translateY: reduceFancyMotion ? 0 : translateY,
+          rotateX: reduce3dMotion ? 0 : rotateX,
+          rotateZ: reduce3dMotion ? 0 : rotateZ,
+          // Keep vertical parallax on mobile (unless user requests reduced motion).
+          translateY: prefersReducedMotion ? 0 : translateY,
           opacity,
         }}
         className="relative z-0"
       >
-        <section aria-label="Links" className="mb-20">
-          <motion.div
-            ref={row0Ref}
-            {...row0Drag}
-            onPointerEnter={() => {
-              hoveredRowRef.current.mv = row0ScrollRaw;
-            }}
-            onPointerLeave={() => {
-              if (hoveredRowRef.current.mv === row0ScrollRaw) {
-                hoveredRowRef.current.mv = null;
-              }
-            }}
-            className="flex flex-row space-x-10 md:space-x-20 touch-pan-y"
-          >
-            {linksRow.map((product, idx) => (
-              <ProductCard
-                product={product}
-                translate={row0Translate}
-                displayHeightPx={getDisplayHeightPx(product)}
-                scrollToId="links"
-                centerOnClickMv={row0ScrollRaw}
-                maxRowScrollPx={MAX_ROW_SCROLL_PX}
-                isHeaderVisible={isHeaderVisible}
-                isCoarsePointer={isCoarsePointer}
-                key={`${product.title}-${product.thumbnail}-${product.link}-${idx}`}
-              />
-            ))}
-          </motion.div>
-        </section>
-
         <section aria-label="Research" className="mb-20">
           <div id="research" className="scroll-mt-40 px-4 mb-6">
             <span className="text-3xl sm:text-5xl font-extrabold text-black dark:text-white">
@@ -672,7 +741,8 @@ export const HeroParallax = ({
                 hoveredRowRef.current.mv = null;
               }
             }}
-            className="flex flex-row-reverse space-x-reverse space-x-10 md:space-x-20 touch-pan-y"
+            style={gapVars.researchStyle}
+            className="flex flex-row-reverse gap-(--gap) md:gap-(--gap-md) touch-pan-y"
           >
             {firstRow.map((product, idx) => (
               <ProductCard
@@ -709,7 +779,8 @@ export const HeroParallax = ({
                 hoveredRowRef.current.mv = null;
               }
             }}
-            className="flex flex-row space-x-10 md:space-x-20 touch-pan-y"
+            style={gapVars.openSourceStyle}
+            className="flex flex-row gap-(--gap) md:gap-(--gap-md) touch-pan-y"
           >
             {secondRow.map((product, idx) => (
               <ProductCard
@@ -746,7 +817,8 @@ export const HeroParallax = ({
                 hoveredRowRef.current.mv = null;
               }
             }}
-            className="flex flex-row-reverse space-x-reverse space-x-10 md:space-x-20 touch-pan-y"
+            style={gapVars.resourcesStyle}
+            className="flex flex-row-reverse gap-(--gap) md:gap-(--gap-md) touch-pan-y"
           >
             {thirdRow.map((product, idx) => (
               <ProductCard
@@ -755,6 +827,38 @@ export const HeroParallax = ({
                 displayHeightPx={getDisplayHeightPx(product)}
                 scrollToId="resources"
                 centerOnClickMv={row3ScrollRaw}
+                maxRowScrollPx={MAX_ROW_SCROLL_PX}
+                isHeaderVisible={isHeaderVisible}
+                isCoarsePointer={isCoarsePointer}
+                key={`${product.title}-${product.thumbnail}-${product.link}-${idx}`}
+              />
+            ))}
+          </motion.div>
+        </section>
+
+        <section aria-label="Links" className="mb-20">
+          <div id="links" className="scroll-mt-40 px-4 mb-6" />
+          <motion.div
+            ref={row0Ref}
+            {...row0Drag}
+            onPointerEnter={() => {
+              hoveredRowRef.current.mv = row0ScrollRaw;
+            }}
+            onPointerLeave={() => {
+              if (hoveredRowRef.current.mv === row0ScrollRaw) {
+                hoveredRowRef.current.mv = null;
+              }
+            }}
+            style={gapVars.linksStyle}
+            className="flex flex-row gap-(--gap) md:gap-(--gap-md) touch-pan-y"
+          >
+            {linksRow.map((product, idx) => (
+              <ProductCard
+                product={product}
+                translate={row0Translate}
+                displayHeightPx={getDisplayHeightPx(product)}
+                scrollToId="links"
+                centerOnClickMv={row0ScrollRaw}
                 maxRowScrollPx={MAX_ROW_SCROLL_PX}
                 isHeaderVisible={isHeaderVisible}
                 isCoarsePointer={isCoarsePointer}
@@ -836,16 +940,6 @@ export const Header = ({ showScrollCue }: { showScrollCue: boolean }) => {
     "dark:hover:bg-white dark:hover:text-black dark:hover:border-white/70 " +
     "dark:focus-visible:ring-white/40";
 
-  const iconPillClassName =
-    "group inline-flex items-center justify-center rounded-full border bg-white/70 shadow-sm backdrop-blur transition-all duration-250 ease-out transform-gpu " +
-    "h-10 w-10 md:h-11 md:w-11 " +
-    "border-black/20 text-black " +
-    "hover:bg-black hover:text-white hover:border-black/70 hover:scale-[1.04] " +
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 " +
-    "dark:border-white/20 dark:bg-black/40 dark:text-white " +
-    "dark:hover:bg-white dark:hover:text-black dark:hover:border-white/70 " +
-    "dark:focus-visible:ring-white/40";
-
   const cvPillClassName =
     "inline-flex items-center gap-2 rounded-full border bg-white/70 px-4 py-2 text-sm md:text-base font-medium shadow-sm backdrop-blur transition-colors duration-250 ease-out " +
     "border-black/20 text-black " +
@@ -886,24 +980,15 @@ export const Header = ({ showScrollCue }: { showScrollCue: boolean }) => {
           </button>
         </div>
         <div className="mt-5 flex items-center justify-center gap-3">
-          <a
-            href="https://github.com/alberto-rota"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="GitHub"
-            className={iconPillClassName}
+          <button
+            type="button"
+            onClick={() => scrollTo("contact")}
+            aria-label="Get in touch"
+            className={cvPillClassName}
           >
-            <Github className="h-5 w-5 md:h-6 md:w-6" aria-hidden="true" />
-          </a>
-          <a
-            href="https://www.linkedin.com/in/albe-rota/"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="LinkedIn"
-            className={iconPillClassName}
-          >
-            <Linkedin className="h-5 w-5 md:h-6 md:w-6" aria-hidden="true" />
-          </a>
+            <Send className="h-4 w-4 md:h-5 md:w-5" aria-hidden="true" />
+            <span>Get in touch</span>
+          </button>
           <a
             href="/CV_Alberto_Rota.pdf"
             download
@@ -972,6 +1057,7 @@ export const ProductCard = ({
   /** If true, avoid hover-only UI and show touch-safe affordances. */
   isCoarsePointer?: boolean;
 }) => {
+  const titleText = product.title?.trim?.() ?? "";
   const [aspectRatio, setAspectRatio] = React.useState<string>(() => {
     if (typeof product.aspectRatio === "string" && product.aspectRatio.trim()) {
       return product.aspectRatio.trim();
@@ -981,7 +1067,7 @@ export const ProductCard = ({
     }
     return aspectRatioCache.get(product.thumbnail) ?? "1 / 1";
   });
-  const [descHeightPx, setDescHeightPx] = React.useState<number>(64);
+  const [descHeightPx, setDescHeightPx] = React.useState<number>(0);
   const descRef = React.useRef<HTMLDivElement | null>(null);
   const rafRef = React.useRef<number | null>(null);
   const isTouch = Boolean(isCoarsePointer);
@@ -1058,8 +1144,8 @@ export const ProductCard = ({
     if (!el) return;
 
     const measure = () => {
-      // Keep the old baseline (64px) but allow full content height.
-      setDescHeightPx(Math.max(64, Math.ceil(el.scrollHeight)));
+      // Use the real content height so the hover lift matches the actual number of lines.
+      setDescHeightPx(Math.max(0, Math.ceil(el.scrollHeight)));
     };
 
     measure();
@@ -1081,11 +1167,16 @@ export const ProductCard = ({
     return top;
   };
 
-  const animateScrollTo = (targetY: number, durationMs: number) => {
+  const animateScrollTo = (
+    targetY: number,
+    durationMs: number,
+    onDone?: () => void
+  ) => {
     if (typeof window === "undefined") return;
 
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
       window.scrollTo({ top: targetY });
+      onDone?.();
       return;
     }
 
@@ -1109,6 +1200,7 @@ export const ProductCard = ({
         rafRef.current = requestAnimationFrame(tick);
       } else {
         rafRef.current = null;
+        onDone?.();
       }
     };
 
@@ -1129,15 +1221,6 @@ export const ProductCard = ({
       if (Math.abs(deltaX) < 0.5) return;
 
       mv.set(clampNumber(mv.get() + deltaX, -max, max));
-
-      // Correct once after Motion applies the new transform.
-      requestAnimationFrame(() => {
-        const rect2 = anchorEl.getBoundingClientRect();
-        const cardCenterX2 = rect2.left + rect2.width / 2;
-        const deltaX2 = viewportCenterX - cardCenterX2;
-        if (Math.abs(deltaX2) < 0.5) return;
-        mv.set(clampNumber(mv.get() + deltaX2, -max, max));
-      });
     },
     [centerOnClickMv, maxRowScrollPx]
   );
@@ -1153,10 +1236,12 @@ export const ProductCard = ({
     if (!el) return;
 
     e.preventDefault();
+    // Center immediately (top stage), then re-center after the vertical scroll completes,
+    // because the base parallax translate changes with scroll progress.
     centerSelfInViewport(e.currentTarget);
     const NAV_OFFSET_PX = -450;
     const y = Math.max(0, getDocumentTopPx(el) - NAV_OFFSET_PX);
-    animateScrollTo(y, 900);
+    animateScrollTo(y, 900, () => centerSelfInViewport(e.currentTarget));
   };
 
   return (
@@ -1166,10 +1251,23 @@ export const ProductCard = ({
           typeof product.thumbWidthPx === "number" && Number.isFinite(product.thumbWidthPx)
             ? product.thumbWidthPx
             : undefined;
+        // Some research thumbnails have slightly different aspect ratios; when the row is
+        // heavily perspective-transformed, this can read as inconsistent "gaps" between cards.
+        // Normalize research card widths (unless explicitly overridden) for a cleaner row rhythm.
+        const normalizedWidthPx =
+          widthPx == null && product.tag === "research"
+            ? Math.round(displayHeightPx * 0.77)
+            : undefined;
         return widthPx != null
           ? {
               x: translate,
               width: widthPx,
+              height: displayHeightPx,
+            }
+          : normalizedWidthPx != null
+          ? {
+              x: translate,
+              width: normalizedWidthPx,
               height: displayHeightPx,
             }
           : {
@@ -1178,8 +1276,10 @@ export const ProductCard = ({
               aspectRatio,
             };
       })()}
+      // Only apply a "cosmetic" lift when there is no description reveal.
+      // When we reveal a description, the inner container already shifts up by exactly `descHeightPx`.
       whileHover={
-        hoverEnabled
+        hoverEnabled && !revealDescription
           ? {
               y: -20,
             }
@@ -1222,12 +1322,12 @@ export const ProductCard = ({
             <a
               href={product.link}
               onClick={onProductClick}
-              aria-label={product.title}
+              aria-label={titleText || "Open item"}
               className="absolute inset-0 z-20 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"
             />
             <NextImage
               src={product.thumbnail}
-              alt={product.title}
+              alt={titleText}
               fill
               sizes="(min-width: 768px) 480px, 90vw"
               className="absolute inset-0 h-full w-full object-cover object-center rounded-2xl"
@@ -1248,8 +1348,8 @@ export const ProductCard = ({
               />
             ) : null}
 
-            {/* Top stage (header visible): show centered title on hover. */}
-            {topStageBorderEnabled ? (
+            {/* Top stage (header visible): show centered title on hover (skip if empty title). */}
+            {topStageBorderEnabled && titleText.length > 0 ? (
               <div
                 className={[
                   "absolute inset-0 flex items-center justify-center transition-opacity duration-200 ease-out pointer-events-none",
@@ -1258,7 +1358,7 @@ export const ProductCard = ({
               >
                 <div className="rounded-xl bg-black/45 px-4 py-2 backdrop-blur-sm">
                   <span className="text-white text-base md:text-lg font-semibold leading-tight">
-                    {product.title}
+                    {titleText}
                   </span>
                 </div>
               </div>
@@ -1273,61 +1373,63 @@ export const ProductCard = ({
                     sectionStageTouch ? "opacity-25" : "opacity-0 group-hover/product:opacity-35",
                   ].join(" ")}
                 ></div>
-                {/* Title label (non-interactive) */}
-                <div
-                  className={[
-                    "absolute bottom-4 left-4 right-4 transition-opacity duration-200 ease-out pointer-events-none",
-                    sectionStageTouch ? "opacity-100" : "opacity-0 group-hover/product:opacity-100",
-                  ].join(" ")}
-                >
-                  <div className="w-full rounded-xl bg-black/50 px-3 py-2 backdrop-blur-sm">
-                    <div className="flex items-center gap-3">
-                      {product.icon ? (
-                        <div className="w-1/8 flex items-center justify-center">
-                          {renderIcon(product.icon, {
-                            size: 44,
-                            className: "h-11 w-11 rounded-lg",
-                          })}
+                {/* Title label (non-interactive): only render if title is non-empty. */}
+                {titleText.length > 0 ? (
+                  <div
+                    className={[
+                      "absolute bottom-4 left-4 right-4 transition-opacity duration-200 ease-out pointer-events-none",
+                      sectionStageTouch ? "opacity-100" : "opacity-0 group-hover/product:opacity-100",
+                    ].join(" ")}
+                  >
+                    <div className="w-full rounded-xl bg-black/50 px-3 py-2 backdrop-blur-sm">
+                      <div className="flex items-center gap-3">
+                        {product.icon ? (
+                          <div className="w-1/8 flex items-center justify-center">
+                            {renderIcon(product.icon, {
+                              size: 44,
+                              className: "h-11 w-11 rounded-lg",
+                            })}
+                          </div>
+                        ) : null}
+                        <div className={product.icon ? "w-7/8" : "w-full"}>
+                          <h2 className="text-white text-sm md:text-base font-semibold leading-tight">
+                            {titleText}
+                          </h2>
+                        </div>
+                      </div>
+                      {sectionStageTouch && descriptionText.length > 0 ? (
+                        <p
+                          className="mt-2 text-xs sm:text-sm font-normal leading-snug text-white/90 overflow-hidden [display:-webkit-box] [-webkit-line-clamp:3] [-webkit-box-orient:vertical]"
+                          style={{ fontFamily: "var(--font-bbh-bogle)" }}
+                        >
+                          {descriptionText}
+                        </p>
+                      ) : null}
+                      {sectionStageTouch && actions.length > 0 ? (
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          {actions.map((action, i) => (
+                            <a
+                              key={`${action.href}-${action.icon}-${action.label ?? ""}-${i}`}
+                              href={action.href}
+                              aria-label={
+                                action.ariaLabel ?? action.label ?? `${titleText} action`
+                              }
+                              className={actionPillClassName + " touch-manipulation"}
+                            >
+                              {renderIcon(action.icon, {
+                                size: 18,
+                                className: "h-[18px] w-[18px] rounded-[4px]",
+                              })}
+                              {action.label ? (
+                                <span className="leading-none">{action.label}</span>
+                              ) : null}
+                            </a>
+                          ))}
                         </div>
                       ) : null}
-                      <div className={product.icon ? "w-7/8" : "w-full"}>
-                        <h2 className="text-white text-sm md:text-base font-semibold leading-tight">
-                          {product.title}
-                        </h2>
-                      </div>
                     </div>
-                    {sectionStageTouch && descriptionText.length > 0 ? (
-                      <p
-                        className="mt-2 text-xs sm:text-sm font-normal leading-snug text-white/90 overflow-hidden [display:-webkit-box] [-webkit-line-clamp:3] [-webkit-box-orient:vertical]"
-                        style={{ fontFamily: "var(--font-bbh-bogle)" }}
-                      >
-                        {descriptionText}
-                      </p>
-                    ) : null}
-                    {sectionStageTouch && actions.length > 0 ? (
-                      <div className="mt-2 flex flex-wrap items-center gap-2">
-                        {actions.map((action, i) => (
-                          <a
-                            key={`${action.href}-${action.icon}-${action.label ?? ""}-${i}`}
-                            href={action.href}
-                            aria-label={
-                              action.ariaLabel ?? action.label ?? `${product.title} action`
-                            }
-                            className={actionPillClassName + " touch-manipulation"}
-                          >
-                            {renderIcon(action.icon, {
-                              size: 18,
-                              className: "h-[18px] w-[18px] rounded-[4px]",
-                            })}
-                            {action.label ? (
-                              <span className="leading-none">{action.label}</span>
-                            ) : null}
-                          </a>
-                        ))}
-                      </div>
-                    ) : null}
                   </div>
-                </div>
+                ) : null}
 
                 {/* Action buttons overlay (interactive; section stage only). */}
                 {actions.length > 0 && (hoverEnabled || sectionStageTouch) ? (
@@ -1370,7 +1472,7 @@ export const ProductCard = ({
           {revealDescription ? (
             <div
               ref={descRef}
-              className="min-h-16 px-4 py-3 bg-white/80 dark:bg-black/60 text-black dark:text-white flex items-start"
+              className="px-4 py-3 bg-white/80 dark:bg-black/60 text-black dark:text-white flex items-start"
             >
               <p
                 className="text-lg md:text-xl font-light leading-snug whitespace-normal wrap-break-word"

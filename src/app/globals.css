@@ -51,13 +51,13 @@
   --font-bbh-bartle: "BBH Bartle", ui-sans-serif, system-ui, sans-serif;
   --font-bbh-bogle: "BBH Bogle", ui-sans-serif, system-ui, sans-serif;
 
-  /* Scrollbar theme (minimal "indicator" style). */
-  --scrollbar-size: 8px;
+  /* Scrollbar theme (black/white, "premium" pill). */
+  --scrollbar-size: 10px;
   --scrollbar-radius: 999px;
-  --scrollbar-track: transparent;
-  --scrollbar-thumb: color-mix(in oklch, var(--foreground) 18%, transparent);
-  --scrollbar-thumb-hover: color-mix(in oklch, var(--foreground) 28%, transparent);
-  --scrollbar-thumb-active: color-mix(in oklch, var(--primary) 22%, transparent);
+  --scrollbar-track: color-mix(in oklch, var(--background) 92%, var(--foreground) 8%);
+  --scrollbar-thumb: color-mix(in oklch, var(--foreground) 22%, transparent);
+  --scrollbar-thumb-hover: color-mix(in oklch, var(--foreground) 38%, transparent);
+  --scrollbar-thumb-active: color-mix(in oklch, var(--foreground) 52%, transparent);
 
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -141,26 +141,24 @@ html::-webkit-scrollbar-track,
 body::-webkit-scrollbar-track,
 *::-webkit-scrollbar-track {
   background: var(--scrollbar-track) !important;
+  border-radius: var(--scrollbar-radius) !important;
 }
 
 html::-webkit-scrollbar-thumb,
 body::-webkit-scrollbar-thumb,
 *::-webkit-scrollbar-thumb {
-  /* Hidden until interaction (more reliable than `opacity` in Chromium). */
-  background: transparent !important;
+  background: var(--scrollbar-thumb) !important;
   border-radius: var(--scrollbar-radius) !important;
-  transition: background-color 180ms ease-out !important;
-  /* Trackless + sleek */
-  border: 0 !important;
+  transition: background-color 160ms ease-out !important;
+  /* "Floating pill" look: creates padding + crisp edge using only b/w. */
+  border: 2px solid var(--scrollbar-track) !important;
+  background-clip: padding-box !important;
 }
 
-/* Reveal the thumb when you interact with any scrollable area. */
-html:hover::-webkit-scrollbar-thumb,
-body:hover::-webkit-scrollbar-thumb,
-*:hover::-webkit-scrollbar-thumb,
-*:focus-within::-webkit-scrollbar-thumb,
-*:active::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb) !important;
+html::-webkit-scrollbar-corner,
+body::-webkit-scrollbar-corner,
+*::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track) !important;
 }
 
 html::-webkit-scrollbar-thumb:hover,
@@ -178,7 +176,7 @@ body::-webkit-scrollbar-thumb:active,
 /* Firefox fallback. */
 html {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklch, var(--foreground) 22%, transparent) transparent;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 @layer base {
@@ -189,8 +187,8 @@ html {
     @apply bg-background text-foreground font-sans;
   }
 }
-
 /* Mobile/touch ergonomics */
 html {
   -webkit-text-size-adjust: 100%;
 }
+
