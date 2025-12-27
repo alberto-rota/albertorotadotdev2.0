@@ -1663,7 +1663,7 @@ function PptSlideshowModal({
 }: {
   open: boolean;
   onClose: () => void;
-  viewer: NonNullable<HeroParallaxProduct["viewer"]>;
+  viewer: Extract<NonNullable<HeroParallaxProduct["viewer"]>, { kind: "ppt-slideshow" }>;
   fallbackTitle: string;
 }) {
   const prefersReducedMotion = usePrefersReducedMotion();
