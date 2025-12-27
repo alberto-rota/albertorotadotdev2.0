@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import NextImage from "next/image";
+import { createPortal } from "react-dom";
 import {
   motion,
   useScroll,
@@ -9,7 +10,17 @@ import {
   useMotionValue,
   MotionValue,
 } from "motion/react";
-import { ArrowDown, FileDown, Send } from "lucide-react";
+import {
+  ArrowDown,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  FileDown,
+  Pause,
+  Play,
+  Send,
+  X,
+} from "lucide-react";
 import * as LucideIcons from "lucide-react";
 
 const aspectRatioCache = new Map<string, string>();
@@ -67,6 +78,10 @@ function horizontalDeltaFromWheelEvent(e: WheelEvent) {
 
 function isPngIcon(v: unknown): v is string {
   return typeof v === "string" && v.toLowerCase().endsWith(".png");
+}
+
+function isSvgPath(v: unknown): v is string {
+  return typeof v === "string" && v.toLowerCase().endsWith(".svg");
 }
 
 function renderIcon(
@@ -188,7 +203,7 @@ function useDragToScrollMotionValue(opts: {
   return { onPointerDown, onPointerMove, onPointerUp: stop, onPointerCancel: stop };
 }
 
-export type HeroParallaxProduct = {
+type HeroParallaxProduct = {
   title: string;
   /** Short description shown on hover in section view. */
   description?: string;
@@ -219,8 +234,8 @@ export type HeroParallaxProduct = {
   actions?: Array<{
     /** Button text (optional). */
     label?: string;
-    /** Redirect URL. */
-    href: string;
+    /** Redirect URL (required unless `kind` is "open-viewer"). */
+    href?: string;
     /**
      * Icon to display.
      * Accepts either:
@@ -230,6 +245,11 @@ export type HeroParallaxProduct = {
     icon: string;
     /** Optional accessibility label (recommended if `label` is omitted). */
     ariaLabel?: string;
+    /**
+     * Optional special action.
+     * - "open-viewer": opens the in-page viewer modal for this product (if any)
+     */
+    kind?: "open-viewer";
   }>;
   /**
    * Optional hover border color (used when the hero header is visible / top stage).
@@ -270,11 +290,51 @@ export type HeroParallaxProduct = {
    * If omitted, order falls back to JSON order (stable).
    */
   position?: number;
+  /**
+   * Optional rich viewer for non-standard assets (e.g. PowerPoint decks).
+   * If present, the product card can open an in-page modal viewer (section stage only).
+   */
+  viewer?:
+    | {
+        kind: "ppt-slideshow";
+        /** Title shown in the viewer header (defaults to product.title). */
+        title?: string;
+        /**
+         * Slide path generator.
+         * Example: prefix "/resources/my-deck/slides/slide-" + pad 2 -> slide-01.svg
+         */
+        slides: {
+          prefix: string;
+          count: number;
+          pad?: number;
+          ext?: string; // e.g. "webp" | "png" | "jpg" | "svg"
+        };
+        /** Optional download link for the original file (e.g. .pptx). */
+        downloadHref?: string;
+        /** Autoplay interval in ms (disabled when prefers-reduced-motion). */
+        autoplayMs?: number;
+        /** Optional fixed aspect ratio (defaults to 16/9). */
+        aspectRatio?: string | number;
+      }
+    | {
+        /**
+         * Online PPTX viewer via Microsoft Office for the web.
+         * NOTE: the PPTX must be publicly reachable over HTTPS for Office to fetch it.
+         */
+        kind: "pptx-office";
+        title?: string;
+        /** PPTX path or URL. If relative ("/..."), it will be resolved against window.location.origin. */
+        pptxHref: string;
+        /** Optional download link for the file (defaults to `pptxHref`). */
+        downloadHref?: string;
+      };
 };
 
-export type HeroParallaxSectionId = "links" | "research" | "open-source" | "resources";
+export type { HeroParallaxProduct };
 
-export type HeroParallaxSectionConfig = {
+type HeroParallaxSectionId = "links" | "research" | "open-source" | "resources";
+
+type HeroParallaxSectionConfig = {
   /**
    * Horizontal gap between cards (px) for this section (mobile/default).
    * Previously hardcoded as Tailwind `gap-10` (40px).
@@ -291,6 +351,8 @@ export type HeroParallaxSectionConfig = {
    */
   initialScrollPx?: number;
 };
+
+export type { HeroParallaxSectionId, HeroParallaxSectionConfig };
 
 function arrangeProducts(products: HeroParallaxProduct[]) {
   type WithIdx = HeroParallaxProduct & { __idx: number };
@@ -1062,6 +1124,8 @@ export const ProductCard = ({
   isCoarsePointer?: boolean;
 }) => {
   const titleText = product.title?.trim?.() ?? "";
+  const viewer = product.viewer;
+  const [viewerOpen, setViewerOpen] = React.useState(false);
   const [aspectRatio, setAspectRatio] = React.useState<string>(() => {
     if (typeof product.aspectRatio === "string" && product.aspectRatio.trim()) {
       return product.aspectRatio.trim();
@@ -1081,7 +1145,11 @@ export const ProductCard = ({
   const descriptionText = product.description?.trim() ?? "";
   const revealDescription = (hoverEnabled || (!isHeaderVisible && isTouch)) && descriptionText.length > 0;
   const actions = Array.isArray(product.actions)
-    ? product.actions.filter((a) => Boolean(a?.href && a?.icon))
+    ? product.actions.filter((a) => {
+        if (!a?.icon) return false;
+        if (a.kind === "open-viewer") return true;
+        return Boolean(a.href);
+      })
     : [];
 
   const sectionStageTouch = !isHeaderVisible && isTouch;
@@ -1230,22 +1298,23 @@ export const ProductCard = ({
   );
 
   const onProductClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Only override the click when the Hero header is visible.
-    // Otherwise, preserve the original navigation to `product.link`.
-    if (!scrollToId) return;
     if (typeof window === "undefined") return;
-    if (!isHeaderVisible) return;
 
-    const el = document.getElementById(scrollToId);
-    if (!el) return;
+    // Top-stage: only override the click when the Hero header is visible.
+    // Otherwise, preserve the original navigation to `product.link` (or open viewer).
+    if (scrollToId && isHeaderVisible) {
+      const el = document.getElementById(scrollToId);
+      if (!el) return;
 
-    e.preventDefault();
-    // Center immediately (top stage), then re-center after the vertical scroll completes,
-    // because the base parallax translate changes with scroll progress.
-    centerSelfInViewport(e.currentTarget);
-    const NAV_OFFSET_PX = -450;
-    const y = Math.max(0, getDocumentTopPx(el) - NAV_OFFSET_PX);
-    animateScrollTo(y, 900, () => centerSelfInViewport(e.currentTarget));
+      e.preventDefault();
+      // Center immediately (top stage), then re-center after the vertical scroll completes,
+      // because the base parallax translate changes with scroll progress.
+      centerSelfInViewport(e.currentTarget);
+      const NAV_OFFSET_PX = -450;
+      const y = Math.max(0, getDocumentTopPx(el) - NAV_OFFSET_PX);
+      animateScrollTo(y, 900, () => centerSelfInViewport(e.currentTarget));
+      return;
+    }
   };
 
   return (
@@ -1335,6 +1404,8 @@ export const ProductCard = ({
               fill
               sizes="(min-width: 768px) 480px, 90vw"
               className="absolute inset-0 h-full w-full object-cover object-center rounded-2xl"
+              // Next's image optimizer doesn't support SVG; render them unoptimized.
+              unoptimized={isSvgPath(product.thumbnail)}
               loading="lazy"
               priority={false}
             />
@@ -1412,6 +1483,27 @@ export const ProductCard = ({
                       {sectionStageTouch && actions.length > 0 ? (
                         <div className="mt-2 flex flex-wrap items-center gap-2">
                           {actions.map((action, i) => (
+                          action.kind === "open-viewer" ? (
+                            <button
+                              key={`open-viewer-${action.icon}-${action.label ?? ""}-${i}`}
+                              type="button"
+                              onClick={() => setViewerOpen(true)}
+                              aria-label={
+                                action.ariaLabel ?? action.label ?? `${titleText} viewer`
+                              }
+                              className={actionPillClassName + " touch-manipulation"}
+                              disabled={!viewer}
+                              title={!viewer ? "Viewer not available for this item" : undefined}
+                            >
+                              {renderIcon(action.icon, {
+                                size: 18,
+                                className: "h-[18px] w-[18px] rounded-[4px]",
+                              })}
+                              {action.label ? (
+                                <span className="leading-none">{action.label}</span>
+                              ) : null}
+                            </button>
+                          ) : (
                             <a
                               key={`${action.href}-${action.icon}-${action.label ?? ""}-${i}`}
                               href={action.href}
@@ -1428,6 +1520,7 @@ export const ProductCard = ({
                                 <span className="leading-none">{action.label}</span>
                               ) : null}
                             </a>
+                          )
                           ))}
                         </div>
                       ) : null}
@@ -1448,22 +1541,44 @@ export const ProductCard = ({
                     <div className="w-[90%] max-w-[90%]">
                       <div className="flex flex-wrap items-center justify-center gap-2">
                         {actions.map((action, i) => (
-                          <a
-                            key={`${action.href}-${action.icon}-${action.label ?? ""}-${i}`}
-                            href={action.href}
-                            aria-label={
-                              action.ariaLabel ?? action.label ?? `${product.title} action`
-                            }
-                            className={actionPillClassName}
-                          >
-                            {renderIcon(action.icon, {
-                              size: 18,
-                              className: "h-[18px] w-[18px] rounded-[4px]",
-                            })}
-                            {action.label ? (
-                              <span className="leading-none">{action.label}</span>
-                            ) : null}
-                          </a>
+                          action.kind === "open-viewer" ? (
+                            <button
+                              key={`open-viewer-${action.icon}-${action.label ?? ""}-${i}`}
+                              type="button"
+                              onClick={() => setViewerOpen(true)}
+                              aria-label={
+                                action.ariaLabel ?? action.label ?? `${product.title} viewer`
+                              }
+                              className={actionPillClassName}
+                              disabled={!viewer}
+                              title={!viewer ? "Viewer not available for this item" : undefined}
+                            >
+                              {renderIcon(action.icon, {
+                                size: 18,
+                                className: "h-[18px] w-[18px] rounded-[4px]",
+                              })}
+                              {action.label ? (
+                                <span className="leading-none">{action.label}</span>
+                              ) : null}
+                            </button>
+                          ) : (
+                            <a
+                              key={`${action.href}-${action.icon}-${action.label ?? ""}-${i}`}
+                              href={action.href}
+                              aria-label={
+                                action.ariaLabel ?? action.label ?? `${product.title} action`
+                              }
+                              className={actionPillClassName}
+                            >
+                              {renderIcon(action.icon, {
+                                size: 18,
+                                className: "h-[18px] w-[18px] rounded-[4px]",
+                              })}
+                              {action.label ? (
+                                <span className="leading-none">{action.label}</span>
+                              ) : null}
+                            </a>
+                          )
                         ))}
                       </div>
                     </div>
@@ -1489,8 +1604,397 @@ export const ProductCard = ({
         </div>
 
       </div>
+      {viewer ? (
+        viewer.kind === "ppt-slideshow" ? (
+          <PptSlideshowModal
+            open={viewerOpen}
+            onClose={() => setViewerOpen(false)}
+            viewer={viewer}
+            fallbackTitle={titleText}
+          />
+        ) : viewer.kind === "pptx-office" ? (
+          <PptxOfficeModal
+            open={viewerOpen}
+            onClose={() => setViewerOpen(false)}
+            viewer={viewer}
+            fallbackTitle={titleText}
+          />
+        ) : null
+      ) : null}
     </motion.div>
   );
 };
+
+function padNumber(n: number, width: number) {
+  const s = String(Math.max(0, Math.floor(n)));
+  return s.length >= width ? s : "0".repeat(width - s.length) + s;
+}
+
+function buildSlidePaths(cfg: {
+  prefix: string;
+  count: number;
+  pad?: number;
+  ext?: string;
+}) {
+  const count = Math.max(0, Math.floor(cfg.count));
+  const pad = typeof cfg.pad === "number" && Number.isFinite(cfg.pad) ? Math.max(0, Math.floor(cfg.pad)) : 0;
+  const ext = (cfg.ext?.trim() || "svg").replace(/^\./, "");
+  const out: string[] = [];
+  for (let i = 1; i <= count; i++) {
+    const idx = pad > 0 ? padNumber(i, pad) : String(i);
+    out.push(`${cfg.prefix}${idx}.${ext}`);
+  }
+  return out;
+}
+
+function Portal({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  if (typeof document === "undefined") return null;
+  return createPortal(children, document.body);
+}
+
+function PptSlideshowModal({
+  open,
+  onClose,
+  viewer,
+  fallbackTitle,
+}: {
+  open: boolean;
+  onClose: () => void;
+  viewer: NonNullable<HeroParallaxProduct["viewer"]>;
+  fallbackTitle: string;
+}) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const slides = React.useMemo(() => buildSlidePaths(viewer.slides), [viewer.slides]);
+  const [idx, setIdx] = React.useState(0);
+  const [paused, setPaused] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!open) return;
+    setIdx(0);
+    setPaused(false);
+  }, [open]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [open]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft") setIdx((v) => (slides.length ? (v - 1 + slides.length) % slides.length : 0));
+      if (e.key === "ArrowRight") setIdx((v) => (slides.length ? (v + 1) % slides.length : 0));
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose, slides.length]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    if (prefersReducedMotion) return;
+    if (paused) return;
+    if (!slides.length) return;
+    const ms = typeof viewer.autoplayMs === "number" && Number.isFinite(viewer.autoplayMs) ? viewer.autoplayMs : 1800;
+    if (ms <= 0) return;
+    const id = window.setInterval(() => {
+      setIdx((v) => (slides.length ? (v + 1) % slides.length : 0));
+    }, ms);
+    return () => window.clearInterval(id);
+  }, [open, paused, prefersReducedMotion, slides.length, viewer.autoplayMs]);
+
+  const title = viewer.title?.trim() || fallbackTitle || "Slides";
+  const ar =
+    typeof viewer.aspectRatio === "string" && viewer.aspectRatio.trim()
+      ? viewer.aspectRatio.trim()
+      : typeof viewer.aspectRatio === "number" && Number.isFinite(viewer.aspectRatio)
+      ? String(viewer.aspectRatio)
+      : "16 / 9";
+
+  if (!open) return null;
+
+  return (
+    <Portal>
+      <div className="fixed inset-0 z-[1000]">
+        {/* Backdrop */}
+        <button
+          type="button"
+          aria-label="Close viewer"
+          onClick={onClose}
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        />
+
+        {/* Dialog */}
+        <div className="absolute inset-0 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 260, damping: 24 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={title}
+            className="relative w-full max-w-5xl rounded-2xl border border-black/20 dark:border-white/20 bg-white/85 dark:bg-black/75 shadow-2xl backdrop-blur-md overflow-hidden"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-black/10 dark:border-white/10">
+              <div className="min-w-0">
+                <div className="text-sm md:text-base font-semibold text-black dark:text-white truncate">
+                  {title}
+                </div>
+                <div className="text-xs text-black/60 dark:text-white/60">
+                  {slides.length ? `Slide ${Math.min(slides.length, idx + 1)} / ${slides.length}` : "No slides found"}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {viewer.downloadHref ? (
+                  <a
+                    href={viewer.downloadHref}
+                    className="inline-flex items-center gap-2 rounded-full border bg-white/70 px-3 py-2 text-xs md:text-sm font-medium shadow-sm backdrop-blur transition-colors duration-250 ease-out border-black/20 text-black hover:bg-black hover:text-white hover:border-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:border-white/20 dark:bg-black/40 dark:text-white dark:hover:bg-white dark:hover:text-black dark:hover:border-white/70 dark:focus-visible:ring-white/40"
+                  >
+                    <FileDown className="h-4 w-4" aria-hidden="true" />
+                    <span>Download PPTX</span>
+                  </a>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close"
+                  className="inline-flex items-center justify-center rounded-full border border-black/20 dark:border-white/20 bg-white/70 dark:bg-black/40 h-10 w-10 transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"
+                >
+                  <X className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+
+            {/* Slide stage */}
+            <div className="px-4 py-4">
+              <div
+                className="relative w-full overflow-hidden rounded-xl border border-black/10 dark:border-white/10 bg-black/[0.03] dark:bg-white/[0.04]"
+                style={{ aspectRatio: ar }}
+              >
+                {slides.length ? (
+                  <motion.div
+                    key={slides[idx] ?? `slide-${idx}`}
+                    initial={prefersReducedMotion ? false : { opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    className="absolute inset-0"
+                  >
+                    <NextImage
+                      src={slides[idx]!}
+                      alt={`${title} slide ${idx + 1}`}
+                      fill
+                      sizes="(min-width: 1024px) 960px, 92vw"
+                      className="absolute inset-0 h-full w-full object-contain"
+                      unoptimized={isSvgPath(slides[idx])}
+                      priority={true}
+                    />
+                  </motion.div>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-sm text-black/60 dark:text-white/60">
+                      Add exported slide images to render an animated preview.
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Controls */}
+              <div className="mt-3 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIdx((v) => (slides.length ? (v - 1 + slides.length) % slides.length : 0))}
+                    aria-label="Previous slide"
+                    className="inline-flex items-center justify-center rounded-full border border-black/20 dark:border-white/20 bg-white/70 dark:bg-black/40 h-10 w-10 transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"
+                    disabled={!slides.length}
+                  >
+                    <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaused((p) => !p)}
+                    aria-label={paused ? "Play" : "Pause"}
+                    className="inline-flex items-center justify-center rounded-full border border-black/20 dark:border-white/20 bg-white/70 dark:bg-black/40 h-10 w-10 transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"
+                    disabled={!slides.length || prefersReducedMotion}
+                    title={prefersReducedMotion ? "Autoplay disabled (prefers reduced motion)" : undefined}
+                  >
+                    {paused ? (
+                      <Play className="h-5 w-5" aria-hidden="true" />
+                    ) : (
+                      <Pause className="h-5 w-5" aria-hidden="true" />
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIdx((v) => (slides.length ? (v + 1) % slides.length : 0))}
+                    aria-label="Next slide"
+                    className="inline-flex items-center justify-center rounded-full border border-black/20 dark:border-white/20 bg-white/70 dark:bg-black/40 h-10 w-10 transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"
+                    disabled={!slides.length}
+                  >
+                    <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                </div>
+
+                <div className="text-xs text-black/60 dark:text-white/60 text-right">
+                  {prefersReducedMotion ? "Autoplay off" : paused ? "Paused" : "Autoplay on"}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </Portal>
+  );
+}
+
+function resolveAbsoluteHref(href: string) {
+  if (typeof window === "undefined") return null;
+  try {
+    return new URL(href, window.location.origin).toString();
+  } catch {
+    return null;
+  }
+}
+
+function PptxOfficeModal({
+  open,
+  onClose,
+  viewer,
+  fallbackTitle,
+}: {
+  open: boolean;
+  onClose: () => void;
+  viewer: Extract<NonNullable<HeroParallaxProduct["viewer"]>, { kind: "pptx-office" }>;
+  fallbackTitle: string;
+}) {
+  const [abs, setAbs] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!open) return;
+    setAbs(resolveAbsoluteHref(viewer.pptxHref));
+  }, [open, viewer.pptxHref]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [open]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+
+  const title = viewer.title?.trim() || fallbackTitle || "PowerPoint";
+  const downloadHref = viewer.downloadHref || viewer.pptxHref;
+  const embedUrl =
+    abs != null
+      ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(abs)}`
+      : null;
+
+  if (!open) return null;
+
+  return (
+    <Portal>
+      <div className="fixed inset-0 z-[1000]">
+        <button
+          type="button"
+          aria-label="Close viewer"
+          onClick={onClose}
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        />
+        <div className="absolute inset-0 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 260, damping: 24 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={title}
+            className="relative w-full max-w-6xl rounded-2xl border border-black/20 dark:border-white/20 bg-white/85 dark:bg-black/75 shadow-2xl backdrop-blur-md overflow-hidden"
+          >
+            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-black/10 dark:border-white/10">
+              <div className="min-w-0">
+                <div className="text-sm md:text-base font-semibold text-black dark:text-white truncate">
+                  {title}
+                </div>
+                <div className="text-xs text-black/60 dark:text-white/60">
+                  Online PowerPoint viewer (Office for the web)
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={downloadHref}
+                  className="inline-flex items-center gap-2 rounded-full border bg-white/70 px-3 py-2 text-xs md:text-sm font-medium shadow-sm backdrop-blur transition-colors duration-250 ease-out border-black/20 text-black hover:bg-black hover:text-white hover:border-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:border-white/20 dark:bg-black/40 dark:text-white dark:hover:bg-white dark:hover:text-black dark:hover:border-white/70 dark:focus-visible:ring-white/40"
+                >
+                  <FileDown className="h-4 w-4" aria-hidden="true" />
+                  <span>Download</span>
+                </a>
+                {embedUrl ? (
+                  <a
+                    href={embedUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border bg-white/70 px-3 py-2 text-xs md:text-sm font-medium shadow-sm backdrop-blur transition-colors duration-250 ease-out border-black/20 text-black hover:bg-black hover:text-white hover:border-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:border-white/20 dark:bg-black/40 dark:text-white dark:hover:bg-white dark:hover:text-black dark:hover:border-white/70 dark:focus-visible:ring-white/40"
+                  >
+                    <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                    <span>Open in new tab</span>
+                  </a>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close"
+                  className="inline-flex items-center justify-center rounded-full border border-black/20 dark:border-white/20 bg-white/70 dark:bg-black/40 h-10 w-10 transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"
+                >
+                  <X className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+
+            <div className="px-4 py-4">
+              <div className="text-xs text-black/60 dark:text-white/60 mb-3">
+                Note: Office’s online viewer can only load the PPTX if it’s publicly reachable over HTTPS
+                (it won’t work from localhost/private networks).
+              </div>
+              <div className="relative w-full overflow-hidden rounded-xl border border-black/10 dark:border-white/10 bg-black/[0.03] dark:bg-white/[0.04] aspect-[16/9]">
+                {embedUrl ? (
+                  <iframe
+                    title={title}
+                    src={embedUrl}
+                    className="absolute inset-0 h-full w-full"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
+                    <div className="text-sm text-black/70 dark:text-white/70">
+                      Could not compute an absolute URL for the PPTX. Try deploying the site or ensuring
+                      the PPTX is accessible via an absolute HTTPS URL.
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </Portal>
+  );
+}
 
 

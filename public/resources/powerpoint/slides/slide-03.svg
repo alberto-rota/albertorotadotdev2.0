@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0b10"/>
+      <stop offset="1" stop-color="#171724"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff6188"/>
+      <stop offset="1" stop-color="#fc9867"/>
+    </linearGradient>
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="18" result="b"/>
+      <feColorMatrix
+        in="b"
+        type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 0.6 0"
+        result="c"
+      />
+      <feMerge>
+        <feMergeNode in="c"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <!-- diagonal accents -->
+  <path d="M-120 860 L520 220" stroke="url(#accent)" stroke-width="34" opacity="0.22" filter="url(#softGlow)"/>
+  <path d="M120 980 L820 150" stroke="#78dce8" stroke-width="18" opacity="0.10" filter="url(#softGlow)"/>
+
+  <!-- top pill -->
+  <g>
+    <rect x="90" y="90" rx="22" ry="22" width="470" height="56" fill="#000000" opacity="0.45"/>
+    <rect x="90" y="90" rx="22" ry="22" width="470" height="56" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.9"/>
+    <text x="120" y="127" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="22" fill="#ffffff" opacity="0.92">
+      Resource • Consistent Graphics
+    </text>
+  </g>
+
+  <!-- title -->
+  <text x="90" y="265" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="64" font-weight="750" fill="#ffffff">
+    Matches your site
+  </text>
+  <text x="90" y="330" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="28" fill="#ffffff" opacity="0.78">
+    Same rounded corners, borders, blur and typography feel.
+  </text>
+
+  <!-- cards -->
+  <g>
+    <rect x="90" y="420" width="460" height="230" rx="22" fill="#000000" opacity="0.28"/>
+    <rect x="90" y="420" width="460" height="230" rx="22" fill="none" stroke="#ffffff" opacity="0.12"/>
+    <rect x="120" y="460" width="270" height="16" rx="8" fill="url(#accent)" opacity="0.9"/>
+    <rect x="120" y="500" width="360" height="12" rx="6" fill="#ffffff" opacity="0.18"/>
+    <rect x="120" y="528" width="330" height="12" rx="6" fill="#ffffff" opacity="0.14"/>
+    <rect x="120" y="556" width="290" height="12" rx="6" fill="#ffffff" opacity="0.10"/>
+
+    <rect x="590" y="420" width="920" height="230" rx="22" fill="#000000" opacity="0.22"/>
+    <rect x="590" y="420" width="920" height="230" rx="22" fill="none" stroke="#ffffff" opacity="0.10"/>
+    <rect x="620" y="460" width="500" height="16" rx="8" fill="#78dce8" opacity="0.7"/>
+    <rect x="620" y="500" width="760" height="12" rx="6" fill="#ffffff" opacity="0.16"/>
+    <rect x="620" y="528" width="700" height="12" rx="6" fill="#ffffff" opacity="0.12"/>
+    <rect x="620" y="556" width="650" height="12" rx="6" fill="#ffffff" opacity="0.10"/>
+  </g>
+
+  <!-- footer -->
+  <text x="90" y="835" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="20" fill="#ffffff" opacity="0.6">
+    Click the resource card to open the slideshow modal.
+  </text>
+</svg>

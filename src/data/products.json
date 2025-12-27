@@ -148,6 +148,26 @@
       "borderColor": "#ff6188"
     },
     {
+      "title": "PowerPoint Slide Deck",
+      "description": "Animated slide preview (auto-playing) rendered as a site-styled slideshow.",
+      "link": "/resources/powerpoint/UnReflectAnything.pptx",
+      "tag": "resources",
+      "thumbnail": "/resources/powerpoint/slides/urapreview.png",
+      "aspectRatio": "16 / 9",
+      "actions": [
+        { "label": "View online", "icon": "ExternalLink", "kind": "open-viewer" },
+        { "label": "Download PPTX", "href": "/resources/powerpoint/UnReflectAnything.pptx", "icon": "FileDown" }
+      ],
+      "viewer": {
+        "kind": "pptx-office",
+        "title": "PowerPoint Slide Deck",
+        "pptxHref": "https://albertorota.dev/resources/powerpoint/UnReflectAnything.pptx",
+        "downloadHref": "/resources/powerpoint/UnReflectAnything.pptx"
+      },
+      "borderColor": "#78dce8",
+      "position": 1
+    },
+    {
       "title": "",
       "link": "#",
       "tag": "links",

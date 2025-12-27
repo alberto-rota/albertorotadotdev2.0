@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0b10"/>
+      <stop offset="1" stop-color="#171724"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#a9dc76"/>
+      <stop offset="1" stop-color="#78dce8"/>
+    </linearGradient>
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="18" result="b"/>
+      <feColorMatrix
+        in="b"
+        type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 0.6 0"
+        result="c"
+      />
+      <feMerge>
+        <feMergeNode in="c"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <!-- subtle grid -->
+  <g opacity="0.15" stroke="#ffffff" stroke-width="1">
+    <path d="M0 150H1600M0 300H1600M0 450H1600M0 600H1600M0 750H1600"/>
+    <path d="M200 0V900M400 0V900M600 0V900M800 0V900M1000 0V900M1200 0V900M1400 0V900"/>
+  </g>
+
+  <!-- accent arc -->
+  <path d="M1040 120 C1320 80, 1520 190, 1540 340 C1560 520, 1420 660, 1240 710 C1040 765, 900 650, 860 510 C820 370, 900 190, 1040 120 Z"
+        fill="#78dce8" opacity="0.14" filter="url(#softGlow)"/>
+  <circle cx="1320" cy="260" r="110" fill="#a9dc76" opacity="0.14" filter="url(#softGlow)"/>
+
+  <!-- top pill -->
+  <g>
+    <rect x="90" y="90" rx="22" ry="22" width="420" height="56" fill="#000000" opacity="0.45"/>
+    <rect x="90" y="90" rx="22" ry="22" width="420" height="56" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.9"/>
+    <text x="120" y="127" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="22" fill="#ffffff" opacity="0.92">
+      Resource • Animated Preview
+    </text>
+  </g>
+
+  <!-- content -->
+  <text x="90" y="260" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="62" font-weight="750" fill="#ffffff">
+    Smooth crossfades
+  </text>
+  <text x="90" y="320" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="28" fill="#ffffff" opacity="0.78">
+    Slides advance automatically (and respect prefers-reduced-motion).
+  </text>
+
+  <!-- simple blocks -->
+  <g opacity="0.95">
+    <rect x="90" y="400" width="520" height="18" rx="9" fill="url(#accent)" opacity="0.9"/>
+    <rect x="90" y="450" width="700" height="12" rx="6" fill="#ffffff" opacity="0.22"/>
+    <rect x="90" y="478" width="640" height="12" rx="6" fill="#ffffff" opacity="0.16"/>
+    <rect x="90" y="506" width="600" height="12" rx="6" fill="#ffffff" opacity="0.12"/>
+  </g>
+
+  <!-- footer -->
+  <text x="90" y="835" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="20" fill="#ffffff" opacity="0.6">
+    Replace these SVGs with your exported slide images (WEBP/PNG recommended).
+  </text>
+</svg>
