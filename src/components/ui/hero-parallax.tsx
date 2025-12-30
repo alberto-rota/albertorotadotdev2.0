@@ -264,8 +264,9 @@ type HeroParallaxProduct = {
    * - "research"
    * - "open-source"
    * - "resources"
+   * - "designs"
    */
-  tag?: "links" | "research" | "open-source" | "resources";
+  tag?: "links" | "research" | "open-source" | "resources" | "designs";
   /**
    * Optional thumbnail *display* sizing overrides.
    *
@@ -332,7 +333,7 @@ type HeroParallaxProduct = {
 
 export type { HeroParallaxProduct };
 
-type HeroParallaxSectionId = "links" | "research" | "open-source" | "resources";
+type HeroParallaxSectionId = "links" | "research" | "open-source" | "resources" | "designs";
 
 type HeroParallaxSectionConfig = {
   /**
@@ -356,7 +357,7 @@ export type { HeroParallaxSectionId, HeroParallaxSectionConfig };
 
 function arrangeProducts(products: HeroParallaxProduct[]) {
   type WithIdx = HeroParallaxProduct & { __idx: number };
-  const rows: WithIdx[][] = [[], [], []]; // [research, open-source, resources]
+  const rows: WithIdx[][] = [[], [], [], []]; // [research, open-source, resources, designs]
   const unassigned: WithIdx[] = [];
 
   products.forEach((p, i) => {
@@ -364,16 +365,18 @@ function arrangeProducts(products: HeroParallaxProduct[]) {
     if (
       withIdx.tag === "research" ||
       withIdx.tag === "open-source" ||
-      withIdx.tag === "resources"
+      withIdx.tag === "resources" ||
+      withIdx.tag === "designs"
     ) {
       type RowTag = Extract<
         NonNullable<HeroParallaxProduct["tag"]>,
-        "research" | "open-source" | "resources"
+        "research" | "open-source" | "resources" | "designs"
       >;
       const tagToRowIdx: Record<RowTag, number> = {
         research: 0,
         "open-source": 1,
         resources: 2,
+        designs: 3,
       };
       rows[tagToRowIdx[withIdx.tag]].push(withIdx);
       return;
@@ -406,6 +409,7 @@ function arrangeProducts(products: HeroParallaxProduct[]) {
     firstRow: rows[0].sort(sortRow),
     secondRow: rows[1].sort(sortRow),
     thirdRow: rows[2].sort(sortRow),
+    fourthRow: rows[3].sort(sortRow),
   };
 }
 
@@ -427,7 +431,18 @@ export const HeroParallax = ({
     () => products.filter((p) => p.tag !== "links"),
     [products]
   );
-  const { firstRow, secondRow, thirdRow } = arrangeProducts(otherProducts);
+  const { firstRow, secondRow, thirdRow, fourthRow } = arrangeProducts(otherProducts);
+
+  // Debug: Log designs products in development
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+      const designsProducts = products.filter((p) => p.tag === "designs");
+      if (designsProducts.length > 0) {
+        console.log("Designs products found:", designsProducts.length, designsProducts);
+        console.log("fourthRow length:", fourthRow.length, fourthRow);
+      }
+    }
+  }, [products, fourthRow]);
 
   // Section-level default thumbnail heights, inferred from the first product that sets it.
   // This makes it easy to keep the same height for all products in a tag without duplication.
@@ -504,6 +519,7 @@ export const HeroParallax = ({
     const research = getSectionCfg("research");
     const openSource = getSectionCfg("open-source");
     const resources = getSectionCfg("resources");
+    const designs = getSectionCfg("designs");
     return {
       linksStyle: { ["--gap"]: `${links.gapPx}px`, ["--gap-md"]: `${links.gapMdPx}px` } as GapVarsStyle,
       researchStyle: { ["--gap"]: `${research.gapPx}px`, ["--gap-md"]: `${research.gapMdPx}px` } as GapVarsStyle,
@@ -515,11 +531,16 @@ export const HeroParallax = ({
         ["--gap"]: `${resources.gapPx}px`,
         ["--gap-md"]: `${resources.gapMdPx}px`,
       } as GapVarsStyle,
+      designsStyle: {
+        ["--gap"]: `${designs.gapPx}px`,
+        ["--gap-md"]: `${designs.gapMdPx}px`,
+      } as GapVarsStyle,
       initial: {
         links: links.initialScrollPx,
         research: research.initialScrollPx,
         openSource: openSource.initialScrollPx,
         resources: resources.initialScrollPx,
+        designs: designs.initialScrollPx,
       },
     };
   }, [getSectionCfg]);
@@ -529,14 +550,17 @@ export const HeroParallax = ({
   const row1Ref = React.useRef<HTMLDivElement | null>(null);
   const row2Ref = React.useRef<HTMLDivElement | null>(null);
   const row3Ref = React.useRef<HTMLDivElement | null>(null);
+  const row4Ref = React.useRef<HTMLDivElement | null>(null);
   const row0ScrollRaw = useMotionValue(gapVars.initial.links);
   const row1ScrollRaw = useMotionValue(gapVars.initial.research);
   const row2ScrollRaw = useMotionValue(gapVars.initial.openSource);
   const row3ScrollRaw = useMotionValue(gapVars.initial.resources);
+  const row4ScrollRaw = useMotionValue(gapVars.initial.designs);
   const row0Scroll = useSpring(row0ScrollRaw, { stiffness: 250, damping: 35 });
   const row1Scroll = useSpring(row1ScrollRaw, { stiffness: 250, damping: 35 });
   const row2Scroll = useSpring(row2ScrollRaw, { stiffness: 250, damping: 35 });
   const row3Scroll = useSpring(row3ScrollRaw, { stiffness: 250, damping: 35 });
+  const row4Scroll = useSpring(row4ScrollRaw, { stiffness: 250, damping: 35 });
 
   // Mouse-at-viewport-edge auto scroll (applies to the row currently hovered).
   const hoveredRowRef = React.useRef<{
@@ -567,6 +591,10 @@ export const HeroParallax = ({
     [translateX, row3Scroll],
     (latest: number[]) => (latest[0] ?? 0) + (latest[1] ?? 0)
   );
+  const row4Translate = useTransform(
+    [translateXReverse, row4Scroll],
+    (latest: number[]) => (latest[0] ?? 0) + (latest[1] ?? 0)
+  );
   const row0Translate = useTransform(
     [translateXReverse, row0Scroll],
     (latest: number[]) => ((latest[0] ?? 0) + 1000) + (latest[1] ?? 0)
@@ -589,6 +617,11 @@ export const HeroParallax = ({
   });
   const row3Drag = useDragToScrollMotionValue({
     mv: row3ScrollRaw,
+    maxPx: MAX_ROW_SCROLL_PX,
+    enabled: isCoarsePointer,
+  });
+  const row4Drag = useDragToScrollMotionValue({
+    mv: row4ScrollRaw,
     maxPx: MAX_ROW_SCROLL_PX,
     enabled: isCoarsePointer,
   });
@@ -657,12 +690,13 @@ export const HeroParallax = ({
       attach(row1Ref.current, row1ScrollRaw),
       attach(row2Ref.current, row2ScrollRaw),
       attach(row3Ref.current, row3ScrollRaw),
+      attach(row4Ref.current, row4ScrollRaw),
     ].filter(Boolean) as Array<() => void>;
 
     return () => {
       cleanups.forEach((fn) => fn());
     };
-  }, [row0ScrollRaw, row1ScrollRaw, row2ScrollRaw, row3ScrollRaw]);
+  }, [row0ScrollRaw, row1ScrollRaw, row2ScrollRaw, row3ScrollRaw, row4ScrollRaw]);
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
@@ -860,7 +894,7 @@ export const HeroParallax = ({
           </motion.div>
         </section>
 
-        <section aria-label="Resources">
+        <section aria-label="Resources" className="mb-20">
           <div id="resources" className="scroll-mt-40 px-4 mb-6">
           <span className="text-3xl sm:text-5xl font-extrabold text-black dark:text-white">
           Resources
@@ -889,6 +923,44 @@ export const HeroParallax = ({
                 displayHeightPx={getDisplayHeightPx(product)}
                 scrollToId="resources"
                 centerOnClickMv={row3ScrollRaw}
+                maxRowScrollPx={MAX_ROW_SCROLL_PX}
+                isHeaderVisible={isHeaderVisible}
+                isCoarsePointer={isCoarsePointer}
+                key={`${product.title}-${product.thumbnail}-${product.link}-${idx}`}
+              />
+            ))}
+          </motion.div>
+        </section>
+
+        <section aria-label="Designs" className="mb-20">
+          <div id="designs" className="scroll-mt-40 px-4 mb-6">
+          <span className="text-3xl sm:text-5xl font-extrabold text-black dark:text-white">
+          Designs
+            </span>
+          </div>
+          <motion.div
+            ref={row4Ref}
+            {...row4Drag}
+            onPointerEnter={() => {
+              if (isCoarsePointer) return;
+              hoveredRowRef.current.mv = row4ScrollRaw;
+            }}
+            onPointerLeave={() => {
+              if (isCoarsePointer) return;
+              if (hoveredRowRef.current.mv === row4ScrollRaw) {
+                hoveredRowRef.current.mv = null;
+              }
+            }}
+            style={gapVars.designsStyle}
+            className="flex flex-row gap-(--gap) md:gap-(--gap-md) touch-pan-y"
+          >
+            {fourthRow.map((product, idx) => (
+              <ProductCard
+                product={product}
+                translate={row4Translate}
+                displayHeightPx={getDisplayHeightPx(product)}
+                scrollToId="designs"
+                centerOnClickMv={row4ScrollRaw}
                 maxRowScrollPx={MAX_ROW_SCROLL_PX}
                 isHeaderVisible={isHeaderVisible}
                 isCoarsePointer={isCoarsePointer}
@@ -1044,6 +1116,13 @@ export const Header = ({ showScrollCue }: { showScrollCue: boolean }) => {
             className={pillClassName + " pointer-events-auto"}
           >
             Resources
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollTo("designs")}
+            className={pillClassName + " pointer-events-auto"}
+          >
+            Designs
           </button>
         </div>
         <div className="mt-5 flex items-center justify-center gap-3 pointer-events-none">
@@ -1393,7 +1472,7 @@ export const ProductCard = ({
           <div className="relative w-full h-full overflow-hidden rounded-2xl">
             {/* Primary click target (kept as a real link for semantics). */}
             <a
-              href={product.link}
+              href={product.link || "#"}
               onClick={onProductClick}
               aria-label={titleText || "Open item"}
               className="absolute inset-0 z-20 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"

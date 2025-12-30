@@ -18,6 +18,11 @@
     "resources": {
       "gapPx": 40,
       "gapMdPx": 80,
+      "initialScrollPx": -800
+    },
+    "designs": {
+      "gapPx": 40,
+      "gapMdPx": 80,
       "initialScrollPx": 0
     }
   },
@@ -64,7 +69,6 @@
           "icon": "Newspaper"
         }
       ],
-      "icon": "/steve_icon.png",
       "borderColor": "#78dce8"
     },
     {
@@ -74,7 +78,6 @@
       "tag": "research",
       "thumbnail": "/match.png",
       "aspectRatio": "1011 / 1311",
-      "icon": "/match.png",
       "borderColor": "#a9dc76"
     },
     {
@@ -87,7 +90,6 @@
       "tag": "research",
       "thumbnail": "/muves.png",
       "aspectRatio": "1013 / 1311",
-      "icon": "/muves.png",
       "borderColor": "#78dce8"
     },
     {
@@ -97,7 +99,6 @@
       "tag": "research",
       "thumbnail": "/review.png",
       "aspectRatio": "925 / 1313",
-      "icon": "/review.png",
       "borderColor": "#fc9867"
     },
     {
@@ -148,29 +149,9 @@
       "borderColor": "#ff6188"
     },
     {
-      "title": "PowerPoint Slide Deck",
-      "description": "Animated slide preview (auto-playing) rendered as a site-styled slideshow.",
-      "link": "/resources/powerpoint/UnReflectAnything.pptx",
-      "tag": "resources",
-      "thumbnail": "/resources/powerpoint/slides/urapreview.png",
-      "aspectRatio": "16 / 9",
-      "actions": [
-        { "label": "View online", "icon": "ExternalLink", "kind": "open-viewer" },
-        { "label": "Download PPTX", "href": "/resources/powerpoint/UnReflectAnything.pptx", "icon": "FileDown" }
-      ],
-      "viewer": {
-        "kind": "pptx-office",
-        "title": "PowerPoint Slide Deck",
-        "pptxHref": "https://albertorota.dev/resources/powerpoint/UnReflectAnything.pptx",
-        "downloadHref": "/resources/powerpoint/UnReflectAnything.pptx"
-      },
-      "borderColor": "#78dce8",
-      "position": 1
-    },
-    {
       "title": "",
-      "link": "#",
-      "tag": "links",
+      "link": "https://github.com/alberto-rota",
+      "tag": "resources",
       "thumbnail": "/githublogo.png",
       "description": "GitHub",
       "aspectRatio": "100 / 100",
@@ -180,7 +161,7 @@
     {
       "title": "",
       "link": "#",
-      "tag": "links",
+      "tag": "resources",
       "thumbnail": "/hflogo.png",
       "aspectRatio": "100 / 100",
       "thumbHeightPx": 100,
@@ -188,8 +169,8 @@
     },
     {
       "title": "",
-      "link": "#",
-      "tag": "links",
+      "link": "https://pypi.org/user/alberto-rota/",
+      "tag": "resources",
       "thumbnail": "/pypilogo.png",
       "aspectRatio": "100 / 100",
       "thumbHeightPx": 100,
@@ -197,8 +178,8 @@
     },
     {
       "title": "",
-      "link": "#",
-      "tag": "links",
+      "link": "https://scholar.google.com/citations?user=VyC48nkAAAAJ&hl=en",
+      "tag": "resources",
       "thumbnail": "/academialogo.png",
       "aspectRatio": "100 / 100",
       "thumbHeightPx": 100,
@@ -206,21 +187,30 @@
     },
     {
       "title": "",
-      "link": "#",
-      "tag": "links",
+      "link": "https://nearlab.polimi.it/medical",
+      "tag": "resources",
       "thumbnail": "/nearlablogo.png",
       "aspectRatio": "100 / 100",
       "thumbHeightPx": 100,
       "thumbWidthPx": 100
     },
     {
-      "title": "",
-      "link": "#",
-      "tag": "links",
+      "title": "WIP",
+      "link": "",
+      "tag": "resources",
       "thumbnail": "/souslogo.png",
       "aspectRatio": "100 / 100",
       "thumbHeightPx": 100,
       "thumbWidthPx": 100
+    },
+    {
+      "title": "NEARLogo",
+      "link": "#",
+      "tag": "designs",
+      "thumbnail": "/nearlab_banner.png",
+      "aspectRatio": "200 / 500",
+      "thumbHeightPx": 100,
+      "thumbWidthPx": 500
     }
   ]
 }
