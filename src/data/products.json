@@ -3,27 +3,27 @@
     "links": {
       "gapPx": 20,
       "gapMdPx": 40,
-      "initialScrollPx": -500
+      "initialScrollPx": -800
     },
     "research": {
       "gapPx": 40,
       "gapMdPx": 80,
-      "initialScrollPx": 0
+      "initialScrollPx": -200
     },
     "open-source": {
       "gapPx": 40,
       "gapMdPx": 80,
-      "initialScrollPx": 0
+      "initialScrollPx": -300
     },  
     "resources": {
       "gapPx": 40,
       "gapMdPx": 80,
-      "initialScrollPx": -800
+      "initialScrollPx": -500
     },
     "designs": {
       "gapPx": 40,
       "gapMdPx": 80,
-      "initialScrollPx": 0
+      "initialScrollPx": 600
     }
   },
   "products": [
@@ -204,13 +204,26 @@
       "thumbWidthPx": 100
     },
     {
-      "title": "NEARLogo",
-      "link": "#",
+      "link": "https://nearlab.polimi.it/",
+      "description": "NEARLab's logo",     
       "tag": "designs",
-      "thumbnail": "/nearlab_banner.png",
-      "aspectRatio": "200 / 500",
-      "thumbHeightPx": 100,
-      "thumbWidthPx": 500
-    }
+      "thumbnail": "/near_design.png",
+      "thumbHeightPx": 200
+        },
+    {
+      "description": "Logo design for ICRA 2029 - To be hosted in Milan",     
+      "link": "https://www.linkedin.com/posts/department-deib-polimi_ieee-icra-2029-la-conferenza-internazionale-activity-7401983609907085312-WQqI/?originalSubdomain=it",
+      "tag": "designs",
+      "thumbnail": "/icra29_design.png",
+      "thumbHeightPx": 200
+        },
+    {
+      "link": "https://nearlab.polimi.it/underxai/",
+      "description": "Logo design for the UNDERXAI project",     
+      "tag": "designs",
+      "thumbnail": "/underxai_design.png",
+      "thumbHeightPx": 200
+        }
+   
   ]
-}
+} 

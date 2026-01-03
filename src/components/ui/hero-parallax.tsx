@@ -329,6 +329,18 @@ type HeroParallaxProduct = {
         /** Optional download link for the file (defaults to `pptxHref`). */
         downloadHref?: string;
       };
+  /**
+   * Whether the product card should translate upward (Y-axis) on hover.
+   * Defaults to `true` if not specified.
+   * Set to `false` to disable the hover lift effect.
+   */
+  hoverTranslateY?: boolean;
+  /**
+   * Whether the product title should appear on hover.
+   * Defaults to `true` if not specified.
+   * Set to `false` to hide the title overlay on hover (both top stage and section stage).
+   */
+  showTitleOnHover?: boolean;
 };
 
 export type { HeroParallaxProduct };
@@ -444,26 +456,31 @@ export const HeroParallax = ({
     }
   }, [products, fourthRow]);
 
-  // Section-level default thumbnail heights, inferred from the first product that sets it.
-  // This makes it easy to keep the same height for all products in a tag without duplication.
+  // Section-level maximum thumbnail heights, calculated as the maximum height among all products in each section.
+  // This ensures the section accommodates the tallest product.
   const tagThumbHeightPx = React.useMemo(() => {
     const map: Partial<Record<NonNullable<HeroParallaxProduct["tag"]>, number>> = {};
     for (const p of products) {
       if (!p.tag) continue;
-      if (typeof p.thumbHeightPx !== "number" || !Number.isFinite(p.thumbHeightPx)) continue;
-      if (map[p.tag] == null) map[p.tag] = p.thumbHeightPx;
+      const height = typeof p.thumbHeightPx === "number" && Number.isFinite(p.thumbHeightPx)
+        ? p.thumbHeightPx
+        : DEFAULT_THUMB_HEIGHT_PX;
+      const currentMax = map[p.tag];
+      if (currentMax == null) {
+        map[p.tag] = height;
+      } else {
+        map[p.tag] = Math.max(currentMax, height);
+      }
     }
     return map;
-  }, [products]);
+  }, [products, DEFAULT_THUMB_HEIGHT_PX]);
 
   const getDisplayHeightPx = React.useCallback(
     (p: HeroParallaxProduct) => {
+      // Use the section's maximum height to ensure all products in the section are the same height
+      // (accommodating the tallest product)
       const fromTag = p.tag ? tagThumbHeightPx[p.tag] : undefined;
-      const fromSelf =
-        typeof p.thumbHeightPx === "number" && Number.isFinite(p.thumbHeightPx)
-          ? p.thumbHeightPx
-          : undefined;
-      return fromTag ?? fromSelf ?? DEFAULT_THUMB_HEIGHT_PX;
+      return fromTag ?? DEFAULT_THUMB_HEIGHT_PX;
     },
     [tagThumbHeightPx, DEFAULT_THUMB_HEIGHT_PX]
   );
@@ -932,7 +949,17 @@ export const HeroParallax = ({
           </motion.div>
         </section>
 
-        <section aria-label="Designs" className="mb-20">
+        {/* 
+          To control the height of this section, you can:
+            - Adjust the padding/margin tailwind classes (e.g. `py-20`, `mb-40`).
+            - Add a `min-h-[value]` or `h-[value]` class (e.g. `min-h-[400px]`).
+            - Use an inline `style={{ minHeight: '400px' }}` prop.
+          Example: 
+            <section aria-label="Designs" className="mb-40 py-20 min-h-[400px]">
+            or
+            <section aria-label="Designs" className="mb-40" style={{ minHeight: '400px', paddingTop: '5rem', paddingBottom: '5rem' }}>
+        */}
+        <section aria-label="Designs" className="mb-40 py-10 min-h-[600px]">
           <div id="designs" className="scroll-mt-40 px-4 mb-6">
           <span className="text-3xl sm:text-5xl font-extrabold text-black dark:text-white">
           Designs
@@ -1431,7 +1458,7 @@ export const ProductCard = ({
       // Only apply a "cosmetic" lift when there is no description reveal.
       // When we reveal a description, the inner container already shifts up by exactly `descHeightPx`.
       whileHover={
-        hoverEnabled && !revealDescription
+        hoverEnabled && !revealDescription && (product.hoverTranslateY !== false)
           ? {
               y: -20,
             }
@@ -1503,7 +1530,7 @@ export const ProductCard = ({
             ) : null}
 
             {/* Top stage (header visible): show centered title on hover (skip if empty title). */}
-            {topStageBorderEnabled && titleText.length > 0 ? (
+            {topStageBorderEnabled && titleText.length > 0 && (product.showTitleOnHover !== false) ? (
               <div
                 className={[
                   "absolute inset-0 flex items-center justify-center transition-opacity duration-200 ease-out pointer-events-none",
@@ -1528,7 +1555,7 @@ export const ProductCard = ({
                   ].join(" ")}
                 ></div>
                 {/* Title label (non-interactive): only render if title is non-empty. */}
-                {titleText.length > 0 ? (
+                {titleText.length > 0 && (product.showTitleOnHover !== false) ? (
                   <div
                     className={[
                       "absolute bottom-4 left-4 right-4 transition-opacity duration-200 ease-out pointer-events-none",
