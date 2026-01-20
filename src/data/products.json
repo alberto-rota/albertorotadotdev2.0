@@ -126,7 +126,7 @@
         }
       ],
       "tag": "open-source",
-      "thumbnail": "/dasshboard.png",
+      "thumbnail": "https://raw.githubusercontent.com/alberto-rota/DaSSHboard/master/overview.png",
       "aspectRatio": "1949 / 1122",
       "icon": "/dasshboard_icon.png",
       "borderColor": "#fc9867"
