@@ -76,6 +76,19 @@ function horizontalDeltaFromWheelEvent(e: WheelEvent) {
   return 0;
 }
 
+function isImagePath(v: unknown): v is string {
+  if (typeof v !== "string") return false;
+  const lower = v.toLowerCase();
+  return (
+    lower.endsWith(".png") ||
+    lower.endsWith(".jpg") ||
+    lower.endsWith(".jpeg") ||
+    lower.endsWith(".webp") ||
+    lower.endsWith(".gif") ||
+    lower.endsWith(".svg")
+  );
+}
+
 function isPngIcon(v: unknown): v is string {
   return typeof v === "string" && v.toLowerCase().endsWith(".png");
 }
@@ -96,7 +109,8 @@ function renderIcon(
 ) {
   if (!icon) return null;
 
-  if (isPngIcon(icon)) {
+  // Handle image files (both local paths and external URLs)
+  if (isImagePath(icon)) {
     return (
       <NextImage
         src={icon}
@@ -104,6 +118,7 @@ function renderIcon(
         width={size}
         height={size}
         className={className}
+        unoptimized={isSvgPath(icon)}
       />
     );
   }
