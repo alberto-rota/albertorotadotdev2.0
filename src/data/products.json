@@ -88,7 +88,7 @@
       "borderColor": "#a9dc76"
     },
     {
-      "title": "muVES",
+      "title": "μVES",
       "description": "[BTM] A three-dimensional method for morphological analysis and flow velocity estimation in microvasculature on-a-chip",
       "actions": [
         { "label": "GitHub", "href": "https://github.com/alberto-rota/muVES", "icon": "Github" },

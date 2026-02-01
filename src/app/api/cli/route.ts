@@ -8,8 +8,18 @@ type Product = {
   description?: string;
   link?: string;
   tag?: string;
-  actions?: Array<{ label?: string; href: string }>;
+  actions?: Array<{ label?: string; href: string; icon?: string }>;
 };
+
+/** Unicode symbol for each action type (CLI / terminal). */
+function actionSymbol(icon?: string, label?: string): string {
+  const key = (icon ?? label ?? "").toLowerCase();
+  if (/newspaper|paper/.test(key)) return "📄";
+  if (/github|githublogo/.test(key)) return "⌘";
+  if (/download|pip|install|pypi|marketplace/.test(key)) return "⬇";
+  if (/target|external|project\s*page|link/.test(key)) return "🔗";
+  return "↗";
+}
 
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace(/^#/, "");
@@ -151,7 +161,7 @@ function parseSectionsDirective(template: string): string[] | null {
     .filter((t) => ALL_SECTION_ORDER.includes(t));
 }
 
-/** Format products as lines with ANSI: bold titles, dim descriptions, underline links. */
+/** Format products as lines with ANSI: bold titles, dim descriptions, labeled hyperlinks with symbols. */
 function formatProductsLines(
   products: Product[],
   sectionOrder: string[] = ALL_SECTION_ORDER
@@ -184,14 +194,28 @@ function formatProductsLines(
       if (!title) continue;
       const hasTitle = Boolean((p.title ?? "").trim());
       const desc = hasTitle && p.description ? p.description : null;
-      const link =
+      const actions = Array.isArray(p.actions)
+        ? p.actions.filter((a) => a?.href && a.href !== "#")
+        : [];
+      const mainLink =
         p.link && p.link !== "#" && p.link !== ""
           ? p.link
-          : p.actions?.[0]?.href;
-      lines.push(`  • ${BOLD}${title}${RESET}`);
-      if (desc && desc !== title)
-        lines.push(`    ${DIM}${desc}${RESET}`);
-      if (link) lines.push(`    ${UNDERLINE}${link}${RESET}`);
+          : actions[0]?.href;
+
+      lines.push(`  • ${BOLD}${UNDERLINE}${title}${RESET}`);
+      if (desc && desc !== title) lines.push(`    ${desc}`);
+
+      if (actions.length > 0) {
+        const linkParts = actions.map((a) => {
+          const displayLabel = (a.label ?? "Link").trim() || "Link";
+          const sym = actionSymbol(a.icon, a.label);
+          return hyperlink(a.href, `${sym} ${displayLabel}`);
+        });
+        lines.push("    " + linkParts.join("   "));
+      } else if (mainLink) {
+        lines.push(`    ${hyperlink(mainLink, "🔗 Project")}`);
+      }
+      lines.push("  " + "─".repeat(36));
     }
   }
 

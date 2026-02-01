@@ -2,6 +2,8 @@
 
 
 
+
+
            █████╗ ██╗     ██████╗ ███████╗
           ██╔══██╗██║     ██╔══██╗██╔════╝
           ███████║██║     ██████╔╝█████╗  
@@ -17,14 +19,13 @@
 <#0a9396>┌────────────────────────┐</><#ca6702>┌────────────────────────┐</>
 <#0a9396>│</>       <a href="https://albertorota.dev"><#0a9396><b>My Webpage</b></></a>       <#0a9396>│</><#ca6702>│</>     <a href="https://albertorota.dev/CV_Alberto_Rota.pdf"><#ca6702><b>Download my CV</b></></a>     <#ca6702>│</>
 <#0a9396>└────────────────────────┘</><#ca6702>└────────────────────────┘</>
-<#9b2226>┌────────────────────────┐</><#ca6702>┌────────────────────────┐</>
-<#9b2226>│</>         <a href="https://albertorota.dev"><#9b2226><b>GitHub</b></></a>         <#9b2226>│</><#ca6702>│</>        <a href="https://albertorota.dev/CV_Alberto_Rota.pdf"><#ca6702><b>Research</b></></a>        <#ca6702>│</>
-<#9b2226>└────────────────────────┘</><#ca6702>└────────────────────────┘</>
-> GitHub: https://github.com/alberto-rota
-> GScholar: https://scholar.google.com/citations?user=VyC48nkAAAAJ&hl=en
+<#9b2226>┌────────────────────────┐</><#e9d8a6>┌────────────────────────┐</>
+<#9b2226>│</>         <a href="https://albertorota.dev"><#9b2226><b>GitHub</b></></a>         <#9b2226>│</><#e9d8a6>│</>        <a href="https://scholar.google.com/citations?user=VyC48nkAAAAJ&hl=en"><#e9d8a6><b>Research</b></></a>        <#e9d8a6>│</>
+<#9b2226>└────────────────────────┘</><#e9d8a6>└────────────────────────┘</>
 
-<a href="mailto:you@example.com">send me an email</a>
-
+<#ffffff>┌──────────────────────────────────────────────────┐</>
+<#ffffff>│</>                  <a href="alberto1.rota@polimi.it">✉️ Get in Touch</a>                 <#ffffff>│</>
+<#ffffff>└──────────────────────────────────────────────────┘</>
 {{SECTIONS=research,open-source}}
 {{PRODUCTS}}
 

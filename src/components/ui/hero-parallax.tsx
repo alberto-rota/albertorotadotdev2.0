@@ -12,8 +12,10 @@ import {
 } from "motion/react";
 import {
   ArrowDown,
+  Check,
   ChevronLeft,
   ChevronRight,
+  Copy,
   ExternalLink,
   FileDown,
   Pause,
@@ -1050,6 +1052,22 @@ export const HeroParallax = ({
 
 export const Header = ({ showScrollCue }: { showScrollCue: boolean }) => {
   const rafRef = React.useRef<number | null>(null);
+  const [origin, setOrigin] = React.useState<string>("");
+  const [copied, setCopied] = React.useState(false);
+  React.useEffect(() => {
+    if (typeof window !== "undefined") setOrigin(window.location.origin);
+  }, []);
+
+  const curlCommand = `curl ${"https://albertorota.dev"}`;
+  const copyCurl = React.useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(curlCommand);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // ignore
+    }
+  }, [curlCommand]);
 
   const getDocumentTopPx = React.useCallback((el: HTMLElement) => {
     // Compute layout top, ignoring CSS transforms (important for Motion-transformed content).
@@ -1159,13 +1177,6 @@ export const Header = ({ showScrollCue }: { showScrollCue: boolean }) => {
           >
             Resources
           </button>
-          <button
-            type="button"
-            onClick={() => scrollTo("designs")}
-            className={pillClassName + " pointer-events-auto"}
-          >
-            Designs
-          </button>
         </div>
         <div className="mt-5 flex items-center justify-center gap-3 pointer-events-none">
           <button
@@ -1186,6 +1197,39 @@ export const Header = ({ showScrollCue }: { showScrollCue: boolean }) => {
             <FileDown className="h-4 w-4 md:h-5 md:w-5" aria-hidden="true" />
             <span>Download my CV</span>
           </a>
+        </div>
+
+        {/* Terminal-style curl hint */}
+        <div className="mt-6 w-full max-w-4xl pointer-events-auto">
+          <p className="text-xs text-black/60 dark:text-white/60 mb-2 text-center">
+            This site is curl-able
+          </p>
+          <div
+            className="font-mono text-sm flex items-center justify-center gap-2 flex-wrap"
+            role="img"
+            aria-label="Terminal showing curl command"
+          >
+            <div className="flex items-center gap-2 text-[#333333] dark:text-[#e5e7eb]">
+              <span className="text-[#059669] dark:text-[#0a9396] select-none">$</span>
+              <span className="text-[#b45309] dark:text-[#ca6702]">curl</span>
+              <span className="break-all">
+                {"https://albertorota.dev"}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={copyCurl}
+              aria-label={copied ? "Copied" : "Copy curl command"}
+              title={copied ? "Copied!" : "Copy to clipboard"}
+              className="inline-flex items-center justify-center rounded-md p-2 text-black/60 dark:text-white/60 hover:text-black hover:bg-black/10 dark:hover:text-white dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30 dark:focus-visible:ring-white/30 transition-colors"
+            >
+              {copied ? (
+                <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+              ) : (
+                <Copy className="h-4 w-4" aria-hidden="true" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Scroll cue inside the header; fades out once the user scrolls. */}
