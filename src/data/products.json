@@ -28,13 +28,12 @@
   },
   "products": [
     {
-      "title": "UnReflectAnything",
+      "title": "UnReflect Anything",
       "description": "RGB-only highlight removal by rendering synthetic specular supervision",
       "link": "https://alberto-rota.github.io/UnReflectAnything/",
       "tag": "research",
       "thumbnail": "/unreflect.png",
       "aspectRatio": "1077 / 2000",
-      "icon": "/unreflect_icon.png",
       "actions": [
         {
           "label": "Project Page",
@@ -55,8 +54,8 @@
       "borderColor": "#a99dec"
     },
     {
-      "title": "STEVE [ICRA 2023]",
-      "description": "Surgical Training Enhanced Virtual Environment",
+      "title": "STEVE",
+      "description": "[ICRA 2024] Implementation and Assessment of an Augmented Training Curriculum for Surgical Robotics",
       "link": "#",
       "tag": "research",
       "thumbnail": "/icra.png",
@@ -72,17 +71,25 @@
       "borderColor": "#78dce8"
     },
     {
-      "title": "Match",
-      "description": "Self-Supervised Contrastive Embedding Adaptation for Endoscopic Image Matching",
+      "title": "SCALE-EM",
+      "description": "[IEEE TMI 2026] Self-Supervised Contrastive Embedding Adaptation for Endoscopic Image Matching",
       "link": "https://arxiv.org/abs/2512.10379",
       "tag": "research",
       "thumbnail": "/match.png",
       "aspectRatio": "1011 / 1311",
+      "actions": [
+        { "label": "GitHub", "href": "https://github.com/alberto-rota/SCALE-EM", "icon": "Github" },
+        {
+          "label": "Paper",
+          "href": "https://arxiv.org/abs/2512.10379",
+          "icon": "Newspaper"
+        }
+      ],
       "borderColor": "#a9dc76"
     },
     {
       "title": "muVES",
-      "description": "An algorithm to automate the morphological and topological analysis of 3D images of microvascular networks",
+      "description": "[BTM] A three-dimensional method for morphological analysis and flow velocity estimation in microvasculature on-a-chip",
       "actions": [
         { "label": "GitHub", "href": "https://github.com/alberto-rota/muVES", "icon": "Github" },
         { "label": "Paper", "href": "https://doi.org/10.1002/btm2.10557", "icon": "Newspaper" }
@@ -90,6 +97,23 @@
       "tag": "research",
       "thumbnail": "/muves.png",
       "aspectRatio": "1013 / 1311",
+      "borderColor": "#78dce8"
+    },
+    {
+      "title": "UnderXAI-OVIT",
+      "description": "[NATURE WH] Deep Learning for Decision Support in Ovarian Cancer Treatment Planning",
+      "link": "#",
+      "tag": "research",
+      "thumbnail": "/nature.png",
+      "aspectRatio": "1010 / 1313",
+      "actions": [
+        { "label": "GitHub", "href": "https://github.com/FrancescaFati/UnderXAI-OVIT", "icon": "Github" },
+        {
+          "label": "Paper",
+          "href": "https://doi.org/10.1109/ICRA57147.2024.10610411",
+          "icon": "Newspaper"
+        }
+      ],
       "borderColor": "#78dce8"
     },
     {
