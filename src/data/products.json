@@ -1,253 +1,320 @@
 {
+  "hero": {
+    "tagline": "PhD candidate in Bioengineering at Politecnico di Milano. I research visual systems for enhanced awareness in surgical robotics and medical AI."
+  },
+  "announcement": {
+    "enabled": true,
+    "label": "CVPR 2026 · Denver",
+    "title": "attending cvpr 2026? ",
+    "body": "I'll be presenting <b>UnReflectAnything</b>, a method for for removing specular highlights trained on synthetic specular supervision. Join <b>Oral Session 1D - Computational Imaging</b> for the oral presentation and <b>Poster Session 1</b> for the poster!",
+    "dates": "Friday June 5th, 2026 ⋅ 9:15 AM - 10:30 AM",
+    "location": "ORAL: Mile High Ballroom 1A - 2A ⋅ POSTER: Exhibit Hall (ExHall A-F) ⋅ Denver, CO",
+    "actions": [
+      { "label": "Get in touch", "href": "mailto:alberto_rota@outlook.com?subject=CVPR%202026%20-%20meet%20at%20Denver", "icon": "Mail" },
+      { "label": "Read the 'UnReflectAnything' paper", "href": "https://doi.org/10.48550/arXiv.2512.09583", "icon": "FileText" }
+    ]
+  },
   "sections": {
-    "links": {
-      "gapPx": 20,
-      "gapMdPx": 40,
-      "initialScrollPx": -800
-    },
     "research": {
-      "gapPx": 40,
-      "gapMdPx": 80,
-      "initialScrollPx": -200
+      "title": "Research",
+      "subtitle": "Peer-reviewed work and ongoing projects",
+      "order": 1
     },
     "open-source": {
-      "gapPx": 40,
-      "gapMdPx": 80,
-      "initialScrollPx": -300
-    },  
+      "title": "Open Source",
+      "subtitle": "Tools, packages and extensions I maintain",
+      "order": 2
+    },
     "resources": {
-      "gapPx": 40,
-      "gapMdPx": 80,
-      "initialScrollPx": -500
+      "title": "Profiles & Links",
+      "subtitle": "Where else to find me",
+      "order": 3,
+      "layout": "compact"
     },
     "designs": {
-      "gapPx": 40,
-      "gapMdPx": 80,
-      "initialScrollPx": 600
+      "title": "Designs",
+      "subtitle": "Branding and visual identity work",
+      "order": 4,
+      "cardAspect": "2/3",
+      "cardFit": "contain"
     }
   },
   "products": [
     {
+      "slug": "unreflect-anything",
       "title": "UnReflect Anything",
-      "description": "RGB-only highlight removal by rendering synthetic specular supervision",
-      "link": "https://alberto-rota.github.io/UnReflectAnything/",
+      "subtitle": "Specular highlight removal, learned from synthetic supervision",
+      "description": "RGB-only highlight removal by rendering synthetic specular supervision.",
       "tag": "research",
       "thumbnail": "/unreflect.png",
-      "aspectRatio": "1077 / 2000",
+      "accent": "#a99dec",
+      "tech": ["PyTorch", "Diffusion", "Synthetic Data"],
+      "meta": { "venue": "arXiv preprint", "year": "2025" },
       "actions": [
-        {
-          "label": "Project Page",
-          "href": "https://alberto-rota.github.io/UnReflectAnything/",
-          "icon": "Target"
-        },
-        {
-          "label": "GitHub",
-          "href": "https://github.com/alberto-rota/UnReflectAnything",
-          "icon": "Github"
-        },
-        {
-          "label": "Paper",
-          "href": "https://doi.org/10.48550/arXiv.2512.09583",
-          "icon": "Newspaper"
-        }
+        { "label": "Project Page", "href": "https://alberto-rota.github.io/UnReflectAnything/", "icon": "Globe" },
+        { "label": "GitHub", "href": "https://github.com/alberto-rota/UnReflectAnything", "icon": "Github" },
+        { "label": "Paper", "href": "https://doi.org/10.48550/arXiv.2512.09583", "icon": "FileText" }
       ],
-      "borderColor": "#a99dec"
+      "details": {
+        "body": "UnReflect Anything is an RGB-only method that removes specular highlights from arbitrary scenes. Instead of relying on multi-view captures or polarization, we render synthetic supervision — pairs of clean and highlighted images — by composing physically-plausible specular layers on top of real images, then train a network to invert the process.\n\nThe result is a fast, single-image pipeline that transfers cleanly to surgical, automotive and macro photography domains, where traditional dichromatic methods break down.",
+        "highlights": [
+          "Single-image input — no multi-view or polarization required",
+          "Synthetic supervision pipeline generalizes across domains",
+          "Real-time inference on a single consumer GPU"
+        ],
+        "media": [
+          { "type": "image", "src": "/unreflect.png", "caption": "Method overview" }
+        ]
+      },
+      "detailComponent": "unreflect-demo"
     },
     {
+      "slug": "steve",
       "title": "STEVE",
-      "description": "[ICRA 2024] Implementation and Assessment of an Augmented Training Curriculum for Surgical Robotics",
-      "link": "#",
+      "subtitle": "Augmented training curriculum for surgical robotics",
+      "description": "Implementation and assessment of an augmented training curriculum for surgical robotics.",
       "tag": "research",
       "thumbnail": "/icra.png",
-      "aspectRatio": "1010 / 1313",
+      "accent": "#78dce8",
+      "tech": ["Unity", "C#", "da Vinci Research Kit"],
+      "meta": { "venue": "ICRA 2024", "year": "2024" },
       "actions": [
         { "label": "GitHub", "href": "https://github.com/alberto-rota/STEVE", "icon": "Github" },
-        {
-          "label": "Paper",
-          "href": "https://doi.org/10.1109/ICRA57147.2024.10610411",
-          "icon": "Newspaper"
-        }
+        { "label": "Paper", "href": "https://doi.org/10.1109/ICRA57147.2024.10610411", "icon": "FileText" }
       ],
-      "borderColor": "#78dce8"
+      "details": {
+        "body": "STEVE pairs the da Vinci Research Kit with a structured AR curriculum that progressively scaffolds operator skill — from basic spatial awareness to bimanual tasks under cognitive load. We measured technical and non-technical skill gains across cohorts and showed that augmented feedback shortens the learning curve.",
+        "highlights": [
+          "AR curriculum integrated with the da Vinci Research Kit",
+          "Validated across multiple operator cohorts at ICRA 2024",
+          "Open hardware/software stack for replication"
+        ]
+      }
     },
     {
+      "slug": "scale-em",
       "title": "SCALE-EM",
-      "description": "[IEEE TMI 2026] Self-Supervised Contrastive Embedding Adaptation for Endoscopic Image Matching",
-      "link": "https://arxiv.org/abs/2512.10379",
+      "subtitle": "Self-supervised embeddings for endoscopic matching",
+      "description": "Self-Supervised Contrastive Embedding Adaptation for Endoscopic Image Matching.",
       "tag": "research",
       "thumbnail": "/match.png",
-      "aspectRatio": "1011 / 1311",
+      "accent": "#a9dc76",
+      "tech": ["PyTorch", "Contrastive Learning", "Endoscopy"],
+      "meta": { "venue": "IEEE TMI 2026", "year": "2026" },
       "actions": [
         { "label": "GitHub", "href": "https://github.com/alberto-rota/SCALE-EM", "icon": "Github" },
-        {
-          "label": "Paper",
-          "href": "https://arxiv.org/abs/2512.10379",
-          "icon": "Newspaper"
-        }
+        { "label": "Paper", "href": "https://arxiv.org/abs/2512.10379", "icon": "FileText" }
       ],
-      "borderColor": "#a9dc76"
+      "details": {
+        "body": "SCALE-EM adapts visual foundation embeddings to the endoscopic domain using a contrastive scheme tailored to surgical video. Without labels, the model learns local descriptors that survive non-rigid tissue deformation and specular interference — unlocking robust frame-to-frame matching for downstream SLAM and registration."
+      }
     },
     {
-      "title": "μVES",
-      "description": "[BTM] A three-dimensional method for morphological analysis and flow velocity estimation in microvasculature on-a-chip",
-      "actions": [
-        { "label": "GitHub", "href": "https://github.com/alberto-rota/muVES", "icon": "Github" },
-        { "label": "Paper", "href": "https://doi.org/10.1002/btm2.10557", "icon": "Newspaper" }
-      ],
+      "slug": "muves",
+      "title": "muVES",
+      "subtitle": "3D analysis of microvasculature on-chip",
+      "description": "A three-dimensional method for morphological analysis and flow velocity estimation in microvasculature on-a-chip.",
       "tag": "research",
       "thumbnail": "/muves.png",
-      "aspectRatio": "1013 / 1311",
-      "borderColor": "#78dce8"
+      "accent": "#78dce8",
+      "tech": ["MATLAB", "Microfluidics", "3D Imaging"],
+      "meta": { "venue": "BTM", "year": "2023" },
+      "actions": [
+        { "label": "GitHub", "href": "https://github.com/alberto-rota/muVES", "icon": "Github" },
+        { "label": "Paper", "href": "https://doi.org/10.1002/btm2.10557", "icon": "FileText" }
+      ],
+      "details": {
+        "body": "μVES is an open pipeline for quantifying micro-vessel morphology and flow inside organs-on-chip. It reconstructs the 3D vascular network from confocal stacks and extracts diameter, tortuosity and velocity — metrics that previously required manual tracing."
+      }
     },
     {
+      "slug": "underxai-ovit",
       "title": "UnderXAI-OVIT",
-      "description": "[NATURE WH] Deep Learning for Decision Support in Ovarian Cancer Treatment Planning",
-      "link": "#",
+      "subtitle": "Decision support in ovarian cancer treatment",
+      "description": "Deep Learning for decision support in ovarian cancer treatment planning.",
       "tag": "research",
       "thumbnail": "/nature.png",
-      "aspectRatio": "1010 / 1313",
+      "accent": "#78dce8",
+      "tech": ["PyTorch", "Explainable AI", "Medical Imaging"],
+      "meta": { "venue": "Nature WH", "year": "2024" },
       "actions": [
         { "label": "GitHub", "href": "https://github.com/FrancescaFati/UnderXAI-OVIT", "icon": "Github" },
-        {
-          "label": "Paper",
-          "href": "https://doi.org/10.1109/ICRA57147.2024.10610411",
-          "icon": "Newspaper"
-        }
+        { "label": "Project", "href": "https://nearlab.polimi.it/underxai/", "icon": "Globe" }
       ],
-      "borderColor": "#78dce8"
+      "details": {
+        "body": "UnderXAI-OVIT couples a clinical-grade segmentation backbone with a counterfactual explanation module so oncologists can interrogate why the network suggests a given treatment route."
+      }
     },
     {
+      "slug": "surgical-ar-review",
       "title": "Surgical AR Review",
-      "description": "[MDPI Actuators] Recent advancements in augmented reality for robotic applications: A survey",
-      "link": "https://doi.org/10.3390/act12080323",
+      "subtitle": "Recent advancements in AR for robotic surgery",
+      "description": "Recent advancements in augmented reality for robotic applications: a survey.",
       "tag": "research",
       "thumbnail": "/review.png",
-      "aspectRatio": "925 / 1313",
-      "borderColor": "#fc9867"
+      "accent": "#fc9867",
+      "meta": { "venue": "MDPI Actuators", "year": "2023" },
+      "actions": [
+        { "label": "Paper", "href": "https://doi.org/10.3390/act12080323", "icon": "FileText" }
+      ],
+      "details": {
+        "body": "A comprehensive survey covering display modalities, registration pipelines and human-factors evidence for AR in robotic surgery. Written as a primer for engineers entering the field."
+      }
     },
     {
+      "slug": "ground-control",
       "title": "GroundControl",
+      "subtitle": "Beautiful system monitoring in your terminal",
       "description": "Rich visualization and monitoring of system metrics in the terminal.",
-      "link": "https://github.com/alberto-rota/ground-control",
+      "tag": "open-source",
+      "thumbnail": "/groundcontrol.png",
+      "cardAspect": "16/9",
+      "cardFit": "cover",
+      "accent": "#ffd866",
+      "tech": ["Python", "Textual", "TUI"],
       "actions": [
         { "label": "GitHub", "href": "https://github.com/alberto-rota/ground-control", "icon": "Github" },
         { "label": "pip install", "href": "https://pypi.org/project/ground-control-tui/", "icon": "Download" }
       ],
-      "tag": "open-source",
-      "thumbnail": "/groundcontrol.png",
-      "aspectRatio": "2299 / 1122",
-      "borderColor": "#ffd866"
+      "details": {
+        "body": "GroundControl is a Textual-based TUI that turns any terminal into a live cockpit for your machine: CPU, GPU, memory, network and disk in one glance. Built for SSH sessions where a browser is not an option.",
+        "highlights": [
+          "Runs over SSH — no display server needed",
+          "Pluggable widgets and theme system",
+          "Available on PyPI: pip install ground-control-tui"
+        ]
+      },
+      "detailComponent": "ground-control-terminal"
     },
     {
+      "slug": "dasshboard",
       "title": "DaSSHboard",
-      "description": "A stylish dashboard for quickly connecting to SSH hosts with customizable settings",
-      "actions": [
-        { "label": "GitHub", "href": "https://github.com/alberto-rota/DaSSHboard", "icon": "Github" },
-        {
-          "label": "Install for VSC",
-          "href": "https://marketplace.visualstudio.com/items?itemName=AlbertoRota.dasshboard",
-          "icon": "Download"
-        }
-      ],
+      "subtitle": "A stylish SSH dashboard for VS Code",
+      "description": "A stylish dashboard for quickly connecting to SSH hosts with customizable settings.",
       "tag": "open-source",
       "thumbnail": "https://raw.githubusercontent.com/alberto-rota/DaSSHboard/master/overview.png",
-      "aspectRatio": "1949 / 1122",
+      "cardAspect": "16/9",
+      "cardFit": "cover",
       "icon": "/dasshboard_icon.png",
-      "borderColor": "#fc9867"
+      "accent": "#fc9867",
+      "tech": ["TypeScript", "VS Code API"],
+      "actions": [
+        { "label": "GitHub", "href": "https://github.com/alberto-rota/DaSSHboard", "icon": "Github" },
+        { "label": "VS Marketplace", "href": "https://marketplace.visualstudio.com/items?itemName=AlbertoRota.dasshboard", "icon": "Download" }
+      ],
+      "details": {
+        "body": "DaSSHboard turns the cluttered list of SSH hosts in VS Code into a fast, visual launcher. Pin hosts, group them, and connect with a single click."
+      }
     },
     {
+      "slug": "medview",
       "title": "MedView",
-      "description": "A medical image viewer for NIfTI and DICOM formats",
-      "actions": [
-        { "label": "GitHub", "href": "https://github.com/FrancescaFati/MedView", "icon": "Github" },
-        {
-          "label": "Install for VSC",
-          "href": "https://marketplace.visualstudio.com/items?itemName=FrancescaFati.MedView",
-          "icon": "Download"
-        }
-      ],
+      "subtitle": "NIfTI / DICOM viewer for VS Code",
+      "description": "A medical image viewer for NIfTI and DICOM formats.",
       "tag": "open-source",
       "thumbnail": "/medview.png",
-      "aspectRatio": "1515 / 1122",
+      "cardAspect": "16/10",
+      "cardFit": "cover",
       "icon": "/medview_icon.png",
-      "borderColor": "#ff6188"
+      "accent": "#ff6188",
+      "tech": ["TypeScript", "VS Code API"],
+      "actions": [
+        { "label": "GitHub", "href": "https://github.com/FrancescaFati/MedView", "icon": "Github" },
+        { "label": "VS Marketplace", "href": "https://marketplace.visualstudio.com/items?itemName=FrancescaFati.MedView", "icon": "Download" }
+      ],
+      "details": {
+        "body": "MedView lets clinicians and engineers inspect NIfTI and DICOM volumes inside VS Code — no separate viewer, no context switching. Useful when annotating or debugging medical-imaging pipelines."
+      }
     },
     {
-      "title": "",
-      "link": "https://github.com/alberto-rota",
+      "slug": "github",
+      "title": "GitHub",
+      "description": "GitHub profile",
       "tag": "resources",
       "thumbnail": "/githublogo.png",
-      "description": "GitHub",
-      "aspectRatio": "100 / 100",
-      "thumbHeightPx": 100,
-      "thumbWidthPx": 100
+      "link": "https://github.com/alberto-rota",
+      "compact": true
     },
     {
-      "title": "",
-      "link": "#",
+      "slug": "huggingface",
+      "title": "Hugging Face",
+      "description": "Hugging Face profile",
       "tag": "resources",
       "thumbnail": "/hflogo.png",
-      "aspectRatio": "100 / 100",
-      "thumbHeightPx": 100,
-      "thumbWidthPx": 100
+      "link": "https://huggingface.co/AlbeRota",
+      "compact": true
     },
     {
-      "title": "",
-      "link": "https://pypi.org/user/alberto-rota/",
+      "slug": "pypi",
+      "title": "PyPI",
+      "description": "PyPI packages",
       "tag": "resources",
       "thumbnail": "/pypilogo.png",
-      "aspectRatio": "100 / 100",
-      "thumbHeightPx": 100,
-      "thumbWidthPx": 100
+      "link": "https://pypi.org/user/alberto-rota/",
+      "compact": true
     },
     {
-      "title": "",
-      "link": "https://scholar.google.com/citations?user=VyC48nkAAAAJ&hl=en",
+      "slug": "scholar",
+      "title": "Google Scholar",
+      "description": "Google Scholar profile",
       "tag": "resources",
       "thumbnail": "/academialogo.png",
-      "aspectRatio": "100 / 100",
-      "thumbHeightPx": 100,
-      "thumbWidthPx": 100
+      "link": "https://scholar.google.com/citations?user=VyC48nkAAAAJ&hl=en",
+      "compact": true
     },
     {
-      "title": "",
-      "link": "https://nearlab.polimi.it/medical",
+      "slug": "nearlab",
+      "title": "NEARLab",
+      "description": "Medical Robotics group at Politecnico di Milano",
       "tag": "resources",
       "thumbnail": "/nearlablogo.png",
-      "aspectRatio": "100 / 100",
-      "thumbHeightPx": 100,
-      "thumbWidthPx": 100
+      "link": "https://nearlab.polimi.it/medical",
+      "compact": true
     },
     {
-      "title": "WIP",
-      "link": "",
-      "tag": "resources",
-      "thumbnail": "/souslogo.png",
-      "aspectRatio": "100 / 100",
-      "thumbHeightPx": 100,
-      "thumbWidthPx": 100
-    },
-    {
-      "link": "https://nearlab.polimi.it/",
-      "description": "NEARLab's logo",     
+      "slug": "nearlab-logo",
+      "title": "NEARLab Identity",
+      "subtitle": "Logo for the medical-robotics group",
+      "description": "Logo design for NEARLab at Politecnico di Milano.",
       "tag": "designs",
       "thumbnail": "/near_design.png",
-      "thumbHeightPx": 200
-        },
+      "accent": "#ffffff",
+      "actions": [
+        { "label": "Visit NEARLab", "href": "https://nearlab.polimi.it/", "icon": "Globe" }
+      ],
+      "details": {
+        "body": "Identity work for the NEARLab medical-robotics group at Politecnico di Milano — a system of marks rooted in the group's surgical and imaging research."
+      }
+    },
     {
-      "description": "Logo design for ICRA 2029 - To be hosted in Milan",     
-      "link": "https://www.linkedin.com/posts/department-deib-polimi_ieee-icra-2029-la-conferenza-internazionale-activity-7401983609907085312-WQqI/?originalSubdomain=it",
+      "slug": "icra29-logo",
+      "title": "ICRA 2029 — Milan",
+      "subtitle": "Identity for IEEE ICRA in Milan",
+      "description": "Logo design for ICRA 2029, to be hosted in Milan.",
       "tag": "designs",
       "thumbnail": "/icra29_design.png",
-      "thumbHeightPx": 200
-        },
+      "accent": "#a9dc76",
+      "actions": [
+        { "label": "Announcement", "href": "https://www.linkedin.com/posts/department-deib-polimi_ieee-icra-2029-la-conferenza-internazionale-activity-7401983609907085312-WQqI/?originalSubdomain=it", "icon": "ExternalLink" }
+      ],
+      "details": {
+        "body": "Identity work for IEEE ICRA 2029, the flagship robotics conference returning to Milan."
+      }
+    },
     {
-      "link": "https://nearlab.polimi.it/underxai/",
-      "description": "Logo design for the UNDERXAI project",     
+      "slug": "underxai-logo",
+      "title": "UNDERXAI Identity",
+      "subtitle": "Brand mark for the UNDERXAI project",
+      "description": "Logo design for the UNDERXAI project.",
       "tag": "designs",
       "thumbnail": "/underxai_design.png",
-      "thumbHeightPx": 200
-        }
-   
+      "accent": "#a99dec",
+      "actions": [
+        { "label": "Project", "href": "https://nearlab.polimi.it/underxai/", "icon": "Globe" }
+      ],
+      "details": {
+        "body": "Mark for the UNDERXAI project — explainable AI for medical decision support."
+      }
+    }
   ]
-} 
+}

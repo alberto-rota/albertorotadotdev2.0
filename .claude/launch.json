@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["next", "dev", "-p", "${port}"],
+      "port": 3000,
+      "autoPort": true
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(curl -sS http://localhost:3000/)",
+      "Bash(curl -sS -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0\\)\" http://localhost:3000/)",
+      "Bash(curl -sS -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0\\)\" http://localhost:3000/ -o page.html)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(taskkill /F /PID 28312)",
+      "Bash(netstat -ano)",
+      "Bash(curl -sS -H \"User-Agent: Mozilla/5.0\" -o /tmp/page.html -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" http://localhost:3000/)",
+      "Bash(grep -oE \"CVPR|Find me at|Schedule a chat|cardAspect\" /tmp/page.html | sort -u; echo \"---\"; grep -c \"ICRA\\\\|BTM\\\\|MDPI\\\\|IEEE TMI\\\\|arXiv\\\\|Nature WH\" /tmp/page.html)",
+      "Bash(curl -sS -H \"User-Agent: Mozilla/5.0\" -o /tmp/page2.html -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" http://localhost:3000/)",
+      "Bash(curl -sS -H \"User-Agent: Mozilla/5.0\" -o /tmp/page3.html -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" http://localhost:3000/)",
+      "Bash(curl -sS -H \"User-Agent: Mozilla/5.0\" http://localhost:3000/ -o /tmp/page4.html)",
+      "Bash(curl -sS -H \"User-Agent: Mozilla/5.0\" http://localhost:3000/ -o /tmp/p5.html)"
+    ]
+  }
+}

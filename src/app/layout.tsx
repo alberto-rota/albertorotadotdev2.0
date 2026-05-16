@@ -16,6 +16,7 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
@@ -26,15 +27,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        {/* BBH fonts are available on Google Fonts, but not supported by `next/font/google`'s internal font list. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=BBH+Bartle&family=BBH+Bogle&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased">
+      <body className="antialiased bg-black text-white font-sans">
         {children}
       </body>
     </html>
