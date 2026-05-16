@@ -158,7 +158,7 @@ export function ParticleField({ className }: { className?: string }) {
 
         if (alpha <= 0.02 || size <= 0.2) continue;
 
-        ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
+        ctx.fillStyle = `rgba(0,0,0,${alpha.toFixed(3)})`;
         ctx.beginPath();
         ctx.arc(sx, sy, size, 0, Math.PI * 2);
         ctx.fill();

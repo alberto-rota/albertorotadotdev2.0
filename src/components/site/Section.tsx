@@ -97,7 +97,7 @@ export function Section({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-15%" }}
                 transition={{ duration: 0.5, delay: 0.06 }}
-                className="mt-2 text-sm sm:text-base text-white/60"
+                className="mt-2 text-sm sm:text-base text-black/60"
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 {subtitle}
@@ -112,7 +112,7 @@ export function Section({
               onClick={() => scrollBy(-1)}
               disabled={!canLeft}
               aria-label={`Scroll ${title} left`}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/[0.1] transition-colors"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/15 bg-black/[0.04] text-black disabled:opacity-30 disabled:cursor-not-allowed hover:bg-black/[0.1] transition-colors"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -121,7 +121,7 @@ export function Section({
               onClick={() => scrollBy(1)}
               disabled={!canRight}
               aria-label={`Scroll ${title} right`}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/[0.1] transition-colors"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/15 bg-black/[0.04] text-black disabled:opacity-30 disabled:cursor-not-allowed hover:bg-black/[0.1] transition-colors"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -158,7 +158,7 @@ export function Section({
 
         {/* Mobile swipe hint shown only when there are >1 items */}
         {products.length > 1 ? (
-          <div className="md:hidden mt-3 px-6 text-[10px] uppercase tracking-[0.22em] text-white/35" style={{ fontFamily: "var(--font-body)" }}>
+          <div className="md:hidden mt-3 px-6 text-[10px] uppercase tracking-[0.22em] text-black/35" style={{ fontFamily: "var(--font-body)" }}>
             Swipe →
           </div>
         ) : null}

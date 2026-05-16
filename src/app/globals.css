@@ -27,28 +27,23 @@
 
   --radius: 0.875rem;
 
-  /* Black/white palette. */
-  --background: #000000;
-  --foreground: #ffffff;
-  --muted: rgba(255, 255, 255, 0.6);
-  --muted-2: rgba(255, 255, 255, 0.35);
-  --border: rgba(255, 255, 255, 0.12);
-  --border-strong: rgba(255, 255, 255, 0.25);
-  --surface: rgba(255, 255, 255, 0.04);
-  --surface-hover: rgba(255, 255, 255, 0.08);
+  /* Black/white palette (light mode). */
+  --background: #ffffff;
+  --foreground: #000000;
+  --muted: rgba(0, 0, 0, 0.6);
+  --muted-2: rgba(0, 0, 0, 0.35);
+  --border: rgba(0, 0, 0, 0.12);
+  --border-strong: rgba(0, 0, 0, 0.25);
+  --surface: rgba(0, 0, 0, 0.04);
+  --surface-hover: rgba(0, 0, 0, 0.08);
 
-  /* Scrollbar (slim, white-on-black pill). */
+  /* Scrollbar (slim, black-on-white pill). */
   --scrollbar-size: 10px;
   --scrollbar-radius: 999px;
   --scrollbar-track: transparent;
-  --scrollbar-thumb: rgba(255, 255, 255, 0.18);
-  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.32);
-  --scrollbar-thumb-active: rgba(255, 255, 255, 0.48);
-}
-
-.dark {
-  --background: #000000;
-  --foreground: #ffffff;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.18);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.32);
+  --scrollbar-thumb-active: rgba(0, 0, 0, 0.48);
 }
 
 /* Global custom scrollbar. */
@@ -90,8 +85,8 @@ html {
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
   -webkit-text-size-adjust: 100%;
-  background: #000;
-  color-scheme: dark;
+  background: #fff;
+  color-scheme: light;
 }
 
 @layer base {
@@ -123,14 +118,14 @@ html {
 /* Subtle grid / radial backdrop for the hero. */
 .bg-noise {
   background-image:
-    radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,0.07), transparent 60%),
-    radial-gradient(800px 400px at 80% 10%, rgba(255,255,255,0.04), transparent 65%);
+    radial-gradient(1200px 600px at 50% -10%, rgba(0,0,0,0.06), transparent 60%),
+    radial-gradient(800px 400px at 80% 10%, rgba(0,0,0,0.03), transparent 65%);
 }
 
 .bg-grid {
   background-image:
-    linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+    linear-gradient(rgba(0,0,0,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.045) 1px, transparent 1px);
   background-size: 56px 56px;
   -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 70%);
   mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 70%);
@@ -180,9 +175,9 @@ html {
 .shimmer-sweep {
   background-image: linear-gradient(
     100deg,
-    rgba(255, 255, 255, 0) 30%,
-    rgba(255, 255, 255, 0.95) 50%,
-    rgba(255, 255, 255, 0) 70%
+    rgba(0, 0, 0, 0) 30%,
+    rgba(0, 0, 0, 0.85) 50%,
+    rgba(0, 0, 0, 0) 70%
   );
   background-size: 200% 100%;
   background-repeat: no-repeat;

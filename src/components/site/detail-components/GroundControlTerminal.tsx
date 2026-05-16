@@ -18,26 +18,26 @@ const STEPS = [
 
 const colorMap = {
   amber: "text-amber-300",
-  muted: "text-white/55",
-  green: "text-emerald-300",
-  white: "text-white/85",
+  muted: "text-black/55",
+  green: "text-emerald-600",
+  white: "text-black/85",
 };
 
 export function GroundControlTerminal(_props: DetailComponentProps) {
   return (
     <div className="p-4 sm:p-5">
       <div
-        className="text-[11px] uppercase tracking-[0.2em] text-white/45 mb-3"
+        className="text-[11px] uppercase tracking-[0.2em] text-black/45 mb-3"
         style={{ fontFamily: "var(--font-body)" }}
       >
         Try it
       </div>
-      <div className="rounded-2xl border border-white/12 bg-black/70 overflow-hidden">
-        <div className="flex items-center gap-1.5 px-3 py-2 border-b border-white/8 bg-white/[0.03]">
+      <div className="rounded-2xl border border-black/12 bg-white/70 overflow-hidden">
+        <div className="flex items-center gap-1.5 px-3 py-2 border-b border-black/8 bg-black/[0.03]">
           <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f56]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f]" />
-          <span className="ml-2 text-xs text-white/45" style={{ fontFamily: "var(--font-mono)" }}>
+          <span className="ml-2 text-xs text-black/45" style={{ fontFamily: "var(--font-mono)" }}>
             zsh — ground-control
           </span>
         </div>
@@ -61,7 +61,7 @@ export function GroundControlTerminal(_props: DetailComponentProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 0] }}
             transition={{ delay: STEPS.length * 0.18, duration: 1.2, repeat: Infinity }}
-            className="inline-block h-4 w-2 bg-white/80 align-middle"
+            className="inline-block h-4 w-2 bg-black/80 align-middle"
           />
         </div>
       </div>

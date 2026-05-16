@@ -79,7 +79,7 @@ export function DetailPanel({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-[80] bg-black/65 backdrop-blur-sm"
+            className="fixed inset-0 z-[80] bg-white/65 backdrop-blur-sm"
             onClick={onClose}
             aria-hidden
           />
@@ -107,7 +107,7 @@ function SidePanel({ product, onClose }: { product: Product; onClose: () => void
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ type: "spring", stiffness: 280, damping: 32 }}
-      className="fixed right-0 top-0 bottom-0 z-[81] w-full sm:w-[560px] lg:w-[640px] max-w-[100vw] bg-black border-l border-white/10 shadow-[-30px_0_80px_-30px_rgba(0,0,0,0.7)]"
+      className="fixed right-0 top-0 bottom-0 z-[81] w-full sm:w-[560px] lg:w-[640px] max-w-[100vw] bg-white border-l border-black/10 shadow-[-30px_0_80px_-30px_rgba(0,0,0,0.15)]"
     >
       <DetailContent product={product} onClose={onClose} />
     </motion.aside>
@@ -140,10 +140,10 @@ function BottomSheet({ product, onClose }: { product: Product; onClose: () => vo
       dragConstraints={{ top: 0, bottom: 0 }}
       dragElastic={0.2}
       onDragEnd={onDragEnd}
-      className="fixed inset-x-0 bottom-0 z-[81] h-[92vh] rounded-t-3xl bg-black border-t border-white/10 shadow-[0_-30px_80px_-20px_rgba(0,0,0,0.8)]"
+      className="fixed inset-x-0 bottom-0 z-[81] h-[92vh] rounded-t-3xl bg-white border-t border-black/10 shadow-[0_-30px_80px_-20px_rgba(0,0,0,0.15)]"
     >
       <div className="pt-2.5 pb-1 flex items-center justify-center">
-        <div className="h-1.5 w-12 rounded-full bg-white/15" />
+        <div className="h-1.5 w-12 rounded-full bg-black/15" />
       </div>
       <DetailContent product={product} onClose={onClose} compact />
     </motion.aside>
@@ -159,14 +159,14 @@ function DetailContent({
   onClose: () => void;
   compact?: boolean;
 }) {
-  const accent = product.accent || "#ffffff";
+  const accent = product.accent || "#000000";
   const Custom = product.detailComponent ? getDetailComponent(product.detailComponent) : null;
   const details = product.details;
 
   return (
     <div className="relative h-full overflow-y-auto overscroll-contain">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-black/85 backdrop-blur border-b border-white/8">
+      <div className="sticky top-0 z-10 bg-white/85 backdrop-blur border-b border-black/8">
         <div className="flex items-center justify-between px-4 sm:px-6 py-3">
           <div className="flex items-center gap-2 min-w-0">
             <span
@@ -174,7 +174,7 @@ function DetailContent({
               style={{ background: accent }}
               aria-hidden
             />
-            <span className="text-[11px] uppercase tracking-[0.2em] text-white/55 truncate" style={{ fontFamily: "var(--font-body)" }}>
+            <span className="text-[11px] uppercase tracking-[0.2em] text-black/55 truncate" style={{ fontFamily: "var(--font-body)" }}>
               {product.tag ?? "Detail"}
               {product.meta?.venue ? ` · ${product.meta.venue}` : ""}
             </span>
@@ -183,7 +183,7 @@ function DetailContent({
             type="button"
             onClick={onClose}
             aria-label="Close detail panel"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white hover:bg-white/10 transition-colors"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/15 text-black hover:bg-black/10 transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -207,7 +207,7 @@ function DetailContent({
           unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/30 to-transparent" />
         <div
           className="absolute bottom-0 left-0 right-0 h-[2px]"
           style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
@@ -218,12 +218,12 @@ function DetailContent({
       <div className="px-4 sm:px-6 py-6 sm:py-8 space-y-7">
         {/* Title */}
         <header>
-          <h2 className="font-display tracking-[0.03em] uppercase text-white text-4xl sm:text-5xl leading-[0.95]">
+          <h2 className="font-display tracking-[0.03em] uppercase text-black text-4xl sm:text-5xl leading-[0.95]">
             {product.title}
           </h2>
           {product.subtitle ? (
             <p
-              className="mt-3 text-white/75 text-base sm:text-lg leading-snug"
+              className="mt-3 text-black/75 text-base sm:text-lg leading-snug"
               style={{ fontFamily: "var(--font-body)" }}
             >
               {product.subtitle}
@@ -236,7 +236,7 @@ function DetailContent({
               {product.tech.map((t) => (
                 <span
                   key={t}
-                  className="rounded-full border border-white/15 bg-white/[0.05] px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] text-white/80"
+                  className="rounded-full border border-black/15 bg-black/[0.05] px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] text-black/80"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
                   {t}
@@ -258,7 +258,7 @@ function DetailContent({
                   target={a.href?.startsWith("http") ? "_blank" : undefined}
                   rel={a.href?.startsWith("http") ? "noreferrer" : undefined}
                   aria-label={a.ariaLabel ?? a.label ?? "Open link"}
-                  className="inline-flex items-center gap-2 rounded-full bg-white text-black px-4 py-2 text-sm font-medium uppercase tracking-[0.12em] hover:bg-white/90 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full bg-black text-white px-4 py-2 text-sm font-medium uppercase tracking-[0.12em] hover:bg-black/90 transition-colors"
                 >
                   <Icon name={a.icon} size={16} className="h-4 w-4 object-contain" />
                   {a.label ?? "Open"}
@@ -274,15 +274,15 @@ function DetailContent({
             {Object.entries(product.meta).map(([k, v]) => (
               <div
                 key={k}
-                className="rounded-2xl border border-white/10 bg-white/[0.04] px-3.5 py-3"
+                className="rounded-2xl border border-black/10 bg-black/[0.04] px-3.5 py-3"
               >
                 <dt
-                  className="text-[10px] uppercase tracking-[0.18em] text-white/45"
+                  className="text-[10px] uppercase tracking-[0.18em] text-black/45"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
                   {k}
                 </dt>
-                <dd className="mt-1 text-white text-sm" style={{ fontFamily: "var(--font-body)" }}>
+                <dd className="mt-1 text-black text-sm" style={{ fontFamily: "var(--font-body)" }}>
                   {v}
                 </dd>
               </div>
@@ -293,7 +293,7 @@ function DetailContent({
         {/* Body text */}
         {details?.body ? (
           <div
-            className="text-white/80 text-[15px] sm:text-base leading-relaxed space-y-4"
+            className="text-black/80 text-[15px] sm:text-base leading-relaxed space-y-4"
             style={{ fontFamily: "var(--font-body)" }}
           >
             {details.body.split(/\n\s*\n/).map((para, i) => (
@@ -302,7 +302,7 @@ function DetailContent({
           </div>
         ) : product.description ? (
           <p
-            className="text-white/80 text-[15px] sm:text-base leading-relaxed"
+            className="text-black/80 text-[15px] sm:text-base leading-relaxed"
             style={{ fontFamily: "var(--font-body)" }}
           >
             {product.description}
@@ -319,7 +319,7 @@ function DetailContent({
                   className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0"
                   style={{ background: accent }}
                 />
-                <span className="text-white/80 leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
+                <span className="text-black/80 leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
                   {h}
                 </span>
               </li>
@@ -330,7 +330,7 @@ function DetailContent({
         {/* Media gallery */}
         {details?.media && details.media.length > 0 ? (
           <div className="space-y-3">
-            <div className="text-[11px] uppercase tracking-[0.2em] text-white/45" style={{ fontFamily: "var(--font-body)" }}>
+            <div className="text-[11px] uppercase tracking-[0.2em] text-black/45" style={{ fontFamily: "var(--font-body)" }}>
               Media
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -343,7 +343,7 @@ function DetailContent({
 
         {/* Custom component slot */}
         {Custom ? (
-          <div className="rounded-3xl border border-white/10 bg-white/[0.03] overflow-hidden">
+          <div className="rounded-3xl border border-black/10 bg-black/[0.03] overflow-hidden">
             <Custom product={product} />
           </div>
         ) : null}
@@ -365,7 +365,7 @@ function MediaTile({ item, accent }: { item: ProductMedia; accent: string }) {
 
   if (item.type === "image") {
     return (
-      <figure className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+      <figure className="overflow-hidden rounded-2xl border border-black/10 bg-black/[0.03]">
         <div className="relative aspect-[16/10]">
           <NextImage
             src={item.src}
@@ -378,7 +378,7 @@ function MediaTile({ item, accent }: { item: ProductMedia; accent: string }) {
         </div>
         {item.caption ? (
           <figcaption
-            className="px-3 py-2 text-xs text-white/55 border-t border-white/8"
+            className="px-3 py-2 text-xs text-black/55 border-t border-black/8"
             style={{ fontFamily: "var(--font-body)" }}
           >
             <span
@@ -394,7 +394,7 @@ function MediaTile({ item, accent }: { item: ProductMedia; accent: string }) {
 
   if (item.type === "video") {
     return (
-      <figure className="overflow-hidden rounded-2xl border border-white/10 bg-black">
+      <figure className="overflow-hidden rounded-2xl border border-black/10 bg-white">
         <video
           src={item.src}
           controls
@@ -404,7 +404,7 @@ function MediaTile({ item, accent }: { item: ProductMedia; accent: string }) {
         />
         {item.caption ? (
           <figcaption
-            className="px-3 py-2 text-xs text-white/55 border-t border-white/8"
+            className="px-3 py-2 text-xs text-black/55 border-t border-black/8"
             style={{ fontFamily: "var(--font-body)" }}
           >
             {item.caption}
@@ -415,7 +415,7 @@ function MediaTile({ item, accent }: { item: ProductMedia; accent: string }) {
   }
 
   return (
-    <figure className="overflow-hidden rounded-2xl border border-white/10 bg-black">
+    <figure className="overflow-hidden rounded-2xl border border-black/10 bg-white">
       <iframe
         src={item.src}
         title={item.caption ?? "Embedded media"}
@@ -425,7 +425,7 @@ function MediaTile({ item, accent }: { item: ProductMedia; accent: string }) {
       />
       {item.caption ? (
         <figcaption
-          className="px-3 py-2 text-xs text-white/55 border-t border-white/8"
+          className="px-3 py-2 text-xs text-black/55 border-t border-black/8"
           style={{ fontFamily: "var(--font-body)" }}
         >
           {item.caption}

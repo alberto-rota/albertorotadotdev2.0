@@ -64,10 +64,10 @@ export function Nav() {
         className="fixed top-0 inset-x-0 z-50 pointer-events-none"
       >
         <div className="mx-auto max-w-6xl px-3 sm:px-4 pt-3 sm:pt-5">
-          <div className="pointer-events-auto flex items-center justify-between gap-3 rounded-full border border-white/12 bg-black/60 backdrop-blur-xl px-2 py-2 shadow-[0_8px_30px_rgb(0,0,0,0.4)] md:grid md:grid-cols-[1fr_auto_1fr]">
+          <div className="pointer-events-auto flex items-center justify-between gap-3 rounded-full border border-black/12 bg-white/60 backdrop-blur-xl px-2 py-2 shadow-[0_8px_30px_rgb(0,0,0,0.12)] md:grid md:grid-cols-[1fr_auto_1fr]">
             <button
               onClick={() => scrollToId("top")}
-              className="shrink-0 font-display text-lg sm:text-xl tracking-[0.18em] pl-3 pr-2 py-1 text-white/90 hover:text-white transition-colors md:justify-self-start"
+              className="shrink-0 font-display text-lg sm:text-xl tracking-[0.18em] pl-3 pr-2 py-1 text-black/90 hover:text-black transition-colors md:justify-self-start"
               aria-label="Back to top"
             >
               AR
@@ -82,13 +82,13 @@ export function Nav() {
                     onClick={() => scrollToId(item.id)}
                     className={cn(
                       "relative font-display tracking-[0.12em] text-sm px-3 py-2 rounded-full transition-colors",
-                      active ? "text-black" : "text-white/70 hover:text-white"
+                      active ? "text-white" : "text-black/70 hover:text-black"
                     )}
                   >
                     {active ? (
                       <motion.span
                         layoutId="nav-pill-active"
-                        className="absolute inset-0 rounded-full bg-white"
+                        className="absolute inset-0 rounded-full bg-black"
                         transition={{ type: "spring", stiffness: 380, damping: 32 }}
                       />
                     ) : null}
@@ -102,14 +102,14 @@ export function Nav() {
               <a
                 href="/CV_Alberto_Rota.pdf"
                 download
-                className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium tracking-wider uppercase text-white/85 hover:text-white border border-white/15 hover:border-white/40 transition-colors"
+                className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium tracking-wider uppercase text-black/85 hover:text-black border border-black/15 hover:border-black/40 transition-colors"
               >
                 <FileDown className="h-4 w-4" />
                 <span className="hidden lg:inline">CV</span>
               </a>
               <button
                 onClick={() => scrollToId("contact")}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium tracking-wider uppercase bg-white text-black hover:bg-white/90 transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium tracking-wider uppercase bg-black text-white hover:bg-black/90 transition-colors"
               >
                 <Mail className="h-4 w-4" />
                 <span className="hidden sm:inline">Get in touch</span>
@@ -118,7 +118,7 @@ export function Nav() {
               <button
                 onClick={() => setOpen(true)}
                 aria-label="Open menu"
-                className="md:hidden ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white"
+                className="md:hidden ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/15 text-black"
               >
                 <MenuIcon className="h-4.5 w-4.5" />
               </button>
@@ -132,26 +132,26 @@ export function Nav() {
         initial={false}
         animate={{ opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
         transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm md:hidden"
+        className="fixed inset-0 z-[60] bg-white/70 backdrop-blur-sm md:hidden"
         onClick={() => setOpen(false)}
       />
       <motion.aside
         initial={false}
         animate={{ y: open ? 0 : "100%" }}
         transition={{ type: "spring", stiffness: 280, damping: 32 }}
-        className="fixed inset-x-0 bottom-0 z-[61] rounded-t-3xl border-t border-white/10 bg-black md:hidden"
+        className="fixed inset-x-0 bottom-0 z-[61] rounded-t-3xl border-t border-black/10 bg-white md:hidden"
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
       >
         <div className="px-5 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-          <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-white/15" />
+          <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-black/15" />
           <div className="flex items-center justify-between mb-4">
-            <span className="font-display tracking-[0.16em] text-lg text-white">MENU</span>
+            <span className="font-display tracking-[0.16em] text-lg text-black">MENU</span>
             <button
               onClick={() => setOpen(false)}
               aria-label="Close menu"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/15 text-black"
             >
               <X className="h-4 w-4" />
             </button>
@@ -165,10 +165,10 @@ export function Nav() {
                     setOpen(false);
                     setTimeout(() => scrollToId(item.id), 120);
                   }}
-                  className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 font-display tracking-[0.14em] text-base uppercase text-white"
+                  className="flex w-full items-center justify-between rounded-2xl border border-black/10 bg-black/[0.04] px-4 py-3 font-display tracking-[0.14em] text-base uppercase text-black"
                 >
                   <span>{item.label}</span>
-                  <span aria-hidden className="text-white/40 text-xl">→</span>
+                  <span aria-hidden className="text-black/40 text-xl">→</span>
                 </button>
               </li>
             ))}
@@ -179,7 +179,7 @@ export function Nav() {
               href="/CV_Alberto_Rota.pdf"
               download
               onClick={() => setOpen(false)}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 px-4 py-3 text-sm uppercase tracking-wider text-white"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-black/15 px-4 py-3 text-sm uppercase tracking-wider text-black"
             >
               <FileDown className="h-4 w-4" /> Download CV
             </a>
@@ -188,7 +188,7 @@ export function Nav() {
                 setOpen(false);
                 setTimeout(() => scrollToId("contact"), 120);
               }}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm uppercase tracking-wider text-black"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-black px-4 py-3 text-sm uppercase tracking-wider text-white"
             >
               <Mail className="h-4 w-4" /> Contact
             </button>

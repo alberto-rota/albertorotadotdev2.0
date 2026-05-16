@@ -40,7 +40,7 @@ function renderRichText(input: string): React.ReactNode {
       switch (popped.tag) {
         case "b":
           parent.children.push(
-            <strong key={parent.children.length} className="text-white">
+            <strong key={parent.children.length} className="text-black">
               {popped.children}
             </strong>
           );
@@ -62,7 +62,7 @@ function renderRichText(input: string): React.ReactNode {
               href={popped.href}
               target={popped.href?.startsWith("http") ? "_blank" : undefined}
               rel={popped.href?.startsWith("http") ? "noreferrer" : undefined}
-              className="text-white underline decoration-white/40 hover:decoration-white"
+              className="text-black underline decoration-black/40 hover:decoration-black"
             >
               {popped.children}
             </a>
@@ -98,7 +98,7 @@ export function Announcement({ data }: { data: AnnouncementData | undefined }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="relative overflow-hidden rounded-3xl border border-white/12 bg-white/[0.04] backdrop-blur"
+          className="relative overflow-hidden rounded-3xl border border-black/12 bg-black/[0.04] backdrop-blur"
         >
           {/* Accent glow */}
           <div
@@ -106,13 +106,13 @@ export function Announcement({ data }: { data: AnnouncementData | undefined }) {
             className="pointer-events-none absolute -inset-px opacity-60"
             style={{
               background:
-                "radial-gradient(800px 200px at 0% 0%, rgba(255,255,255,0.10), transparent 60%)",
+                "radial-gradient(800px 200px at 0% 0%, rgba(0,0,0,0.08), transparent 60%)",
             }}
           />
           <div className="relative grid gap-5 p-5 sm:p-6 md:grid-cols-[1.6fr_1fr] md:items-center">
             <div>
               {data.label ? (
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.05] px-3 py-1 text-[11px] sm:text-xs uppercase tracking-[0.22em] text-white/80">
+                <div className="inline-flex items-center gap-2 rounded-full border border-black/20 bg-black/[0.05] px-3 py-1 text-[11px] sm:text-xs uppercase tracking-[0.22em] text-black/80">
                   <span className="relative inline-flex h-2 w-2">
                     <span className="absolute inset-0 rounded-full bg-emerald-400 animate-soft-pulse" />
                     <span className="absolute inset-[2px] rounded-full bg-emerald-300" />
@@ -122,14 +122,14 @@ export function Announcement({ data }: { data: AnnouncementData | undefined }) {
               ) : null}
 
               {data.title ? (
-                <h2 className="mt-3 font-display tracking-[0.03em] uppercase text-3xl sm:text-4xl md:text-5xl leading-[0.95] text-white">
+                <h2 className="mt-3 font-display tracking-[0.03em] uppercase text-3xl sm:text-4xl md:text-5xl leading-[0.95] text-black">
                   {data.title}
                 </h2>
               ) : null}
 
               {data.body ? (
                 <p
-                  className="mt-3 text-sm sm:text-base text-white/75 leading-relaxed max-w-2xl"
+                  className="mt-3 text-sm sm:text-base text-black/75 leading-relaxed max-w-2xl"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
                   {renderRichText(data.body)}
@@ -138,7 +138,7 @@ export function Announcement({ data }: { data: AnnouncementData | undefined }) {
 
               {(data.dates || data.location) && (
                 <div
-                  className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm text-white/65"
+                  className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm text-black/65"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
                   {data.dates ? (
@@ -165,8 +165,8 @@ export function Announcement({ data }: { data: AnnouncementData | undefined }) {
                     rel={a.href?.startsWith("http") ? "noreferrer" : undefined}
                     className={
                       i === 0
-                        ? "inline-flex items-center gap-2 rounded-full bg-white text-black px-4 py-2.5 text-sm font-medium uppercase tracking-[0.14em] hover:bg-white/90 transition-colors"
-                        : "inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2.5 text-sm font-medium uppercase tracking-[0.14em] text-white hover:bg-white/10 transition-colors"
+                        ? "inline-flex items-center gap-2 rounded-full bg-black text-white px-4 py-2.5 text-sm font-medium uppercase tracking-[0.14em] hover:bg-black/90 transition-colors"
+                        : "inline-flex items-center gap-2 rounded-full border border-black/20 px-4 py-2.5 text-sm font-medium uppercase tracking-[0.14em] text-black hover:bg-black/10 transition-colors"
                     }
                   >
                     <Icon name={a.icon} size={16} className="h-4 w-4" />

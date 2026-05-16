@@ -10,9 +10,9 @@ const DEFAULT_TAGLINE =
   "PhD candidate in Bioengineering at Politecnico di Milano. I build research, open-source tools, and visual systems for surgical robotics and medical AI.";
 
 const glassBtn =
-  "rounded-full border border-white/12 bg-black/60 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.4)] transition-colors";
+  "rounded-full border border-black/12 bg-white/60 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-colors";
 const glassBtnPrimary =
-  "rounded-full border border-white/20 bg-white/90 backdrop-blur-xl text-black shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:bg-white transition-colors";
+  "rounded-full border border-black/20 bg-black/90 backdrop-blur-xl text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-black transition-colors";
 
 function scrollToId(id: string) {
   const el = document.getElementById(id);
@@ -50,7 +50,7 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0 h-24 -z-10"
         style={{
-          background: "linear-gradient(to bottom, rgba(0,0,0,0), #000)",
+          background: "linear-gradient(to bottom, rgba(255,255,255,0), #fff)",
         }}
       />
 
@@ -60,7 +60,7 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px"
         style={{
           background:
-            "linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)",
+            "linear-gradient(90deg, transparent, rgba(0,0,0,0.35), transparent)",
         }}
       />
 
@@ -71,7 +71,7 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
           className="pointer-events-none absolute left-1/2 top-1/2 -z-[1] h-[min(520px,85%)] w-[min(920px,120%)] -translate-x-1/2 -translate-y-[48%]"
           style={{
             background:
-              "radial-gradient(ellipse 72% 68% at 50% 50%, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.72) 42%, rgba(0,0,0,0.28) 68%, transparent 82%)",
+              "radial-gradient(ellipse 72% 68% at 50% 50%, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.72) 42%, rgba(255,255,255,0.28) 68%, transparent 82%)",
           }}
         />
 
@@ -84,7 +84,7 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
             className="relative font-display tracking-[0.04em] leading-[0.92] text-[15vw] sm:text-[9vw] md:text-[7rem] lg:text-[8.5rem]"
           >
             {/* base text */}
-            <span className="bg-clip-text text-transparent bg-[linear-gradient(180deg,#ffffff_0%,#cfcfcf_70%,#9a9a9a_100%)]">
+            <span className="bg-clip-text text-transparent bg-[linear-gradient(180deg,#000000_0%,#303030_70%,#5a5a5a_100%)]">
               ALBERTO ROTA
             </span>
             {/* moving shimmer */}
@@ -97,7 +97,7 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
             {/* soft glow */}
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 blur-[18px] opacity-40 text-white"
+              className="pointer-events-none absolute inset-0 blur-[18px] opacity-40 text-black"
             >
               ALBERTO ROTA
             </span>
@@ -108,7 +108,7 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.12 }}
-            className="mt-3 max-w-2xl text-sm sm:text-base text-white/70 leading-relaxed"
+            className="mt-3 max-w-2xl text-sm sm:text-base text-black/70 leading-relaxed"
             style={{ fontFamily: "var(--font-body)" }}
           >
             {tagline}
@@ -119,7 +119,7 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.18 }}
-            className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-white/55"
+            className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-black/55"
             style={{ fontFamily: "var(--font-body)" }}
           >
             <span className="inline-flex items-center gap-1.5">
@@ -129,13 +129,13 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
               href="https://github.com/alberto-rota"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 hover:text-black transition-colors"
             >
               <Github className="h-3.5 w-3.5" /> alberto-rota
             </a>
             <a
               href="mailto:alberto_rota@outlook.com"
-              className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 hover:text-black transition-colors"
             >
               <Mail className="h-3.5 w-3.5" /> alberto_rota@outlook.com
             </a>
@@ -158,7 +158,7 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
             <a
               href="/CV_Alberto_Rota.pdf"
               download
-              className={`inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium uppercase tracking-[0.14em] text-white/85 hover:text-white hover:border-white/25 ${glassBtn}`}
+              className={`inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium uppercase tracking-[0.14em] text-black/85 hover:text-black hover:border-black/25 ${glassBtn}`}
             >
               <FileDown className="h-4 w-4" />
               Download my CV
@@ -172,18 +172,18 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.32 }}
-            className={`group mt-5 inline-flex max-w-full items-center gap-3 px-3.5 py-2 text-xs sm:text-sm text-white/85 hover:border-white/25 ${glassBtn}`}
+            className={`group mt-5 inline-flex max-w-full items-center gap-3 px-3.5 py-2 text-xs sm:text-sm text-black/85 hover:border-black/25 ${glassBtn}`}
             aria-label={copied ? "Copied" : "Copy curl command"}
             style={{ fontFamily: "var(--font-mono)" }}
           >
             <span className="text-emerald-400/90 select-none">$</span>
             <span className="text-amber-300/90">curl</span>
-            <span className="text-white/85 truncate">{CURL_TARGET}</span>
-            <span className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10 group-hover:bg-white/20 transition-colors">
+            <span className="text-black/85 truncate">{CURL_TARGET}</span>
+            <span className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-black/10 group-hover:bg-black/20 transition-colors">
               {copied ? (
-                <Check className="h-3.5 w-3.5 text-emerald-300" />
+                <Check className="h-3.5 w-3.5 text-emerald-600" />
               ) : (
-                <Copy className="h-3.5 w-3.5 text-white/80" />
+                <Copy className="h-3.5 w-3.5 text-black/80" />
               )}
             </span>
           </motion.button>
@@ -191,7 +191,7 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
       </div>
 
       {/* divider */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-black/15 to-transparent" />
     </section>
   );
 }

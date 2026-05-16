@@ -103,7 +103,7 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-15%" }}
           transition={{ duration: 0.5, delay: 0.05 }}
-          className="mt-2 text-sm sm:text-base text-white/60 max-w-2xl"
+          className="mt-2 text-sm sm:text-base text-black/60 max-w-2xl"
           style={{ fontFamily: "var(--font-body)" }}
         >
           Open to research collaborations, talks and consulting around medical AI,
@@ -130,22 +130,22 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
                         rel: c.href.startsWith("http") ? "noreferrer" : undefined,
                       }
                     : {})}
-                  className="group block rounded-2xl border border-white/12 bg-white/[0.04] p-5 hover:border-white/30 hover:bg-white/[0.07] transition-colors"
+                  className="group block rounded-2xl border border-black/12 bg-black/[0.04] p-5 hover:border-black/30 hover:bg-black/[0.07] transition-colors"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/8 border border-white/12 text-white">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-black/8 border border-black/12 text-black">
                         {c.icon}
                       </span>
                       <div>
                         <div
-                          className="text-[10px] uppercase tracking-[0.22em] text-white/45"
+                          className="text-[10px] uppercase tracking-[0.22em] text-black/45"
                           style={{ fontFamily: "var(--font-body)" }}
                         >
                           {c.label}
                         </div>
                         <div
-                          className="mt-0.5 text-white text-sm sm:text-base wrap-break-word"
+                          className="mt-0.5 text-black text-sm sm:text-base wrap-break-word"
                           style={{ fontFamily: "var(--font-body)" }}
                         >
                           {c.value}
@@ -162,16 +162,16 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
                           copy(c.id, c.value);
                         }}
                         aria-label={isCopied ? "Copied" : `Copy ${c.value}`}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/12 bg-white/[0.04] hover:bg-white/10 transition-colors"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/12 bg-black/[0.04] hover:bg-black/10 transition-colors"
                       >
                         {isCopied ? (
                           <Check className="h-4 w-4 text-emerald-300" />
                         ) : (
-                          <Copy className="h-4 w-4 text-white/80" />
+                          <Copy className="h-4 w-4 text-black/80" />
                         )}
                       </button>
                     ) : c.href ? (
-                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/12 bg-white/[0.04] text-white/80 group-hover:bg-white group-hover:text-black transition-colors">
+                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/12 bg-black/[0.04] text-black/80 group-hover:bg-black group-hover:text-white transition-colors">
                         <ArrowUpRight className="h-4 w-4" />
                       </span>
                     ) : null}
@@ -186,11 +186,11 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
         {profileLinks.length > 0 ? (
           <div className="mt-10">
             <div
-              className="flex items-center gap-3 text-[10px] uppercase tracking-[0.24em] text-white/45"
+              className="flex items-center gap-3 text-[10px] uppercase tracking-[0.24em] text-black/45"
               style={{ fontFamily: "var(--font-body)" }}
             >
               <span>Also on</span>
-              <span aria-hidden className="h-px flex-1 bg-white/8" />
+              <span aria-hidden className="h-px flex-1 bg-black/8" />
             </div>
             <div className="mt-4 flex flex-wrap gap-2.5">
               {profileLinks.map((p, i) => (
@@ -204,7 +204,7 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
         <div className="mt-10 flex flex-wrap items-center gap-3">
           <a
             href="mailto:alberto_rota@outlook.com"
-            className="inline-flex items-center gap-2 rounded-full bg-white text-black px-5 py-3 text-sm font-medium uppercase tracking-[0.14em] hover:bg-white/90 transition-colors"
+            className="inline-flex items-center gap-2 rounded-full bg-black text-white px-5 py-3 text-sm font-medium uppercase tracking-[0.14em] hover:bg-black/90 transition-colors"
           >
             <Mail className="h-4 w-4" />
             Send me an email
@@ -212,7 +212,7 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
           <a
             href="/CV_Alberto_Rota.pdf"
             download
-            className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-3 text-sm font-medium uppercase tracking-[0.14em] text-white hover:bg-white/10 transition-colors"
+            className="inline-flex items-center gap-2 rounded-full border border-black/20 px-5 py-3 text-sm font-medium uppercase tracking-[0.14em] text-black hover:bg-black/10 transition-colors"
           >
             <FileDown className="h-4 w-4" />
             Download CV
@@ -243,10 +243,10 @@ function ProfileChip({ product, index }: { product: Product; index: number }) {
               rel: href.startsWith("http") ? "noreferrer" : undefined,
             }
           : {})}
-        className="group inline-flex items-center gap-2.5 rounded-full border border-white/12 bg-white/[0.04] pl-2 pr-4 py-1.5 hover:border-white/30 hover:bg-white/[0.08] transition-colors"
+        className="group inline-flex items-center gap-2.5 rounded-full border border-black/12 bg-black/[0.04] pl-2 pr-4 py-1.5 hover:border-black/30 hover:bg-black/[0.08] transition-colors"
         aria-label={product.title}
       >
-        <span className="relative inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/10 overflow-hidden">
+        <span className="relative inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/10 overflow-hidden">
           <NextImage
             src={product.thumbnail}
             alt=""
@@ -257,13 +257,13 @@ function ProfileChip({ product, index }: { product: Product; index: number }) {
           />
         </span>
         <span
-          className="text-xs sm:text-sm uppercase tracking-[0.14em] text-white/85 group-hover:text-white"
+          className="text-xs sm:text-sm uppercase tracking-[0.14em] text-black/85 group-hover:text-black"
           style={{ fontFamily: "var(--font-body)" }}
         >
           {product.title}
         </span>
         {href ? (
-          <ArrowUpRight className="h-3.5 w-3.5 text-white/45 group-hover:text-white transition-colors" />
+          <ArrowUpRight className="h-3.5 w-3.5 text-black/45 group-hover:text-black transition-colors" />
         ) : null}
       </Container>
     </motion.div>
@@ -272,16 +272,16 @@ function ProfileChip({ product, index }: { product: Product; index: number }) {
 
 function Footer() {
   return (
-    <footer className="mt-20 border-t border-white/8 pt-6 pb-10">
+    <footer className="mt-20 border-t border-black/8 pt-6 pb-10">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div
-          className="text-xs text-white/40"
+          className="text-xs text-black/40"
           style={{ fontFamily: "var(--font-body)" }}
         >
           © {new Date().getFullYear()} Alberto Rota. Built with care.
         </div>
         <div
-          className="text-[10px] uppercase tracking-[0.24em] text-white/35"
+          className="text-[10px] uppercase tracking-[0.24em] text-black/35"
           style={{ fontFamily: "var(--font-mono)" }}
         >
           $ curl https://albertorota.dev

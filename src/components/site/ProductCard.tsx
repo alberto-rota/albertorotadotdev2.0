@@ -13,9 +13,9 @@ type CardSize = "default" | "compact";
 const actionBtnBase =
   "inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors";
 const actionBtnResearch =
-  "bg-black border-black/20 text-white hover:bg-black/85";
+  "bg-white border-white/20 text-black hover:bg-white/85";
 const actionBtnDefault =
-  "bg-white/10 border-white/15 backdrop-blur text-white hover:bg-white hover:text-black";
+  "bg-black/10 border-black/15 backdrop-blur text-black hover:bg-black hover:text-white";
 
 export function ProductCard({
   product,
@@ -34,7 +34,7 @@ export function ProductCard({
   index: number;
   onOpenDetail: (p: Product) => void;
 }) {
-  const accent = product.accent || "#ffffff";
+  const accent = product.accent || "#000000";
   const primaryAction = product.actions?.find((a) => a.href) ?? null;
   const externalHref = product.link && product.link !== "#" ? product.link : primaryAction?.href ?? null;
 
@@ -69,10 +69,10 @@ export function ProductCard({
         type="button"
         onClick={() => onOpenDetail(product)}
         aria-label={`Open details for ${product.title}`}
-        className="block w-full h-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 rounded-3xl"
+        className="block w-full h-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-black/40 rounded-3xl"
       >
         <div
-          className="relative h-full w-full overflow-hidden rounded-3xl border border-white/10 bg-black"
+          className="relative h-full w-full overflow-hidden rounded-3xl border border-black/10 bg-white"
           style={
             {
               ["--accent" as string]: accent,
@@ -112,8 +112,8 @@ export function ProductCard({
             className={cn(
               "absolute inset-0 pointer-events-none",
               isContain
-                ? "bg-gradient-to-t from-black/85 via-black/10 to-transparent"
-                : "bg-gradient-to-t from-black/85 via-black/30 to-black/10"
+                ? "bg-gradient-to-t from-white/85 via-white/10 to-transparent"
+                : "bg-gradient-to-t from-white/85 via-white/30 to-white/10"
             )}
           />
 
@@ -126,7 +126,7 @@ export function ProductCard({
           {/* Meta chip — venue / journal / conference tag */}
           {product.meta?.venue ? (
             <div
-              className="absolute top-3 left-3 inline-flex items-center gap-2 rounded-full bg-black/65 border backdrop-blur px-3 py-1.5 text-xs sm:text-sm uppercase tracking-[0.16em] text-white"
+              className="absolute top-3 left-3 inline-flex items-center gap-2 rounded-full bg-white/65 border backdrop-blur px-3 py-1.5 text-xs sm:text-sm uppercase tracking-[0.16em] text-black"
               style={{ borderColor: `${accent}66` }}
             >
               <span
@@ -160,17 +160,17 @@ export function ProductCard({
           <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
             <div className="flex items-end gap-3">
               {product.icon ? (
-                <div className="shrink-0 h-10 w-10 sm:h-11 sm:w-11 rounded-xl overflow-hidden bg-white/10 border border-white/15 flex items-center justify-center p-1.5">
+                <div className="shrink-0 h-10 w-10 sm:h-11 sm:w-11 rounded-xl overflow-hidden bg-black/10 border border-black/15 flex items-center justify-center p-1.5">
                   <Icon name={product.icon} size={36} className="object-contain" />
                 </div>
               ) : null}
               <div className="min-w-0">
-                <h3 className="font-display tracking-[0.04em] text-white text-2xl sm:text-3xl leading-[1] uppercase">
+                <h3 className="font-display tracking-[0.04em] text-black text-2xl sm:text-3xl leading-[1] uppercase">
                   {product.title}
                 </h3>
                 {product.subtitle ? (
                   <p
-                    className="mt-1.5 text-white/75 text-xs sm:text-sm leading-snug line-clamp-2"
+                    className="mt-1.5 text-black/75 text-xs sm:text-sm leading-snug line-clamp-2"
                     style={{ fontFamily: "var(--font-body)" }}
                   >
                     {product.subtitle}
@@ -184,7 +184,7 @@ export function ProductCard({
                 {product.tech.slice(0, 4).map((t) => (
                   <span
                     key={t}
-                    className="rounded-full border border-white/15 bg-white/[0.06] px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-white/80"
+                    className="rounded-full border border-black/15 bg-black/[0.06] px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-black/80"
                     style={{ fontFamily: "var(--font-body)" }}
                   >
                     {t}
@@ -235,7 +235,7 @@ function CompactCard({
         {...(externalHref
           ? { href: externalHref, target: "_blank", rel: "noreferrer" }
           : {})}
-        className="group relative flex flex-col items-center justify-center gap-2 h-32 w-32 sm:h-36 sm:w-36 rounded-2xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.07] hover:border-white/25 transition-colors"
+        className="group relative flex flex-col items-center justify-center gap-2 h-32 w-32 sm:h-36 sm:w-36 rounded-2xl border border-black/10 bg-black/[0.04] hover:bg-black/[0.07] hover:border-black/25 transition-colors"
         aria-label={product.title}
       >
         <div className="relative h-14 w-14 sm:h-16 sm:w-16">
@@ -249,7 +249,7 @@ function CompactCard({
           />
         </div>
         <div
-          className="text-[10px] sm:text-xs uppercase tracking-[0.14em] text-white/70 group-hover:text-white transition-colors"
+          className="text-[10px] sm:text-xs uppercase tracking-[0.14em] text-black/70 group-hover:text-black transition-colors"
           style={{ fontFamily: "var(--font-body)" }}
         >
           {product.title}
