@@ -1,7 +1,5 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  // Required for small, production-ready Docker images (Cloud Run friendly).
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   output: "standalone",
   images: {
     remotePatterns: [
