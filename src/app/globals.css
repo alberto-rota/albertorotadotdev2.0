@@ -21,14 +21,15 @@
 
 :root {
   /* Font families (loaded via Google Fonts <link> in `app/layout.tsx`). */
-  --font-display: "Bebas Neue", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: "Red Hat Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-body: "Red Hat Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: "Red Hat Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --radius: 0.875rem;
 
-  /* Black/white palette (light mode). */
-  --background: #ffffff;
+  /* Warm, color-balanced light palette. Black text remains the default. */
+  --background: #f7f2ec;
+  --surface-tint: #fbf7f1;
   --foreground: #000000;
   --muted: rgba(0, 0, 0, 0.6);
   --muted-2: rgba(0, 0, 0, 0.35);
@@ -37,7 +38,13 @@
   --surface: rgba(0, 0, 0, 0.04);
   --surface-hover: rgba(0, 0, 0, 0.08);
 
-  /* Scrollbar (slim, black-on-white pill). */
+  /* Brand colors. */
+  --primary: #7dbfc5;
+  --primary-soft: rgba(125, 191, 197, 0.18);
+  --secondary: #eaad76;
+  --secondary-soft: rgba(234, 173, 118, 0.20);
+
+  /* Scrollbar (slim, black-on-cream pill). */
   --scrollbar-size: 10px;
   --scrollbar-radius: 999px;
   --scrollbar-track: transparent;
@@ -85,7 +92,7 @@ html {
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
   -webkit-text-size-adjust: 100%;
-  background: #fff;
+  background: var(--background);
   color-scheme: light;
 }
 
@@ -102,7 +109,8 @@ html {
   }
   h1, h2, h3, h4, h5, h6, .font-display {
     font-family: var(--font-display);
-    letter-spacing: 0.02em;
+    font-weight: 700;
+    letter-spacing: 0.01em;
   }
 }
 
@@ -115,11 +123,11 @@ html {
   scrollbar-width: none;
 }
 
-/* Subtle grid / radial backdrop for the hero. */
+/* Subtle grid / radial backdrop for the hero — warmed with brand tints. */
 .bg-noise {
   background-image:
-    radial-gradient(1200px 600px at 50% -10%, rgba(0,0,0,0.06), transparent 60%),
-    radial-gradient(800px 400px at 80% 10%, rgba(0,0,0,0.03), transparent 65%);
+    radial-gradient(1200px 600px at 50% -10%, rgba(125,191,197,0.10), transparent 60%),
+    radial-gradient(800px 400px at 80% 10%, rgba(234,173,118,0.08), transparent 65%);
 }
 
 .bg-grid {
@@ -130,6 +138,14 @@ html {
   -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 70%);
   mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 70%);
 }
+
+/* Brand accent helpers. */
+.text-primary { color: var(--primary); }
+.text-secondary { color: var(--secondary); }
+.bg-primary-soft { background-color: var(--primary-soft); }
+.bg-secondary-soft { background-color: var(--secondary-soft); }
+.border-primary { border-color: var(--primary); }
+.border-secondary { border-color: var(--secondary); }
 
 /* Edge fade for horizontal row tracks (left/right). */
 .fade-x {
@@ -167,7 +183,7 @@ html {
   animation: soft-pulse 3.6s ease-in-out infinite;
 }
 
-/* Diagonal shimmer sweeping across hero title. */
+/* Diagonal shimmer sweeping across hero title (tinted with primary). */
 @keyframes shimmer-sweep {
   0%   { background-position: -120% 0; }
   100% { background-position: 220% 0; }
@@ -176,7 +192,7 @@ html {
   background-image: linear-gradient(
     100deg,
     rgba(0, 0, 0, 0) 30%,
-    rgba(0, 0, 0, 0.85) 50%,
+    rgba(125, 191, 197, 0.85) 50%,
     rgba(0, 0, 0, 0) 70%
   );
   background-size: 200% 100%;

@@ -11,7 +11,7 @@ type NavItem = { id: SectionId | "contact"; label: string };
 const ITEMS: NavItem[] = [
   { id: "research", label: "Research" },
   { id: "open-source", label: "Open Source" },
-  { id: "designs", label: "Designs" },
+  { id: "funded", label: "Funded" },
   { id: "contact", label: "Contact" },
 ];
 
@@ -64,13 +64,13 @@ export function Nav() {
         className="fixed top-0 inset-x-0 z-50 pointer-events-none"
       >
         <div className="mx-auto max-w-6xl px-3 sm:px-4 pt-3 sm:pt-5">
-          <div className="pointer-events-auto flex items-center justify-between gap-3 rounded-full border border-black/12 bg-white/60 backdrop-blur-xl px-2 py-2 shadow-[0_8px_30px_rgb(0,0,0,0.12)] md:grid md:grid-cols-[1fr_auto_1fr]">
+          <div className="pointer-events-auto flex items-center justify-between gap-3 rounded-full border border-black/12 bg-[var(--surface-tint)]/75 backdrop-blur-xl px-2 py-2 shadow-[0_8px_30px_rgba(125,191,197,0.18)] md:grid md:grid-cols-[1fr_auto_1fr]">
             <button
               onClick={() => scrollToId("top")}
-              className="shrink-0 font-display text-lg sm:text-xl tracking-[0.18em] pl-3 pr-2 py-1 text-black/90 hover:text-black transition-colors md:justify-self-start"
+              className="shrink-0 font-display text-lg sm:text-xl tracking-[0.08em] pl-3 pr-2 py-1 text-black/90 hover:text-black transition-colors md:justify-self-start"
               aria-label="Back to top"
             >
-              AR
+              FF
             </button>
 
             <nav className="hidden md:flex items-center justify-center gap-1 justify-self-center">
@@ -81,7 +81,7 @@ export function Nav() {
                     key={item.id}
                     onClick={() => scrollToId(item.id)}
                     className={cn(
-                      "relative font-display tracking-[0.12em] text-sm px-3 py-2 rounded-full transition-colors",
+                      "relative font-display text-sm px-3 py-2 rounded-full transition-colors",
                       active ? "text-white" : "text-black/70 hover:text-black"
                     )}
                   >
@@ -92,7 +92,7 @@ export function Nav() {
                         transition={{ type: "spring", stiffness: 380, damping: 32 }}
                       />
                     ) : null}
-                    <span className="relative z-10 uppercase">{item.label}</span>
+                    <span className="relative z-10">{item.label}</span>
                   </button>
                 );
               })}
@@ -100,16 +100,16 @@ export function Nav() {
 
             <div className="flex shrink-0 items-center justify-end gap-1.5 md:col-start-3 md:justify-self-end">
               <a
-                href="/CV_Alberto_Rota.pdf"
+                href="/CV_Francesca_Fati.pdf"
                 download
-                className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium tracking-wider uppercase text-black/85 hover:text-black border border-black/15 hover:border-black/40 transition-colors"
+                className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium text-black/85 hover:text-black border border-black/15 hover:border-[var(--primary)] transition-colors"
               >
                 <FileDown className="h-4 w-4" />
                 <span className="hidden lg:inline">CV</span>
               </a>
               <button
                 onClick={() => scrollToId("contact")}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium tracking-wider uppercase bg-black text-white hover:bg-black/90 transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium bg-black text-white hover:bg-black/90 transition-colors"
               >
                 <Mail className="h-4 w-4" />
                 <span className="hidden sm:inline">Get in touch</span>
@@ -132,14 +132,14 @@ export function Nav() {
         initial={false}
         animate={{ opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
         transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-[60] bg-white/70 backdrop-blur-sm md:hidden"
+        className="fixed inset-0 z-[60] bg-[var(--background)]/70 backdrop-blur-sm md:hidden"
         onClick={() => setOpen(false)}
       />
       <motion.aside
         initial={false}
         animate={{ y: open ? 0 : "100%" }}
         transition={{ type: "spring", stiffness: 280, damping: 32 }}
-        className="fixed inset-x-0 bottom-0 z-[61] rounded-t-3xl border-t border-black/10 bg-white md:hidden"
+        className="fixed inset-x-0 bottom-0 z-[61] rounded-t-3xl border-t border-black/10 bg-[var(--surface-tint)] md:hidden"
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
@@ -147,7 +147,7 @@ export function Nav() {
         <div className="px-5 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-black/15" />
           <div className="flex items-center justify-between mb-4">
-            <span className="font-display tracking-[0.16em] text-lg text-black">MENU</span>
+            <span className="font-display text-lg text-black">Menu</span>
             <button
               onClick={() => setOpen(false)}
               aria-label="Close menu"
@@ -165,10 +165,10 @@ export function Nav() {
                     setOpen(false);
                     setTimeout(() => scrollToId(item.id), 120);
                   }}
-                  className="flex w-full items-center justify-between rounded-2xl border border-black/10 bg-black/[0.04] px-4 py-3 font-display tracking-[0.14em] text-base uppercase text-black"
+                  className="flex w-full items-center justify-between rounded-2xl border border-black/10 bg-[var(--primary-soft)] px-4 py-3 font-display text-base text-black active:bg-[color-mix(in_srgb,var(--primary)_28%,white)] transition-colors"
                 >
                   <span>{item.label}</span>
-                  <span aria-hidden className="text-black/40 text-xl">→</span>
+                  <span aria-hidden className="text-black/45 text-xl">→</span>
                 </button>
               </li>
             ))}
@@ -176,10 +176,10 @@ export function Nav() {
 
           <div className="mt-4 grid grid-cols-2 gap-2">
             <a
-              href="/CV_Alberto_Rota.pdf"
+              href="/CV_Francesca_Fati.pdf"
               download
               onClick={() => setOpen(false)}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-black/15 px-4 py-3 text-sm uppercase tracking-wider text-black"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-black/15 px-4 py-3 text-sm text-black"
             >
               <FileDown className="h-4 w-4" /> Download CV
             </a>
@@ -188,7 +188,7 @@ export function Nav() {
                 setOpen(false);
                 setTimeout(() => scrollToId("contact"), 120);
               }}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-black px-4 py-3 text-sm uppercase tracking-wider text-white"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-black px-4 py-3 text-sm text-white"
             >
               <Mail className="h-4 w-4" /> Contact
             </button>

@@ -3,55 +3,48 @@
 import * as React from "react";
 
 /**
- * Lightweight 3D particle field rendered to a 2D canvas.
- * Inspired by Google Antigravity's hero — a slowly rotating dot cloud with
- * perspective-based depth fade, mouse parallax and a subtle "breathing" radius.
+ * Connected-particle network rendered to a 2D canvas.
  *
- * No WebGL / no extra deps. Pauses while the tab is hidden. Honors
- * prefers-reduced-motion (renders a static frame).
+ * Particles drift gently across the hero, bounce against the bounds and
+ * connect to near neighbours with thin lines whose opacity falls with
+ * distance. The pointer (mouse or finger) gently attracts nearby particles,
+ * making the field feel reactive on both desktop and touchscreens.
+ *
+ * Light-mode friendly (dark dots, brand-tinted links). Pauses while hidden,
+ * honours prefers-reduced-motion (single static frame), and scales the
+ * particle count down on coarse pointers / small viewports.
  */
 
-type Particle = {
+type P = {
   x: number;
   y: number;
-  z: number;
-  /** Per-particle size jitter (0.6 – 1.4). */
-  s: number;
-  /** Per-particle brightness jitter (0.6 – 1.0). */
-  b: number;
+  vx: number;
+  vy: number;
+  r: number;
 };
 
-const COUNT_DESKTOP = 1400;
-const COUNT_MOBILE = 700;
+const COUNT_DESKTOP = 70;
+const COUNT_MOBILE = 38;
+const LINK_DIST_DESKTOP = 140;
+const LINK_DIST_MOBILE = 110;
+const POINTER_RADIUS = 160;
+
+// Brand palette (kept in sync with globals.css).
+const PRIMARY = { r: 125, g: 191, b: 197 };
+const SECONDARY = { r: 234, g: 173, b: 118 };
 
 function rand(min: number, max: number) {
   return min + Math.random() * (max - min);
 }
 
-function makeParticles(count: number): Particle[] {
-  const out: Particle[] = [];
-  for (let i = 0; i < count; i++) {
-    // Distribute in a sphere shell with some inner depth (looks fuller than a uniform sphere).
-    const u = Math.random();
-    const v = Math.random();
-    const theta = u * Math.PI * 2;
-    const phi = Math.acos(2 * v - 1);
-    const r = 0.55 + Math.pow(Math.random(), 0.8) * 0.55; // bias toward the shell
-    out.push({
-      x: r * Math.sin(phi) * Math.cos(theta),
-      y: r * Math.sin(phi) * Math.sin(theta),
-      z: r * Math.cos(phi),
-      s: rand(0.6, 1.4),
-      b: rand(0.55, 1.0),
-    });
-  }
-  return out;
-}
-
 export function ParticleField({ className }: { className?: string }) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const mouseRef = React.useRef({ x: 0, y: 0 });
+  const pointerRef = React.useRef<{ x: number; y: number; active: boolean }>({
+    x: 0,
+    y: 0,
+    active: false,
+  });
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
@@ -64,11 +57,27 @@ export function ParticleField({ className }: { className?: string }) {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isCoarse = window.matchMedia("(hover: none), (pointer: coarse)").matches;
     const count = isCoarse ? COUNT_MOBILE : COUNT_DESKTOP;
-    const particles = makeParticles(count);
+    const linkDist = isCoarse ? LINK_DIST_MOBILE : LINK_DIST_DESKTOP;
+    const linkDistSq = linkDist * linkDist;
 
     let width = 0;
     let height = 0;
     let dpr = 1;
+
+    const particles: P[] = [];
+
+    const seed = () => {
+      particles.length = 0;
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: rand(-0.22, 0.22),
+          vy: rand(-0.22, 0.22),
+          r: rand(1.4, 2.6),
+        });
+      }
+    };
 
     const resize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 1.75);
@@ -78,93 +87,168 @@ export function ParticleField({ className }: { className?: string }) {
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (particles.length === 0) seed();
     };
     resize();
 
     const ro = new ResizeObserver(resize);
     ro.observe(container);
 
-    const onPointerMove = (e: PointerEvent) => {
+    const setPointer = (clientX: number, clientY: number, active: boolean) => {
       const r = container.getBoundingClientRect();
       const inside =
-        e.clientX >= r.left &&
-        e.clientX <= r.right &&
-        e.clientY >= r.top &&
-        e.clientY <= r.bottom;
-      if (!inside) return;
-      mouseRef.current.x = (e.clientX - r.left - r.width / 2) / (r.width / 2);
-      mouseRef.current.y = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+        clientX >= r.left &&
+        clientX <= r.right &&
+        clientY >= r.top &&
+        clientY <= r.bottom;
+      pointerRef.current.active = inside && active;
+      if (inside) {
+        pointerRef.current.x = clientX - r.left;
+        pointerRef.current.y = clientY - r.top;
+      }
     };
+
+    const onPointerMove = (e: PointerEvent) =>
+      setPointer(e.clientX, e.clientY, true);
+    const onPointerLeave = () => {
+      pointerRef.current.active = false;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (!t) return;
+      setPointer(t.clientX, t.clientY, true);
+    };
+    const onTouchEnd = () => {
+      pointerRef.current.active = false;
+    };
+
     window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("pointerleave", onPointerLeave, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
 
     let rafId = 0;
     let lastT = performance.now();
-    let autoY = 0;
-    let autoX = 0;
-    let rxCurrent = 0;
-    let ryCurrent = 0;
-    let breath = 0;
+
+    const step = (dt: number) => {
+      const pointer = pointerRef.current;
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        // Pointer attraction.
+        if (pointer.active) {
+          const dx = pointer.x - p.x;
+          const dy = pointer.y - p.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < POINTER_RADIUS * POINTER_RADIUS && d2 > 1) {
+            const d = Math.sqrt(d2);
+            const force = (1 - d / POINTER_RADIUS) * 0.45;
+            p.vx += (dx / d) * force * dt;
+            p.vy += (dy / d) * force * dt;
+          }
+        }
+
+        // Drift + integrate.
+        p.x += p.vx * dt * 60;
+        p.y += p.vy * dt * 60;
+
+        // Damping toward target speed.
+        const speed = Math.hypot(p.vx, p.vy);
+        const max = 0.55;
+        if (speed > max) {
+          p.vx *= max / speed;
+          p.vy *= max / speed;
+        }
+        p.vx *= 0.992;
+        p.vy *= 0.992;
+
+        // Bounce off bounds, with a small jitter to avoid sticking.
+        if (p.x < 0) {
+          p.x = 0;
+          p.vx = Math.abs(p.vx) + rand(0.05, 0.12);
+        } else if (p.x > width) {
+          p.x = width;
+          p.vx = -Math.abs(p.vx) - rand(0.05, 0.12);
+        }
+        if (p.y < 0) {
+          p.y = 0;
+          p.vy = Math.abs(p.vy) + rand(0.05, 0.12);
+        } else if (p.y > height) {
+          p.y = height;
+          p.vy = -Math.abs(p.vy) - rand(0.05, 0.12);
+        }
+      }
+    };
 
     const draw = (now: number) => {
       const dt = Math.min(0.05, (now - lastT) / 1000);
       lastT = now;
 
-      // Auto spin + slight breathing.
-      autoY += dt * 0.085;
-      autoX += dt * 0.025;
-      breath += dt * 0.6;
-
-      // Spring rotation toward pointer offset.
-      const tgtX = mouseRef.current.y * 0.55 + Math.sin(autoX) * 0.07;
-      const tgtY = mouseRef.current.x * 0.55;
-      rxCurrent += (tgtX - rxCurrent) * 0.05;
-      ryCurrent += (tgtY - ryCurrent) * 0.05;
-
-      const cx = width / 2;
-      const cy = height / 2;
-      const baseScale = Math.min(width, height) * 0.42;
-      const fov = Math.max(width, height) * 0.9;
-      const radius = 1 + Math.sin(breath) * 0.04; // slow breath
-
-      const sinX = Math.sin(rxCurrent);
-      const cosX = Math.cos(rxCurrent);
-      const sinY = Math.sin(autoY + ryCurrent);
-      const cosY = Math.cos(autoY + ryCurrent);
+      step(dt);
 
       ctx.clearRect(0, 0, width, height);
-      ctx.globalCompositeOperation = "lighter";
 
+      // Draw links first so the dots sit on top.
+      for (let i = 0; i < particles.length; i++) {
+        const a = particles[i];
+        for (let j = i + 1; j < particles.length; j++) {
+          const b = particles[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 > linkDistSq) continue;
+          const d = Math.sqrt(d2);
+          const t = 1 - d / linkDist;
+          // Blend primary→secondary across distance for a subtle gradient.
+          const r = Math.round(PRIMARY.r * t + SECONDARY.r * (1 - t));
+          const g = Math.round(PRIMARY.g * t + SECONDARY.g * (1 - t));
+          const bl = Math.round(PRIMARY.b * t + SECONDARY.b * (1 - t));
+          const alpha = (t * t * 0.55).toFixed(3);
+          ctx.strokeStyle = `rgba(${r},${g},${bl},${alpha})`;
+          ctx.lineWidth = Math.max(0.6, t * 1.2);
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+
+      // Draw dots (dark on light bg).
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        // rotate around Y
-        const px = p.x * radius;
-        const py = p.y * radius;
-        const pz = p.z * radius;
-        const x1 = px * cosY + pz * sinY;
-        const z1 = -px * sinY + pz * cosY;
-        // rotate around X
-        const y1 = py * cosX - z1 * sinX;
-        const z2 = py * sinX + z1 * cosX;
-
-        // Perspective projection (z2 in roughly [-1, 1]).
-        const perspective = fov / (fov + z2 * baseScale * 1.15);
-        const sx = cx + x1 * baseScale * perspective;
-        const sy = cy + y1 * baseScale * perspective;
-
-        // Depth-aware size & alpha (front bright/large, back dim/small).
-        const depth = (z2 + 1) * 0.5; // 0 = back, 1 = front
-        const size = (0.4 + depth * 1.5) * p.s * dpr * 0.65;
-        const alpha = (0.08 + depth * 0.85) * p.b;
-
-        if (alpha <= 0.02 || size <= 0.2) continue;
-
-        ctx.fillStyle = `rgba(0,0,0,${alpha.toFixed(3)})`;
+        ctx.fillStyle = "rgba(0,0,0,0.62)";
         ctx.beginPath();
-        ctx.arc(sx, sy, size, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        // Soft halo in primary brand tint.
+        ctx.fillStyle = "rgba(125,191,197,0.18)";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 2.4, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      ctx.globalCompositeOperation = "source-over";
+      // Pointer halo — visible feedback on both mouse + touch.
+      if (pointerRef.current.active) {
+        const grd = ctx.createRadialGradient(
+          pointerRef.current.x,
+          pointerRef.current.y,
+          0,
+          pointerRef.current.x,
+          pointerRef.current.y,
+          POINTER_RADIUS
+        );
+        grd.addColorStop(0, "rgba(125,191,197,0.18)");
+        grd.addColorStop(1, "rgba(125,191,197,0)");
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.arc(
+          pointerRef.current.x,
+          pointerRef.current.y,
+          POINTER_RADIUS,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+      }
 
       if (!reduced && !document.hidden) {
         rafId = requestAnimationFrame(draw);
@@ -193,15 +277,14 @@ export function ParticleField({ className }: { className?: string }) {
       ro.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerleave", onPointerLeave);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
     };
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className={className}
-      aria-hidden
-    >
+    <div ref={containerRef} className={className} aria-hidden>
       <canvas ref={canvasRef} className="h-full w-full block" />
     </div>
   );

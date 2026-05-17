@@ -26,33 +26,25 @@ type ContactItem = {
 
 const CONTACTS: ContactItem[] = [
   {
-    id: "email-personal",
-    label: "Personal email",
-    value: "alberto_rota@outlook.com",
-    href: "mailto:alberto_rota@outlook.com",
-    icon: <Mail className="h-5 w-5" />,
-    copyable: true,
-  },
-  {
     id: "email-academic",
     label: "Academic email",
-    value: "alberto1.rota@polimi.it",
-    href: "mailto:alberto1.rota@polimi.it",
+    value: "francesca.fati@polimi.it",
+    href: "mailto:francesca.fati@polimi.it",
     icon: <Mail className="h-5 w-5" />,
     copyable: true,
   },
   {
     id: "github",
     label: "GitHub",
-    value: "github.com/alberto-rota",
-    href: "https://github.com/alberto-rota",
+    value: "github.com/FrancescaFati",
+    href: "https://github.com/FrancescaFati",
     icon: <Github className="h-5 w-5" />,
   },
   {
     id: "linkedin",
     label: "LinkedIn",
-    value: "linkedin.com/in/albe-rota",
-    href: "https://www.linkedin.com/in/albe-rota/",
+    value: "linkedin.com/in/francesca-fati",
+    href: "https://www.linkedin.com/in/francesca-fati/",
     icon: <Linkedin className="h-5 w-5" />,
   },
   {
@@ -69,7 +61,7 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
   // Skip duplicates of channels already shown as featured cards (GitHub).
   const profileLinks = profiles.filter((p) => {
     const link = (p.link ?? "").toLowerCase();
-    return !link.includes("github.com/alberto-rota");
+    return !link.includes("github.com/francescafati");
   });
 
   const copy = async (id: string, value: string) => {
@@ -94,7 +86,7 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-15%" }}
           transition={{ duration: 0.5 }}
-          className="font-display tracking-[0.04em] uppercase text-4xl sm:text-5xl md:text-6xl leading-[0.95]"
+          className="font-display tracking-[0.01em] text-4xl sm:text-5xl md:text-6xl leading-[0.95]"
         >
           Get in touch
         </motion.h2>
@@ -107,7 +99,7 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
           style={{ fontFamily: "var(--font-body)" }}
         >
           Open to research collaborations, talks and consulting around medical AI,
-          surgical robotics and developer tooling.
+          explainable models and developer tooling.
         </motion.p>
 
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -130,22 +122,26 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
                         rel: c.href.startsWith("http") ? "noreferrer" : undefined,
                       }
                     : {})}
-                  className="group block rounded-2xl border border-black/12 bg-black/[0.04] p-5 hover:border-black/30 hover:bg-black/[0.07] transition-colors"
+                  className="group block rounded-2xl border border-black/12 bg-[var(--surface-tint)] p-5 hover:border-[var(--primary)] hover:bg-[var(--primary-soft)] transition-colors"
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-black/8 border border-black/12 text-black">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <span
+                        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-black/12 text-black"
+                        style={{ background: i % 2 === 0 ? "var(--primary-soft)" : "var(--secondary-soft)" }}
+                      >
                         {c.icon}
                       </span>
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <div
-                          className="text-[10px] uppercase tracking-[0.22em] text-black/45"
+                          className="text-[11px] tracking-[0.04em] text-black/55"
                           style={{ fontFamily: "var(--font-body)" }}
                         >
                           {c.label}
                         </div>
                         <div
-                          className="mt-0.5 text-black text-sm sm:text-base wrap-break-word"
+                          className="mt-0.5 text-black text-sm sm:text-base truncate"
+                          title={c.value}
                           style={{ fontFamily: "var(--font-body)" }}
                         >
                           {c.value}
@@ -165,7 +161,7 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
                         className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/12 bg-black/[0.04] hover:bg-black/10 transition-colors"
                       >
                         {isCopied ? (
-                          <Check className="h-4 w-4 text-emerald-300" />
+                          <Check className="h-4 w-4" style={{ color: "var(--primary)" }} />
                         ) : (
                           <Copy className="h-4 w-4 text-black/80" />
                         )}
@@ -186,7 +182,7 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
         {profileLinks.length > 0 ? (
           <div className="mt-10">
             <div
-              className="flex items-center gap-3 text-[10px] uppercase tracking-[0.24em] text-black/45"
+              className="flex items-center gap-3 text-[11px] tracking-[0.04em] text-black/55"
               style={{ fontFamily: "var(--font-body)" }}
             >
               <span>Also on</span>
@@ -203,16 +199,16 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
         {/* CTA row */}
         <div className="mt-10 flex flex-wrap items-center gap-3">
           <a
-            href="mailto:alberto_rota@outlook.com"
-            className="inline-flex items-center gap-2 rounded-full bg-black text-white px-5 py-3 text-sm font-medium uppercase tracking-[0.14em] hover:bg-black/90 transition-colors"
+            href="mailto:francesca.fati@polimi.it"
+            className="inline-flex items-center gap-2 rounded-full bg-black text-white px-5 py-3 text-sm font-medium hover:bg-black/90 transition-colors shadow-[0_8px_24px_rgba(125,191,197,0.30)]"
           >
             <Mail className="h-4 w-4" />
             Send me an email
           </a>
           <a
-            href="/CV_Alberto_Rota.pdf"
+            href="/CV_Francesca_Fati.pdf"
             download
-            className="inline-flex items-center gap-2 rounded-full border border-black/20 px-5 py-3 text-sm font-medium uppercase tracking-[0.14em] text-black hover:bg-black/10 transition-colors"
+            className="inline-flex items-center gap-2 rounded-full border border-black/20 px-5 py-3 text-sm font-medium text-black hover:bg-[var(--secondary-soft)] hover:border-[var(--secondary)] transition-colors"
           >
             <FileDown className="h-4 w-4" />
             Download CV
@@ -243,27 +239,28 @@ function ProfileChip({ product, index }: { product: Product; index: number }) {
               rel: href.startsWith("http") ? "noreferrer" : undefined,
             }
           : {})}
-        className="group inline-flex items-center gap-2.5 rounded-full border border-black/12 bg-black/[0.04] pl-2 pr-4 py-1.5 hover:border-black/30 hover:bg-black/[0.08] transition-colors"
+        className="group inline-flex items-center gap-2.5 max-w-full rounded-full border border-black/12 bg-black/[0.04] pl-2 pr-4 py-1.5 hover:border-black/30 hover:bg-black/[0.08] transition-colors"
         aria-label={product.title}
       >
-        <span className="relative inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/10 overflow-hidden">
+        <span className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/10 overflow-hidden">
           <NextImage
             src={product.thumbnail}
             alt=""
             width={20}
             height={20}
             className="object-contain"
+            style={{ filter: "brightness(0)" }}
             unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
           />
         </span>
         <span
-          className="text-xs sm:text-sm uppercase tracking-[0.14em] text-black/85 group-hover:text-black"
+          className="text-xs sm:text-sm tracking-[0.02em] text-black/85 group-hover:text-black truncate whitespace-nowrap"
           style={{ fontFamily: "var(--font-body)" }}
         >
           {product.title}
         </span>
         {href ? (
-          <ArrowUpRight className="h-3.5 w-3.5 text-black/45 group-hover:text-black transition-colors" />
+          <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-black/45 group-hover:text-black transition-colors" />
         ) : null}
       </Container>
     </motion.div>
@@ -275,16 +272,17 @@ function Footer() {
     <footer className="mt-20 border-t border-black/8 pt-6 pb-10">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div
-          className="text-xs text-black/40"
+          className="text-xs text-black/45"
           style={{ fontFamily: "var(--font-body)" }}
         >
-          © {new Date().getFullYear()} Alberto Rota. Built with care.
+          © {new Date().getFullYear()} Francesca Fati. Built with care.
         </div>
         <div
-          className="text-[10px] uppercase tracking-[0.24em] text-black/35"
+          className="text-[11px] tracking-[0.02em] text-black/55"
           style={{ fontFamily: "var(--font-mono)" }}
         >
-          $ curl https://albertorota.dev
+          <span style={{ color: "var(--primary)" }}>$</span>{" "}
+          <span style={{ color: "var(--secondary)" }}>curl</span> https://francescafati.dev
         </div>
       </div>
     </footer>

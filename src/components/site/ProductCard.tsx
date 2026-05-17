@@ -12,10 +12,12 @@ type CardSize = "default" | "compact";
 
 const actionBtnBase =
   "inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors";
+// Research thumbnails are usually white paper pages — dark pill stands out.
 const actionBtnResearch =
-  "bg-white border-white/20 text-black hover:bg-white/85";
+  "bg-black/85 border-black/20 text-white hover:bg-black";
+// Open-source / Funded thumbnails skew dark — cream pill stands out.
 const actionBtnDefault =
-  "bg-black/10 border-black/15 backdrop-blur text-black hover:bg-black hover:text-white";
+  "bg-[var(--surface-tint)] border-black/15 backdrop-blur text-black hover:bg-black hover:text-white";
 
 export function ProductCard({
   product,
@@ -50,10 +52,10 @@ export function ProductCard({
   const fit = product.cardFit ?? defaultCardFit ?? "cover";
   const isContain = fit === "contain";
   const isResearch = sectionId === "research";
-  const isDesigns = sectionId === "designs";
+  const isFunded = sectionId === "funded";
   const actionBtn = cn(actionBtnBase, isResearch ? actionBtnResearch : actionBtnDefault);
-  const cardHeight = isDesigns
-    ? "h-[clamp(380px,58vh,620px)]"
+  const cardHeight = isFunded
+    ? "h-[clamp(360px,52vh,560px)]"
     : "h-[clamp(360px,52vh,560px)]";
 
   return (
@@ -72,15 +74,28 @@ export function ProductCard({
         className="block w-full h-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-black/40 rounded-3xl"
       >
         <div
-          className="relative h-full w-full overflow-hidden rounded-3xl border border-black/10 bg-white"
+          className="relative h-full w-full overflow-hidden rounded-3xl border border-black/10 bg-[var(--surface-tint)]"
           style={
             {
               ["--accent" as string]: accent,
             } as React.CSSProperties
           }
         >
-          {/* Backdrop image (blurred fill behind contained thumbnails) */}
-          {isContain ? (
+          {/* Smart accent backdrop for the Funded section — survives transparent PNG logos */}
+          {isFunded ? (
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{
+                background: `
+                  radial-gradient(120% 85% at 22% 16%, color-mix(in srgb, ${accent} 55%, transparent), transparent 60%),
+                  radial-gradient(130% 100% at 80% 88%, color-mix(in srgb, ${accent} 38%, transparent), transparent 65%),
+                  linear-gradient(140deg, color-mix(in srgb, ${accent} 8%, var(--surface-tint)), color-mix(in srgb, ${accent} 22%, var(--surface-tint)))
+                `,
+              }}
+            />
+          ) : isContain ? (
+            /* Backdrop image (blurred fill) behind contained thumbnails in other sections. */
             <NextImage
               src={product.thumbnail}
               alt=""
@@ -101,20 +116,26 @@ export function ProductCard({
             sizes="(min-width: 768px) 700px, 90vw"
             className={cn(
               "absolute inset-0 h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.04]",
-              isContain ? "object-contain p-4 sm:p-6" : "object-cover"
+              isContain
+                ? isFunded
+                  ? "object-contain p-6 sm:p-10"
+                  : "object-contain p-4 sm:p-6"
+                : "object-cover"
             )}
             unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
             loading="lazy"
           />
 
-          {/* Gradient — softer when image is contained so it isn't darkened */}
+          {/* Bottom scrim so the title block reads against any thumbnail.
+              Solid cream for the title zone, then a quick fade so the image stays visible. */}
           <div
-            className={cn(
-              "absolute inset-0 pointer-events-none",
-              isContain
-                ? "bg-gradient-to-t from-white/85 via-white/10 to-transparent"
-                : "bg-gradient-to-t from-white/85 via-white/30 to-white/10"
-            )}
+            aria-hidden
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: isFunded
+                ? "linear-gradient(to top, var(--surface-tint) 0%, color-mix(in srgb, var(--surface-tint) 70%, transparent) 18%, transparent 38%)"
+                : "linear-gradient(to top, var(--surface-tint) 0%, var(--surface-tint) 22%, color-mix(in srgb, var(--surface-tint) 35%, transparent) 38%, transparent 55%)",
+            }}
           />
 
           {/* Accent line — top */}
@@ -123,17 +144,24 @@ export function ProductCard({
             style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
           />
 
-          {/* Meta chip — venue / journal / conference tag */}
-          {product.meta?.venue ? (
+          {/* Meta chip — venue/funder/journal/conference tag.
+              Research thumbnails are mostly white → dark pill for contrast.
+              Other thumbnails skew dark → cream pill. */}
+          {product.meta?.venue || product.meta?.funder ? (
             <div
-              className="absolute top-3 left-3 inline-flex items-center gap-2 rounded-full bg-white/65 border backdrop-blur px-3 py-1.5 text-xs sm:text-sm uppercase tracking-[0.16em] text-black"
-              style={{ borderColor: `${accent}66` }}
+              className={cn(
+                "absolute top-3 left-3 inline-flex items-center gap-2 rounded-full border backdrop-blur px-3 py-1.5 text-xs sm:text-sm tracking-[0.02em]",
+                isResearch
+                  ? "bg-black/85 text-white"
+                  : "bg-[var(--surface-tint)]/90 text-black"
+              )}
+              style={{ borderColor: isResearch ? `${accent}aa` : `${accent}66` }}
             >
               <span
                 className="h-2 w-2 rounded-full"
                 style={{ background: accent, boxShadow: `0 0 12px ${accent}` }}
               />
-              {product.meta.venue}
+              {product.meta.venue ?? product.meta.funder}
             </div>
           ) : null}
 
@@ -165,7 +193,7 @@ export function ProductCard({
                 </div>
               ) : null}
               <div className="min-w-0">
-                <h3 className="font-display tracking-[0.04em] text-black text-2xl sm:text-3xl leading-[1] uppercase">
+                <h3 className="font-display tracking-[0.01em] text-black text-2xl sm:text-3xl leading-[1.05]">
                   {product.title}
                 </h3>
                 {product.subtitle ? (
@@ -184,7 +212,7 @@ export function ProductCard({
                 {product.tech.slice(0, 4).map((t) => (
                   <span
                     key={t}
-                    className="rounded-full border border-black/15 bg-black/[0.06] px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-black/80"
+                    className="rounded-full border border-black/15 bg-black/[0.06] px-2 py-0.5 text-[11px] tracking-[0.02em] text-black/80"
                     style={{ fontFamily: "var(--font-body)" }}
                   >
                     {t}
@@ -249,7 +277,7 @@ function CompactCard({
           />
         </div>
         <div
-          className="text-[10px] sm:text-xs uppercase tracking-[0.14em] text-black/70 group-hover:text-black transition-colors"
+          className="text-[11px] sm:text-xs tracking-[0.02em] text-black/70 group-hover:text-black transition-colors"
           style={{ fontFamily: "var(--font-body)" }}
         >
           {product.title}

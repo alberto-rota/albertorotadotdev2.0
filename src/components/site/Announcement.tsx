@@ -98,31 +98,43 @@ export function Announcement({ data }: { data: AnnouncementData | undefined }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="relative overflow-hidden rounded-3xl border border-black/12 bg-black/[0.04] backdrop-blur"
+          className="relative overflow-hidden rounded-3xl border border-black/12 bg-[var(--surface-tint)] backdrop-blur"
         >
-          {/* Accent glow */}
+          {/* Accent glow — brand-tinted */}
           <div
             aria-hidden
-            className="pointer-events-none absolute -inset-px opacity-60"
+            className="pointer-events-none absolute -inset-px opacity-80"
             style={{
               background:
-                "radial-gradient(800px 200px at 0% 0%, rgba(0,0,0,0.08), transparent 60%)",
+                "radial-gradient(800px 220px at 0% 0%, rgba(125,191,197,0.22), transparent 60%), radial-gradient(700px 220px at 100% 100%, rgba(234,173,118,0.20), transparent 65%)",
             }}
           />
           <div className="relative grid gap-5 p-5 sm:p-6 md:grid-cols-[1.6fr_1fr] md:items-center">
             <div>
               {data.label ? (
-                <div className="inline-flex items-center gap-2 rounded-full border border-black/20 bg-black/[0.05] px-3 py-1 text-[11px] sm:text-xs uppercase tracking-[0.22em] text-black/80">
+                <div
+                  className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] sm:text-xs tracking-[0.04em] text-black/85"
+                  style={{
+                    borderColor: "color-mix(in srgb, var(--primary) 50%, transparent)",
+                    background: "var(--primary-soft)",
+                  }}
+                >
                   <span className="relative inline-flex h-2 w-2">
-                    <span className="absolute inset-0 rounded-full bg-emerald-400 animate-soft-pulse" />
-                    <span className="absolute inset-[2px] rounded-full bg-emerald-300" />
+                    <span
+                      className="absolute inset-0 rounded-full animate-soft-pulse"
+                      style={{ background: "var(--primary)" }}
+                    />
+                    <span
+                      className="absolute inset-[2px] rounded-full"
+                      style={{ background: "var(--secondary)" }}
+                    />
                   </span>
                   {data.label}
                 </div>
               ) : null}
 
               {data.title ? (
-                <h2 className="mt-3 font-display tracking-[0.03em] uppercase text-3xl sm:text-4xl md:text-5xl leading-[0.95] text-black">
+                <h2 className="mt-3 font-display tracking-[0.01em] text-3xl sm:text-4xl md:text-5xl leading-[1.02] text-black">
                   {data.title}
                 </h2>
               ) : null}
@@ -165,8 +177,8 @@ export function Announcement({ data }: { data: AnnouncementData | undefined }) {
                     rel={a.href?.startsWith("http") ? "noreferrer" : undefined}
                     className={
                       i === 0
-                        ? "inline-flex items-center gap-2 rounded-full bg-black text-white px-4 py-2.5 text-sm font-medium uppercase tracking-[0.14em] hover:bg-black/90 transition-colors"
-                        : "inline-flex items-center gap-2 rounded-full border border-black/20 px-4 py-2.5 text-sm font-medium uppercase tracking-[0.14em] text-black hover:bg-black/10 transition-colors"
+                        ? "inline-flex items-center gap-2 rounded-full bg-black text-white px-4 py-2.5 text-sm font-medium hover:bg-black/90 transition-colors"
+                        : "inline-flex items-center gap-2 rounded-full border border-black/20 px-4 py-2.5 text-sm font-medium text-black hover:bg-black/10 transition-colors"
                     }
                   >
                     <Icon name={a.icon} size={16} className="h-4 w-4" />
