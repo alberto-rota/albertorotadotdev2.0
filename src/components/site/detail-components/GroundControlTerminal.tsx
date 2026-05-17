@@ -27,7 +27,7 @@ export function GroundControlTerminal(_props: DetailComponentProps) {
   return (
     <div className="p-4 sm:p-5">
       <div
-        className="text-[11px] uppercase tracking-[0.2em] text-black/45 mb-3"
+        className="text-[11px] tracking-[0.04em] text-black/55 mb-3"
         style={{ fontFamily: "var(--font-body)" }}
       >
         Try it

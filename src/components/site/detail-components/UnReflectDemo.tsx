@@ -35,7 +35,7 @@ export function UnReflectDemo(_props: DetailComponentProps) {
   return (
     <div className="p-4 sm:p-5">
       <div
-        className="text-[11px] uppercase tracking-[0.2em] text-black/45 mb-3"
+        className="text-[11px] tracking-[0.04em] text-black/55 mb-3"
         style={{ fontFamily: "var(--font-body)" }}
       >
         Before / After
@@ -83,10 +83,10 @@ export function UnReflectDemo(_props: DetailComponentProps) {
         </motion.div>
 
         {/* Labels */}
-        <div className="pointer-events-none absolute top-2 left-2 rounded-md bg-white/60 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-black/80" style={{ fontFamily: "var(--font-body)" }}>
+        <div className="pointer-events-none absolute top-2 left-2 rounded-md bg-white/60 px-2 py-0.5 text-[11px] tracking-[0.04em] text-black/80" style={{ fontFamily: "var(--font-body)" }}>
           Input
         </div>
-        <div className="pointer-events-none absolute top-2 right-2 rounded-md bg-white/60 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-black/80" style={{ fontFamily: "var(--font-body)" }}>
+        <div className="pointer-events-none absolute top-2 right-2 rounded-md bg-white/60 px-2 py-0.5 text-[11px] tracking-[0.04em] text-black/80" style={{ fontFamily: "var(--font-body)" }}>
           Cleaned
         </div>
       </div>

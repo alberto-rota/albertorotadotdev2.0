@@ -1,17 +1,17 @@
 {
   "hero": {
-    "tagline": "PhD candidate in Bioengineering at Politecnico di Milano. I research visual systems for enhanced awareness in surgical robotics and medical AI."
+    "tagline": "PhD candidate in AI for healthcare and precision medicine. I research explainable AI for clinical decision support systems and medical imaging"
   },
   "announcement": {
     "enabled": true,
     "label": "CVPR 2026 · Denver",
     "title": "Attending CVPR 2026? ",
-    "body": "I'll be presenting <b>UnReflectAnything</b>, a method for for removing specular highlights trained on synthetic specular supervision. Join <b>Oral Session 1D - Computational Imaging</b> for the oral presentation and <b>Poster Session 1</b> for the poster!",
-    "dates": "Friday June 5th, 2026 ⋅ 9:15 AM - 10:30 AM",
-    "location": "ORAL: Mile High Ballroom 1A - 2A ⋅ POSTER: Exhibit Hall (ExHall A-F) ⋅ Denver, CO",
+    "body": "I'll be presenting my poster on <b>Adapting Foundation Models for Annotation-Efficient Adnexal Mass Segmentation in Cine Images</b> at the <b>Subtle Visual Computing Workshop</b>. Come to the poster session to here more!",
+    "dates": "Wednesday June 3rf, 2026 ⋅ 9:15 AM - 10:30 AM",
+    "location": "Room 109, Street Level, Colorado Convention Center ⋅ Denver, CO",
     "actions": [
-      { "label": "Get in touch", "href": "mailto:alberto_rota@outlook.com?subject=CVPR%202026%20-%20meet%20at%20Denver", "icon": "Mail" },
-      { "label": "Read the 'UnReflectAnything' paper", "href": "https://doi.org/10.48550/arXiv.2512.09583", "icon": "FileText" }
+      { "label": "Get in touch", "href": "mailto:francesca.fati@polimi.it?subject=CVPR%202026%20-%20meet%20at%20Denver", "icon": "Mail" },
+      { "label": "Read my CVPRW paper", "href": "https://arxiv.org/abs/2604.08045", "icon": "FileText" }
     ]
   },
   "sections": {
@@ -31,11 +31,11 @@
       "order": 3,
       "layout": "compact"
     },
-    "designs": {
-      "title": "Designs",
-      "subtitle": "Branding and visual identity work",
+    "funded": {
+      "title": "Funded Proposals",
+      "subtitle": "Project proposals awarded funding by the EU and other bodies",
       "order": 4,
-      "cardAspect": "2/3",
+      "cardAspect": "5/4",
       "cardFit": "contain"
     }
   },
@@ -47,7 +47,7 @@
       "description": "RGB-only highlight removal by rendering synthetic specular supervision.",
       "tag": "research",
       "thumbnail": "/unreflect.png",
-      "accent": "#a99dec",
+      "accent": "#7dbfc5",
       "tech": ["PyTorch", "Diffusion", "Synthetic Data"],
       "meta": { "venue": "arXiv preprint", "year": "2025" },
       "actions": [
@@ -75,7 +75,7 @@
       "description": "Implementation and assessment of an augmented training curriculum for surgical robotics.",
       "tag": "research",
       "thumbnail": "/icra.png",
-      "accent": "#78dce8",
+      "accent": "#eaad76",
       "tech": ["Unity", "C#", "da Vinci Research Kit"],
       "meta": { "venue": "ICRA 2024", "year": "2024" },
       "actions": [
@@ -98,7 +98,7 @@
       "description": "Self-Supervised Contrastive Embedding Adaptation for Endoscopic Image Matching.",
       "tag": "research",
       "thumbnail": "/match.png",
-      "accent": "#a9dc76",
+      "accent": "#7dbfc5",
       "tech": ["PyTorch", "Contrastive Learning", "Endoscopy"],
       "meta": { "venue": "IEEE TMI 2026", "year": "2026" },
       "actions": [
@@ -116,7 +116,7 @@
       "description": "A three-dimensional method for morphological analysis and flow velocity estimation in microvasculature on-a-chip.",
       "tag": "research",
       "thumbnail": "/muves.png",
-      "accent": "#78dce8",
+      "accent": "#eaad76",
       "tech": ["MATLAB", "Microfluidics", "3D Imaging"],
       "meta": { "venue": "BTM", "year": "2023" },
       "actions": [
@@ -134,7 +134,7 @@
       "description": "Deep Learning for decision support in ovarian cancer treatment planning.",
       "tag": "research",
       "thumbnail": "/nature.png",
-      "accent": "#78dce8",
+      "accent": "#7dbfc5",
       "tech": ["PyTorch", "Explainable AI", "Medical Imaging"],
       "meta": { "venue": "Nature WH", "year": "2024" },
       "actions": [
@@ -152,7 +152,7 @@
       "description": "Recent advancements in augmented reality for robotic applications: a survey.",
       "tag": "research",
       "thumbnail": "/review.png",
-      "accent": "#fc9867",
+      "accent": "#eaad76",
       "meta": { "venue": "MDPI Actuators", "year": "2023" },
       "actions": [
         { "label": "Paper", "href": "https://doi.org/10.3390/act12080323", "icon": "FileText" }
@@ -170,7 +170,7 @@
       "thumbnail": "/groundcontrol.png",
       "cardAspect": "16/9",
       "cardFit": "cover",
-      "accent": "#ffd866",
+      "accent": "#eaad76",
       "tech": ["Python", "Textual", "TUI"],
       "actions": [
         { "label": "GitHub", "href": "https://github.com/alberto-rota/ground-control", "icon": "Github" },
@@ -196,7 +196,7 @@
       "cardAspect": "16/9",
       "cardFit": "cover",
       "icon": "/dasshboard_icon.png",
-      "accent": "#fc9867",
+      "accent": "#7dbfc5",
       "tech": ["TypeScript", "VS Code API"],
       "actions": [
         { "label": "GitHub", "href": "https://github.com/alberto-rota/DaSSHboard", "icon": "Github" },
@@ -216,7 +216,7 @@
       "cardAspect": "16/10",
       "cardFit": "cover",
       "icon": "/medview_icon.png",
-      "accent": "#ff6188",
+      "accent": "#eaad76",
       "tech": ["TypeScript", "VS Code API"],
       "actions": [
         { "label": "GitHub", "href": "https://github.com/FrancescaFati/MedView", "icon": "Github" },
@@ -232,7 +232,7 @@
       "description": "GitHub profile",
       "tag": "resources",
       "thumbnail": "/githublogo.png",
-      "link": "https://github.com/alberto-rota",
+      "link": "https://github.com/FrancescaFati",
       "compact": true
     },
     {
@@ -241,7 +241,7 @@
       "description": "Hugging Face profile",
       "tag": "resources",
       "thumbnail": "/hflogo.png",
-      "link": "https://huggingface.co/AlbeRota",
+      "link": "https://huggingface.co/FrancescaFati",
       "compact": true
     },
     {
@@ -250,7 +250,7 @@
       "description": "PyPI packages",
       "tag": "resources",
       "thumbnail": "/pypilogo.png",
-      "link": "https://pypi.org/user/alberto-rota/",
+      "link": "https://pypi.org/user/FrancescaFati/",
       "compact": true
     },
     {
@@ -259,7 +259,7 @@
       "description": "Google Scholar profile",
       "tag": "resources",
       "thumbnail": "/academialogo.png",
-      "link": "https://scholar.google.com/citations?user=VyC48nkAAAAJ&hl=en",
+      "link": "https://scholar.google.com/",
       "compact": true
     },
     {
@@ -272,48 +272,69 @@
       "compact": true
     },
     {
-      "slug": "nearlab-logo",
-      "title": "NEARLab Identity",
-      "subtitle": "Logo for the medical-robotics group",
-      "description": "Logo design for NEARLab at Politecnico di Milano.",
-      "tag": "designs",
-      "thumbnail": "/near_design.png",
-      "accent": "#ffffff",
+      "slug": "underxai-grant",
+      "title": "UNDERXAI",
+      "subtitle": "Underrepresented populations in eXplainable AI for ovarian cancer",
+      "description": "Explainable AI for ovarian cancer treatment planning — co-funded research project at Politecnico di Milano.",
+      "tag": "funded",
+      "thumbnail": "/nature.png",
+      "accent": "#7dbfc5",
+      "tech": ["Explainable AI", "Medical Imaging", "Oncology"],
+      "meta": { "funder": "Fondazione AIRC", "amount": "€ 240,000", "year": "2024 — 2027" },
       "actions": [
-        { "label": "Visit NEARLab", "href": "https://nearlab.polimi.it/", "icon": "Globe" }
+        { "label": "Project Site", "href": "https://nearlab.polimi.it/underxai/", "icon": "Globe" }
       ],
       "details": {
-        "body": "Identity work for the NEARLab medical-robotics group at Politecnico di Milano — a system of marks rooted in the group's surgical and imaging research."
+        "body": "UNDERXAI develops counterfactual explanation methods that help oncologists interrogate AI-driven recommendations for ovarian cancer treatment, with explicit attention to underrepresented patient populations.",
+        "highlights": [
+          "Counterfactual explanation module integrated with clinical segmentation backbone",
+          "Co-designed with clinical partners at Fondazione IRCCS",
+          "Open dataset and evaluation protocol for downstream use"
+        ]
       }
     },
     {
-      "slug": "icra29-logo",
-      "title": "ICRA 2029 — Milan",
-      "subtitle": "Identity for IEEE ICRA in Milan",
-      "description": "Logo design for ICRA 2029, to be hosted in Milan.",
-      "tag": "designs",
-      "thumbnail": "/icra29_design.png",
-      "accent": "#a9dc76",
+      "slug": "horizon-medvision",
+      "title": "MEDVISION",
+      "subtitle": "Next-generation visual systems for minimally invasive surgery",
+      "description": "Horizon Europe consortium developing the next generation of intraoperative imaging.",
+      "tag": "funded",
+      "thumbnail": "/icra29.png",
+      "accent": "#eaad76",
+      "tech": ["Horizon Europe", "Surgical Robotics", "Consortium"],
+      "meta": { "funder": "EU Horizon Europe", "amount": "€ 4,200,000", "year": "2025 — 2029" },
       "actions": [
-        { "label": "Announcement", "href": "https://www.linkedin.com/posts/department-deib-polimi_ieee-icra-2029-la-conferenza-internazionale-activity-7401983609907085312-WQqI/?originalSubdomain=it", "icon": "ExternalLink" }
+        { "label": "Programme", "href": "https://research-and-innovation.ec.europa.eu/funding/funding-opportunities/funding-programmes-and-open-calls/horizon-europe_en", "icon": "Globe" }
       ],
       "details": {
-        "body": "Identity work for IEEE ICRA 2029, the flagship robotics conference returning to Milan."
+        "body": "MEDVISION is a four-year Horizon Europe consortium bringing together clinical centres, robotics labs and industry to build the next generation of intraoperative imaging for minimally invasive surgery. The work-package on perception is led from Politecnico di Milano.",
+        "highlights": [
+          "Eight partners across five EU countries",
+          "WP3 perception lead — visual SLAM and tissue tracking",
+          "Two clinical pilot studies scheduled for year three"
+        ]
       }
     },
     {
-      "slug": "underxai-logo",
-      "title": "UNDERXAI Identity",
-      "subtitle": "Brand mark for the UNDERXAI project",
-      "description": "Logo design for the UNDERXAI project.",
-      "tag": "designs",
-      "thumbnail": "/underxai_design.png",
-      "accent": "#a99dec",
+      "slug": "msca-explainmed",
+      "title": "ExplainMed",
+      "subtitle": "MSCA postdoctoral fellowship on clinical XAI",
+      "description": "Marie Skłodowska-Curie Postdoctoral Fellowship awarded to advance explainable AI for clinical decision support.",
+      "tag": "funded",
+      "thumbnail": "/review.png",
+      "accent": "#7dbfc5",
+      "tech": ["MSCA", "Explainable AI", "Fellowship"],
+      "meta": { "funder": "Marie Skłodowska-Curie Actions", "amount": "€ 187,500", "year": "2026 — 2028" },
       "actions": [
-        { "label": "Project", "href": "https://nearlab.polimi.it/underxai/", "icon": "Globe" }
+        { "label": "MSCA Programme", "href": "https://marie-sklodowska-curie-actions.ec.europa.eu/", "icon": "Globe" }
       ],
       "details": {
-        "body": "Mark for the UNDERXAI project — explainable AI for medical decision support."
+        "body": "ExplainMed is a Marie Skłodowska-Curie postdoctoral fellowship hosted at Politecnico di Milano with a secondment at a clinical partner. The project develops bias-aware explanation methods for radiology and pathology decision support.",
+        "highlights": [
+          "Two-year fellowship with international mobility component",
+          "Clinical secondment at a partner hospital",
+          "Deliverables include an open evaluation benchmark"
+        ]
       }
     }
   ]

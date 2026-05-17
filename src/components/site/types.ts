@@ -1,4 +1,4 @@
-export type SectionId = "research" | "open-source" | "resources" | "designs";
+export type SectionId = "research" | "open-source" | "resources" | "funded";
 
 export type ProductAction = {
   label?: string;

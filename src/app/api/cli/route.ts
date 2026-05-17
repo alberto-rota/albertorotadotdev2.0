@@ -149,7 +149,7 @@ function parseColorTags(text: string): string {
 const LEFT_COLUMN_WIDTH = 52;
 const RIGHT_COLUMN_MAX_WIDTH = 100;
 
-const ALL_SECTION_ORDER = ["research", "open-source", "resources", "designs"];
+const ALL_SECTION_ORDER = ["research", "open-source", "resources", "funded"];
 
 /** Parse {{SECTIONS=a,b,c}} from template; returns null if absent (use all sections). */
 function parseSectionsDirective(template: string): string[] | null {
@@ -178,7 +178,7 @@ function formatProductsLines(
     research: "Research",
     "open-source": "Open source",
     resources: "Links",
-    designs: "Designs",
+    funded: "Funded Proposals",
   };
 
   for (const tag of sectionOrder) {

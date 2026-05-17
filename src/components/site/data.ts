@@ -10,7 +10,7 @@ import type {
   SiteData,
 } from "./types";
 
-const VALID: SectionId[] = ["research", "open-source", "resources", "designs"];
+const VALID: SectionId[] = ["research", "open-source", "resources", "funded"];
 
 function isSectionId(value: unknown): value is SectionId {
   return typeof value === "string" && (VALID as string[]).includes(value);
@@ -149,7 +149,7 @@ export function bySection(products: Product[]): Record<SectionId, Product[]> {
     research: [],
     "open-source": [],
     resources: [],
-    designs: [],
+    funded: [],
   };
   for (const p of products) {
     if (p.tag) grouped[p.tag].push(p);
@@ -171,5 +171,5 @@ export const SECTION_FALLBACK_TITLES: Record<SectionId, string> = {
   research: "Research",
   "open-source": "Open Source",
   resources: "Profiles & Links",
-  designs: "Designs",
+  funded: "Funded Proposals",
 };

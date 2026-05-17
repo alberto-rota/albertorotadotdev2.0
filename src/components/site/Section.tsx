@@ -87,10 +87,22 @@ export function Section({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-15%" }}
               transition={{ duration: 0.5 }}
-              className="font-display tracking-[0.04em] uppercase text-4xl sm:text-5xl md:text-6xl leading-[0.95]"
+              className="font-display tracking-[0.01em] text-4xl sm:text-5xl md:text-6xl leading-[0.95]"
             >
               {title}
             </motion.h2>
+            <motion.span
+              aria-hidden
+              initial={{ scaleX: 0, opacity: 0 }}
+              whileInView={{ scaleX: 1, opacity: 1 }}
+              viewport={{ once: true, margin: "-15%" }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="block mt-3 h-[3px] w-20 origin-left rounded-full"
+              style={{
+                background:
+                  "linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%)",
+              }}
+            />
             {subtitle ? (
               <motion.p
                 initial={{ opacity: 0, y: 8 }}
@@ -112,7 +124,7 @@ export function Section({
               onClick={() => scrollBy(-1)}
               disabled={!canLeft}
               aria-label={`Scroll ${title} left`}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/15 bg-black/[0.04] text-black disabled:opacity-30 disabled:cursor-not-allowed hover:bg-black/[0.1] transition-colors"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/15 bg-[var(--surface-tint)] text-black disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--primary-soft)] hover:border-[var(--primary)] transition-colors"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -121,7 +133,7 @@ export function Section({
               onClick={() => scrollBy(1)}
               disabled={!canRight}
               aria-label={`Scroll ${title} right`}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/15 bg-black/[0.04] text-black disabled:opacity-30 disabled:cursor-not-allowed hover:bg-black/[0.1] transition-colors"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/15 bg-[var(--surface-tint)] text-black disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--primary-soft)] hover:border-[var(--primary)] transition-colors"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -158,8 +170,8 @@ export function Section({
 
         {/* Mobile swipe hint shown only when there are >1 items */}
         {products.length > 1 ? (
-          <div className="md:hidden mt-3 px-6 text-[10px] uppercase tracking-[0.22em] text-black/35" style={{ fontFamily: "var(--font-body)" }}>
-            Swipe →
+          <div className="md:hidden mt-3 px-6 text-[11px] tracking-[0.04em] text-black/45" style={{ fontFamily: "var(--font-body)" }}>
+            swipe →
           </div>
         ) : null}
       </div>
