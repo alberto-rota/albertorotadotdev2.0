@@ -5,7 +5,7 @@
   "announcement": {
     "enabled": true,
     "label": "CVPR 2026 · Denver",
-    "title": "attending cvpr 2026? ",
+    "title": "Attending CVPR 2026? ",
     "body": "I'll be presenting <b>UnReflectAnything</b>, a method for for removing specular highlights trained on synthetic specular supervision. Join <b>Oral Session 1D - Computational Imaging</b> for the oral presentation and <b>Poster Session 1</b> for the poster!",
     "dates": "Friday June 5th, 2026 ⋅ 9:15 AM - 10:30 AM",
     "location": "ORAL: Mile High Ballroom 1A - 2A ⋅ POSTER: Exhibit Hall (ExHall A-F) ⋅ Denver, CO",
@@ -25,7 +25,7 @@
       "subtitle": "Tools, packages and extensions I maintain",
       "order": 2
     },
-    "resources": {
+    "resources": {  
       "title": "Profiles & Links",
       "subtitle": "Where else to find me",
       "order": 3,
