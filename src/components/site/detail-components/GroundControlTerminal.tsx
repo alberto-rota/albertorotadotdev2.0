@@ -10,10 +10,10 @@ import type { DetailComponentProps } from "./registry";
  */
 const STEPS = [
   { prompt: "$", text: "pip install ground-control-tui", color: "amber" as const },
-  { prompt: ">", text: "Collecting ground-control-tui...", color: "muted" as const },
   { prompt: ">", text: "Successfully installed ground-control-tui 0.6.2", color: "green" as const },
-  { prompt: "$", text: "ground-control", color: "amber" as const },
-  { prompt: ">", text: "Launching cockpit... [GPU: 22% · CPU: 14% · MEM: 38%]", color: "white" as const },
+  { prompt: "$", text: "gc", color: "amber" as const },
+  { prompt: "", text: "// Or if you have 'uv' installed", color: "muted" as const },
+  { prompt: "$", text: "uvx --from ground-control-tui ground-control", color: "amber" as const },
 ];
 
 const colorMap = {

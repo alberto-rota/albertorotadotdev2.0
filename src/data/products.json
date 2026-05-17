@@ -43,12 +43,12 @@
     {
       "slug": "unreflect-anything",
       "title": "UnReflectAnything",
-      "subtitle": "Specular highlight removal, learned from synthetic supervision",
+      "subtitle": "RGB-only highlight removal by rendering synthetic specular supervision",
       "description": "RGB-only highlight removal by rendering synthetic specular supervision.",
       "tag": "research",
       "thumbnail": "/unreflect.png",
       "accent": "#a99dec",
-      "tech": ["PyTorch", "Diffusion", "Synthetic Data"],
+      "tech": ["self-supervision", ""],
       "meta": { "venue": "CVPR 2026 ⋅ ORAL", "year": "2026" },
       "actions": [
         { "label": "Project Page", "href": "https://alberto-rota.github.io/UnReflectAnything/", "icon": "Globe" },
@@ -180,8 +180,9 @@
         "body": "GroundControl is a Textual-based TUI that turns any terminal into a live cockpit for your machine: CPU, GPU, memory, network and disk in one glance. Built for SSH sessions where a browser is not an option.",
         "highlights": [
           "Runs over SSH — no display server needed",
-          "Pluggable widgets and theme system",
-          "Available on PyPI: pip install ground-control-tui"
+          "Syncronized, real-time metrics display",
+          "Pluggable widgets and theme system. You choose what to see and how to see it!",
+          "uv ground-control-tui"
         ]
       },
       "detailComponent": "ground-control-terminal"

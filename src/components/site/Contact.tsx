@@ -86,7 +86,7 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
     <section
       id="contact"
       aria-label="Get in touch"
-      className="relative py-16 sm:py-24 scroll-mt-24"
+      className="relative pt-16 sm:pt-24 scroll-mt-24"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <motion.h2
@@ -272,13 +272,13 @@ function ProfileChip({ product, index }: { product: Product; index: number }) {
 
 function Footer() {
   return (
-    <footer className="mt-20 border-t border-white/8 pt-6 pb-10">
+    <footer className="mt-20 border-t border-white/8 pt-6 pb-6">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div
           className="text-xs text-white/40"
           style={{ fontFamily: "var(--font-body)" }}
         >
-          © {new Date().getFullYear()} Alberto Rota. Built with care.
+          © {new Date().getFullYear()} Alberto Rota. Built with Claude Code because I'm surely not a web dev
         </div>
         <div
           className="text-[10px] uppercase tracking-[0.24em] text-white/35"
