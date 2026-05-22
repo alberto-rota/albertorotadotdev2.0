@@ -269,7 +269,7 @@
       "description": "Medical Robotics group at Politecnico di Milano",
       "tag": "resources",
       "thumbnail": "/nearlablogo.png",
-      "link": "https://nearlab.polimi.it/medical",
+      "link": "https://nearlab.polimi.it/neuroengineering-and-medical-robotics/medical/alberto-rota/",
       "compact": true
     },
     {
@@ -308,13 +308,28 @@
       "subtitle": "Brand mark for the UNDERXAI project",
       "description": "Logo design for the UNDERXAI project.",
       "tag": "designs",
-      "thumbnail": "/underxai_design.png",
+      "thumbnail": "/underxai.png",
       "accent": "#a99dec",
       "actions": [
         { "label": "Project", "href": "https://nearlab.polimi.it/underxai/", "icon": "Globe" }
       ],
       "details": {
         "body": "Mark for the UNDERXAI project — explainable AI for medical decision support."
+      }
+    },
+    {
+      "slug": "predict-logo",
+      "title": "PREDICT Project Identity",
+      "subtitle": "Logo design for the PREDICT project",
+      "description": "Logo design for the UNDERXAI project.",
+      "tag": "designs",
+      "thumbnail": "/predict.png",
+      "accent": "#4595a9",
+      "actions": [
+        { "label": "Project", "icon": "Globe" }
+      ],
+      "details": {
+        "body": "Mark for the PREDICT project — Predictive Response and Disease Evaluation in Ovarian Cancer with Generative AI"
       }
     }
   ]
