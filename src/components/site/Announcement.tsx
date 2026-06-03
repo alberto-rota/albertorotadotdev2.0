@@ -6,14 +6,24 @@ import { Calendar, MapPin } from "lucide-react";
 import { Icon } from "./Icon";
 import type { Announcement as AnnouncementData } from "./types";
 
+const HEX_COLOR = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+
+function parseTagAttrs(tag: string): { href?: string; color?: string } {
+  const href = /href=["']([^"']+)["']/i.exec(tag)?.[1];
+  const colorRaw = /color=["']([^"']+)["']/i.exec(tag)?.[1];
+  const color =
+    colorRaw && HEX_COLOR.test(colorRaw) ? colorRaw.toLowerCase() : undefined;
+  return { href, color };
+}
+
 /**
- * Sanitize a tiny HTML subset (<b>, <i>, <u>, <br>, <a href>).
+ * Sanitize a tiny HTML subset (<b>, <b color="#hex">, <i>, <u>, <br>, <a href>).
  * Everything else is escaped.
  */
 function renderRichText(input: string): React.ReactNode {
-  // We do a very small whitelist parse. Anything we don't recognize is rendered as text.
   const tokens: Array<{ type: "text" | "tag"; value: string }> = [];
-  const tagRe = /<\/?(b|i|u|br|a)(\s+href=["']([^"']+)["'])?\s*\/?>/gi;
+  const tagRe =
+    /<\/?(b|i|u|br|a)((?:\s+(?:href|color)=["'][^"']+["'])*)\s*\/?>/gi;
   let last = 0;
   let m: RegExpExecArray | null;
   while ((m = tagRe.exec(input))) {
@@ -23,24 +33,38 @@ function renderRichText(input: string): React.ReactNode {
   }
   if (last < input.length) tokens.push({ type: "text", value: input.slice(last) });
 
-  const stack: Array<{ tag: string; href?: string; children: React.ReactNode[] }> = [
-    { tag: "root", children: [] },
-  ];
+  const stack: Array<{
+    tag: string;
+    href?: string;
+    color?: string;
+    children: React.ReactNode[];
+  }> = [{ tag: "root", children: [] }];
 
   for (const tok of tokens) {
+    const current = () => stack[stack.length - 1];
     if (tok.type === "text") {
-      stack[stack.length - 1].children.push(tok.value);
+      if (!current()) continue;
+      current().children.push(tok.value);
       continue;
     }
     const lower = tok.value.toLowerCase();
     if (lower.startsWith("</")) {
+      if (stack.length <= 1) continue;
       const popped = stack.pop();
-      if (!popped || stack.length === 0) continue;
+      if (!popped) continue;
       const parent = stack[stack.length - 1];
       switch (popped.tag) {
         case "b":
           parent.children.push(
-            <strong key={parent.children.length} className="text-black">
+            <strong
+              key={parent.children.length}
+              className={popped.color ? undefined : "text-black"}
+              style={
+                popped.color
+                  ? { color: popped.color, fontWeight: 700 }
+                  : undefined
+              }
+            >
               {popped.children}
             </strong>
           );
@@ -72,14 +96,14 @@ function renderRichText(input: string): React.ReactNode {
       continue;
     }
     if (lower.startsWith("<br")) {
-      stack[stack.length - 1].children.push(
-        <br key={stack[stack.length - 1].children.length} />
-      );
+      if (!current()) continue;
+      current().children.push(<br key={current().children.length} />);
       continue;
     }
-    const tagMatch = /^<([a-z]+)(\s+href=["']([^"']+)["'])?/i.exec(tok.value);
+    const tagMatch = /^<([a-z]+)/i.exec(tok.value);
     if (!tagMatch) continue;
-    stack.push({ tag: tagMatch[1].toLowerCase(), href: tagMatch[3], children: [] });
+    const attrs = parseTagAttrs(tok.value);
+    stack.push({ tag: tagMatch[1].toLowerCase(), ...attrs, children: [] });
   }
 
   return <>{stack[0].children}</>;

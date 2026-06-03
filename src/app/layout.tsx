@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   title: "Francesca Fati",
   description: "Research, open-source, and funded projects by Francesca Fati.",
   icons: {
-    icon: [{ url: "/AR.png", type: "image/png" }],
-    shortcut: [{ url: "/AR.png", type: "image/png" }],
-    apple: [{ url: "/AR.png", type: "image/png" }],
+    icon: "/FF.png",
+    shortcut: "/FF.png",
+    apple: "/FF.png",
   },
 };
 

@@ -166,7 +166,7 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
             </a>
           </motion.div>
 
-          {/* curl pill */}
+          {/* curl pill
           <motion.button
             type="button"
             onClick={copyCurl}
@@ -187,7 +187,7 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
                 <Copy className="h-3.5 w-3.5 text-black/80" />
               )}
             </span>
-          </motion.button>
+          </motion.button> */}
         </div>
       </div>
 

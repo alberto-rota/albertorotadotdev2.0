@@ -83,7 +83,7 @@ export type Announcement = {
   label?: string;
   /** Headline. */
   title?: string;
-  /** Body text. Supports a tiny HTML subset: <b>, <i>, <u>, <a href>. */
+  /** Body text. Supports a tiny HTML subset: <b>, <b color="#hex">, <i>, <u>, <a href>. */
   body?: string;
   /** Optional dates / location lines. */
   dates?: string;

@@ -6,8 +6,8 @@
     "enabled": true,
     "label": "CVPR 2026 · Denver",
     "title": "Attending CVPR 2026? ",
-    "body": "I'll be presenting my poster on <b>Adapting Foundation Models for Annotation-Efficient Adnexal Mass Segmentation in Cine Images</b> at the <b>Subtle Visual Computing Workshop</b>. Come to the poster session to here more!",
-    "dates": "Wednesday June 3rf, 2026 ⋅ 9:15 AM - 10:30 AM",
+    "body": "I'll be presenting <b color=\"#7dbfc5\">Adapting Foundation Models for Annotation-Efficient Adnexal Mass Segmentation in Cine Images</b> at the <b color=\"#eaad76\">Subtle Visual Computing Workshop</b>. Come hear the talk!",
+    "dates": "Wednesday June 3rd, 2026 ⋅ 9:15 AM - 10:30 AM",
     "location": "Room 109, Street Level, Colorado Convention Center ⋅ Denver, CO",
     "actions": [
       { "label": "Get in touch", "href": "mailto:francesca.fati@polimi.it?subject=CVPR%202026%20-%20meet%20at%20Denver", "icon": "Mail" },
@@ -18,7 +18,7 @@
     "research": {
       "title": "Research",
       "subtitle": "Peer-reviewed work and ongoing projects",
-      "order": 1
+      "order": 1  
     },
     "open-source": {
       "title": "Open Source",
@@ -41,171 +41,97 @@
   },
   "products": [
     {
-      "slug": "unreflect-anything",
-      "title": "UnReflect Anything",
-      "subtitle": "Specular highlight removal, learned from synthetic supervision",
-      "description": "RGB-only highlight removal by rendering synthetic specular supervision.",
+      "slug": "ital-ia",
+      "title": "OVIT",
+      "subtitle": "Deep learning–based tumor resectability prediction in ovarian cancer — a preliminary evaluation",
+      "description": "Vision Transformer that predicts post-surgical residual tumor in advanced epithelial ovarian cancer from preoperative CT alone.",
       "tag": "research",
-      "thumbnail": "/unreflect.png",
+      "thumbnail": "/italia.png",
       "accent": "#7dbfc5",
-      "tech": ["PyTorch", "Diffusion", "Synthetic Data"],
-      "meta": { "venue": "arXiv preprint", "year": "2025" },
+      "tech": ["PyTorch", "Vision Transformers", "CT Imaging"],
+      "meta": { "venue": "Ital-IA", "year": "2024" },
       "actions": [
-        { "label": "Project Page", "href": "https://alberto-rota.github.io/UnReflectAnything/", "icon": "Globe" },
-        { "label": "GitHub", "href": "https://github.com/alberto-rota/UnReflectAnything", "icon": "Github" },
-        { "label": "Paper", "href": "https://doi.org/10.48550/arXiv.2512.09583", "icon": "FileText" }
+        { "label": "Paper", "href": "https://ceur-ws.org/Vol-3762/574.pdf", "icon": "FileText" }
       ],
       "details": {
-        "body": "UnReflect Anything is an RGB-only method that removes specular highlights from arbitrary scenes. Instead of relying on multi-view captures or polarization, we render synthetic supervision — pairs of clean and highlighted images — by composing physically-plausible specular layers on top of real images, then train a network to invert the process.\n\nThe result is a fast, single-image pipeline that transfers cleanly to surgical, automotive and macro photography domains, where traditional dichromatic methods break down.",
+        "body": "OVIT is a Vision Transformer–based decision-support model that predicts whether a complete cytoreduction is achievable in patients with advanced epithelial ovarian cancer, using only preoperative CT scans. The architecture encodes CT slices with a pre-trained ViT and aggregates slice-level features through attention to produce a patient-level resectability score.\n\nThis preliminary evaluation, presented at Ital-IA 2024, established the feasibility of fully-automated, image-only prediction without manual segmentation or hand-crafted radiological features — paving the way for the extended journal study carried out under the UnderXAI programme.",
         "highlights": [
-          "Single-image input — no multi-view or polarization required",
-          "Synthetic supervision pipeline generalizes across domains",
-          "Real-time inference on a single consumer GPU"
-        ],
-        "media": [
-          { "type": "image", "src": "/unreflect.png", "caption": "Method overview" }
+          "Vision Transformer backbone with attention-based slice aggregation",
+          "Fully automated — no manual segmentation or radiological feature engineering",
+          "Validated on a cohort from the European Institute of Oncology"
         ]
-      },
-      "detailComponent": "unreflect-demo"
+      }
     },
     {
-      "slug": "steve",
-      "title": "STEVE",
-      "subtitle": "Augmented training curriculum for surgical robotics",
-      "description": "Implementation and assessment of an augmented training curriculum for surgical robotics.",
+      "slug": "mesa",
+      "title": "MESA",
+      "subtitle": "Adapting Foundation Models for Annotation-Efficient Adnexal Mass Segmentation in Cine Images",
+      "description": "Label-efficient ultrasound cine segmentation built on a DINOv3 foundation backbone for adnexal mass evaluation.",
       "tag": "research",
-      "thumbnail": "/icra.png",
+      "thumbnail": "/mesa.png",
       "accent": "#eaad76",
-      "tech": ["Unity", "C#", "da Vinci Research Kit"],
-      "meta": { "venue": "ICRA 2024", "year": "2024" },
+      "tech": ["PyTorch", "DINOv3", "Ultrasound"],
+      "meta": { "venue": "CVPRW SVC", "year": "2026" },
       "actions": [
-        { "label": "GitHub", "href": "https://github.com/alberto-rota/STEVE", "icon": "Github" },
-        { "label": "Paper", "href": "https://doi.org/10.1109/ICRA57147.2024.10610411", "icon": "FileText" }
+        { "label": "GitHub", "href": "https://github.com/FrancescaFati/MESA", "icon": "Github" },
+        { "label": "Paper", "href": "https://openaccess.thecvf.com/content/CVPR2026W/SVC/html/Fati_Adapting_Foundation_Models_for_Annotation-Efficient_Adnexal_Mass_Segmentation_in_Cine_CVPRW_2026_paper.html", "icon": "FileText" }
       ],
       "details": {
-        "body": "STEVE pairs the da Vinci Research Kit with a structured AR curriculum that progressively scaffolds operator skill — from basic spatial awareness to bimanual tasks under cognitive load. We measured technical and non-technical skill gains across cohorts and showed that augmented feedback shortens the learning curve.",
+        "body": "MESA adapts a pre-trained DINOv3 vision transformer to the task of segmenting adnexal masses in transvaginal ultrasound cine sequences. The frozen DINOv3 backbone is paired with a Dense Prediction Transformer–style decoder that hierarchically reassembles multi-scale features, combining global semantic priors with fine-grained spatial detail.\n\nEvaluated on 7,777 annotated frames from 112 patients across Mayo Clinic and Istituto Europeo di Oncologia, MESA reaches a Dice score of 0.945 and reduces Hausdorff distance by 11.4% over fully-supervised baselines, while remaining competitive when trained on only 25% of the available labels.",
         "highlights": [
-          "AR curriculum integrated with the da Vinci Research Kit",
-          "Validated across multiple operator cohorts at ICRA 2024",
-          "Open hardware/software stack for replication"
+          "Frozen DINOv3 foundation backbone with DPT-style decoder",
+          "State-of-the-art Dice on a 7,777-frame multi-centre cine dataset",
+          "Maintains accuracy with only 25% of training annotations"
         ]
       }
     },
     {
       "slug": "scale-em",
-      "title": "SCALE-EM",
-      "subtitle": "Self-supervised embeddings for endoscopic matching",
-      "description": "Self-Supervised Contrastive Embedding Adaptation for Endoscopic Image Matching.",
+      "title": "CRS-ViT",
+      "subtitle": "Vision Transformers for Preoperative CT-Based Prediction of Histopathologic Chemotherapy Response Score in High-Grade Serous Ovarian Carcinoma",
+      "description": "Multimodal Vision Transformer that predicts the histopathologic Chemotherapy Response Score from preoperative CT and clinical variables.",
       "tag": "research",
-      "thumbnail": "/match.png",
+      "thumbnail": "/cars.png",
       "accent": "#7dbfc5",
-      "tech": ["PyTorch", "Contrastive Learning", "Endoscopy"],
-      "meta": { "venue": "IEEE TMI 2026", "year": "2026" },
+      "tech": ["PyTorch", "Vision Transformers", "Multimodal Fusion"],
+      "meta": { "venue": "IJCARS", "year": "2026" },
       "actions": [
-        { "label": "GitHub", "href": "https://github.com/alberto-rota/SCALE-EM", "icon": "Github" },
-        { "label": "Paper", "href": "https://arxiv.org/abs/2512.10379", "icon": "FileText" }
+        { "label": "Paper", "href": "https://arxiv.org/abs/2604.09197", "icon": "FileText" }
       ],
       "details": {
-        "body": "SCALE-EM adapts visual foundation embeddings to the endoscopic domain using a contrastive scheme tailored to surgical video. Without labels, the model learns local descriptors that survive non-rigid tissue deformation and specular interference — unlocking robust frame-to-frame matching for downstream SLAM and registration."
-      }
-    },
-    {
-      "slug": "muves",
-      "title": "muVES",
-      "subtitle": "3D analysis of microvasculature on-chip",
-      "description": "A three-dimensional method for morphological analysis and flow velocity estimation in microvasculature on-a-chip.",
-      "tag": "research",
-      "thumbnail": "/muves.png",
-      "accent": "#eaad76",
-      "tech": ["MATLAB", "Microfluidics", "3D Imaging"],
-      "meta": { "venue": "BTM", "year": "2023" },
-      "actions": [
-        { "label": "GitHub", "href": "https://github.com/alberto-rota/muVES", "icon": "Github" },
-        { "label": "Paper", "href": "https://doi.org/10.1002/btm2.10557", "icon": "FileText" }
-      ],
-      "details": {
-        "body": "μVES is an open pipeline for quantifying micro-vessel morphology and flow inside organs-on-chip. It reconstructs the 3D vascular network from confocal stacks and extracts diameter, tortuosity and velocity — metrics that previously required manual tracing."
+        "body": "CRS-ViT is a 2.5D multimodal deep-learning framework that predicts the histopathologic Chemotherapy Response Score (CRS) — a validated biomarker of neoadjuvant chemotherapy efficacy in high-grade serous ovarian carcinoma — from preoperative CT alone. Lesion-dense omental slices are encoded with a pre-trained Vision Transformer and fused with structured clinical variables through an intermediate-fusion module to produce a pre-treatment CRS estimate.\n\nThe model bridges a critical clinical gap: CRS is normally only available after surgery, but CRS-ViT delivers an equivalent score at diagnosis, when it can still inform the choice between primary debulking and neoadjuvant chemotherapy strategies.",
+        "highlights": [
+          "2.5D ViT encoder over lesion-dense omental CT slices",
+          "Intermediate fusion of imaging features with structured clinical variables",
+          "Brings a post-operative biomarker forward to diagnosis-time decision support"
+        ]
       }
     },
     {
       "slug": "underxai-ovit",
-      "title": "UnderXAI-OVIT",
-      "subtitle": "Decision support in ovarian cancer treatment",
-      "description": "Deep Learning for decision support in ovarian cancer treatment planning.",
+      "title": "OVIT",
+      "subtitle": "Deep learning for decision support in ovarian cancer treatment planning",
+      "description": "Vision Transformer–based system that predicts residual tumor after primary debulking surgery in high-grade serous ovarian cancer.",
       "tag": "research",
       "thumbnail": "/nature.png",
       "accent": "#7dbfc5",
-      "tech": ["PyTorch", "Explainable AI", "Medical Imaging"],
-      "meta": { "venue": "Nature WH", "year": "2024" },
+      "tech": ["PyTorch", "Vision Transformers", "Explainable AI"],
+      "meta": { "venue": "Nature WH", "year": "2025" },
       "actions": [
         { "label": "GitHub", "href": "https://github.com/FrancescaFati/UnderXAI-OVIT", "icon": "Github" },
+        { "label": "Preprint", "href": "https://www.researchsquare.com/article/rs-7434368/v1", "icon": "FileText" },
         { "label": "Project", "href": "https://nearlab.polimi.it/underxai/", "icon": "Globe" }
       ],
       "details": {
-        "body": "UnderXAI-OVIT couples a clinical-grade segmentation backbone with a counterfactual explanation module so oncologists can interrogate why the network suggests a given treatment route."
-      }
-    },
-    {
-      "slug": "surgical-ar-review",
-      "title": "Surgical AR Review",
-      "subtitle": "Recent advancements in AR for robotic surgery",
-      "description": "Recent advancements in augmented reality for robotic applications: a survey.",
-      "tag": "research",
-      "thumbnail": "/review.png",
-      "accent": "#eaad76",
-      "meta": { "venue": "MDPI Actuators", "year": "2023" },
-      "actions": [
-        { "label": "Paper", "href": "https://doi.org/10.3390/act12080323", "icon": "FileText" }
-      ],
-      "details": {
-        "body": "A comprehensive survey covering display modalities, registration pipelines and human-factors evidence for AR in robotic surgery. Written as a primer for engineers entering the field."
-      }
-    },
-    {
-      "slug": "ground-control",
-      "title": "GroundControl",
-      "subtitle": "Beautiful system monitoring in your terminal",
-      "description": "Rich visualization and monitoring of system metrics in the terminal.",
-      "tag": "open-source",
-      "thumbnail": "/groundcontrol.png",
-      "cardAspect": "16/9",
-      "cardFit": "cover",
-      "accent": "#eaad76",
-      "tech": ["Python", "Textual", "TUI"],
-      "actions": [
-        { "label": "GitHub", "href": "https://github.com/alberto-rota/ground-control", "icon": "Github" },
-        { "label": "pip install", "href": "https://pypi.org/project/ground-control-tui/", "icon": "Download" }
-      ],
-      "details": {
-        "body": "GroundControl is a Textual-based TUI that turns any terminal into a live cockpit for your machine: CPU, GPU, memory, network and disk in one glance. Built for SSH sessions where a browser is not an option.",
+        "body": "The extended OVIT framework is a fully-automated decision-support system that estimates residual tumor after primary debulking surgery in patients with high-grade serous ovarian cancer. Pre-trained Vision Transformer encoders are combined with an attention mechanism that aggregates slice-level evidence across the preoperative CT volume, removing the need for manual segmentation or hand-crafted radiological features.\n\nValidated on 465 patients at the European Institute of Oncology and developed under the UnderXAI programme, OVIT delivers a patient-level resectability score together with attention maps that let oncologists interrogate the regions driving each prediction.",
         "highlights": [
-          "Runs over SSH — no display server needed",
-          "Pluggable widgets and theme system",
-          "Available on PyPI: pip install ground-control-tui"
+          "ViT encoder with attention-based slice aggregation",
+          "ROC-AUC of 0.80 on a 465-patient test set",
+          "Built under the UnderXAI explainable-AI programme"
         ]
-      },
-      "detailComponent": "ground-control-terminal"
-    },
-    {
-      "slug": "dasshboard",
-      "title": "DaSSHboard",
-      "subtitle": "A stylish SSH dashboard for VS Code",
-      "description": "A stylish dashboard for quickly connecting to SSH hosts with customizable settings.",
-      "tag": "open-source",
-      "thumbnail": "https://raw.githubusercontent.com/alberto-rota/DaSSHboard/master/overview.png",
-      "cardAspect": "16/9",
-      "cardFit": "cover",
-      "icon": "/dasshboard_icon.png",
-      "accent": "#7dbfc5",
-      "tech": ["TypeScript", "VS Code API"],
-      "actions": [
-        { "label": "GitHub", "href": "https://github.com/alberto-rota/DaSSHboard", "icon": "Github" },
-        { "label": "VS Marketplace", "href": "https://marketplace.visualstudio.com/items?itemName=AlbertoRota.dasshboard", "icon": "Download" }
-      ],
-      "details": {
-        "body": "DaSSHboard turns the cluttered list of SSH hosts in VS Code into a fast, visual launcher. Pin hosts, group them, and connect with a single click."
       }
     },
+ 
     {
       "slug": "medview",
       "title": "MedView",
@@ -224,6 +150,29 @@
       ],
       "details": {
         "body": "MedView lets clinicians and engineers inspect NIfTI and DICOM volumes inside VS Code — no separate viewer, no context switching. Useful when annotating or debugging medical-imaging pipelines."
+      }
+    },
+    {
+      "slug": "rapidreview-us",
+      "title": "RapidReview-US",
+      "subtitle": "Rapid Review for Ultrasound Images",
+      "description": "Web app for high-throughput review and classification of ultrasound cine sequences with keyboard-driven workflow and CSV auto-export.",
+      "tag": "open-source",
+      "thumbnail": "/rapidreview.png",
+      "cardAspect": "16/10",
+      "cardFit": "cover",
+      "accent": "#7dbfc5",
+      "tech": ["Python", "Flask", "JavaScript"],
+      "actions": [
+        { "label": "GitHub", "href": "https://github.com/FrancescaFati/RapidReview_US", "icon": "Github" }
+      ],
+      "details": {
+        "body": "RapidReview-US is a lightweight Flask web app for reviewing and labelling ultrasound cine sequences at scale. It pairs full-screen playback with a collapsible classification sidebar (image class, US mode, probe orientation, ovary laterality, free-text comments) and Accept/Reject keyboard shortcuts so an annotator can move through hundreds of cases with hands never leaving the keyboard.\n\nBuilt while curating the multi-centre dataset behind the MESA paper, the tool auto-saves every decision to CSV — including reviewer identity and timestamp — so the labelling pipeline is fully reproducible.",
+        "highlights": [
+          "Single-key Accept/Reject workflow with frame-by-frame playback",
+          "Collapsible multi-axis classification panel for structured labels",
+          "Auto-save to CSV with reviewer and timestamp for audit trails"
+        ]
       }
     },
     {
@@ -274,68 +223,69 @@
     {
       "slug": "underxai-grant",
       "title": "UNDERXAI",
-      "subtitle": "Underrepresented populations in eXplainable AI for ovarian cancer",
-      "description": "Explainable AI for ovarian cancer treatment planning — co-funded research project at Politecnico di Milano.",
+      "subtitle": "Understanding Ovarian Cancer Initiation and Progression through Explainable Artificial Intelligence",
+      "description": "PNRR-funded multi-centre programme building explainable-AI decision support for ovarian cancer diagnosis and therapy planning.",
       "tag": "funded",
       "thumbnail": "/nature.png",
       "accent": "#7dbfc5",
       "tech": ["Explainable AI", "Medical Imaging", "Oncology"],
-      "meta": { "funder": "Fondazione AIRC", "amount": "€ 240,000", "year": "2024 — 2027" },
+      "meta": { "funder": "EU NextGenerationEU · PNRR", "amount": "PNRR-MAD-2022-12376574", "year": "2023 — 2026" },
       "actions": [
         { "label": "Project Site", "href": "https://nearlab.polimi.it/underxai/", "icon": "Globe" }
       ],
       "details": {
-        "body": "UNDERXAI develops counterfactual explanation methods that help oncologists interrogate AI-driven recommendations for ovarian cancer treatment, with explicit attention to underrepresented patient populations.",
+        "body": "UNDERXAI is a multi-centre research programme funded by the European Union's NextGenerationEU initiative through Italy's Piano Nazionale di Ripresa e Resilienza (PNRR). Coordinated by NEARLab at Politecnico di Milano, the project builds an explainable-AI decision-support system to assist clinicians in diagnosing and planning therapy for patients with ovarian cancer, with explicit attention to traditionally underrepresented populations.",
         "highlights": [
-          "Counterfactual explanation module integrated with clinical segmentation backbone",
-          "Co-designed with clinical partners at Fondazione IRCCS",
-          "Open dataset and evaluation protocol for downstream use"
+          "Co-designed with clinical partners at Istituto Europeo di Oncologia",
+          "Counterfactual and attention-based explanations for transparent decision support",
+          "Consortium across Milan, Catanzaro, Cagliari and Varese"
         ]
       }
     },
     {
-      "slug": "horizon-medvision",
-      "title": "MEDVISION",
-      "subtitle": "Next-generation visual systems for minimally invasive surgery",
-      "description": "Horizon Europe consortium developing the next generation of intraoperative imaging.",
+      "slug": "predict",
+      "title": "PREDICT",
+      "subtitle": "Predictive Response and Disease Evaluation in Ovarian Cancer with Generative AI",
+      "description": "Generative-AI consortium that anticipates tumor progression and treatment response in ovarian cancer from baseline CT.",
       "tag": "funded",
-      "thumbnail": "/icra29.png",
-      "accent": "#eaad76",
-      "tech": ["Horizon Europe", "Surgical Robotics", "Consortium"],
-      "meta": { "funder": "EU Horizon Europe", "amount": "€ 4,200,000", "year": "2025 — 2029" },
-      "actions": [
-        { "label": "Programme", "href": "https://research-and-innovation.ec.europa.eu/funding/funding-opportunities/funding-programmes-and-open-calls/horizon-europe_en", "icon": "Globe" }
-      ],
-      "details": {
-        "body": "MEDVISION is a four-year Horizon Europe consortium bringing together clinical centres, robotics labs and industry to build the next generation of intraoperative imaging for minimally invasive surgery. The work-package on perception is led from Politecnico di Milano.",
-        "highlights": [
-          "Eight partners across five EU countries",
-          "WP3 perception lead — visual SLAM and tissue tracking",
-          "Two clinical pilot studies scheduled for year three"
-        ]
-      }
-    },
-    {
-      "slug": "msca-explainmed",
-      "title": "ExplainMed",
-      "subtitle": "MSCA postdoctoral fellowship on clinical XAI",
-      "description": "Marie Skłodowska-Curie Postdoctoral Fellowship awarded to advance explainable AI for clinical decision support.",
-      "tag": "funded",
-      "thumbnail": "/review.png",
+      "thumbnail": "/predict.png",
       "accent": "#7dbfc5",
-      "tech": ["MSCA", "Explainable AI", "Fellowship"],
-      "meta": { "funder": "Marie Skłodowska-Curie Actions", "amount": "€ 187,500", "year": "2026 — 2028" },
+      "tech": ["Generative AI", "CT Imaging", "Oncology"],
+      "meta": { "funder": "Regione Lombardia · FRRB", "amount": "012024R0055", "year": "2025" },
       "actions": [
-        { "label": "MSCA Programme", "href": "https://marie-sklodowska-curie-actions.ec.europa.eu/", "icon": "Globe" }
+        { "label": "Project Site", "href": "https://nearlab.polimi.it/neuroengineering-and-medical-robotics/medical/predict/", "icon": "Globe" }
       ],
       "details": {
-        "body": "ExplainMed is a Marie Skłodowska-Curie postdoctoral fellowship hosted at Politecnico di Milano with a secondment at a clinical partner. The project develops bias-aware explanation methods for radiology and pathology decision support.",
+        "body": "PREDICT leverages generative AI to support clinicians caring for patients with ovarian cancer. The project generates post-chemotherapy CT images at diagnosis, anticipates tumor progression and predicts treatment response before therapy begins — directly targeting the diagnostic delays that drive the ~500 ovarian-cancer deaths recorded each year in Lombardy.\n\nFunded by Fondazione Regionale per la Ricerca Biomedica (Regione Lombardia, project 012024R0055) and led from NEARLab at Politecnico di Milano with Istituto Europeo di Oncologia and Università degli Studi dell'Insubria, the consortium aims to deliver precise, personalised care strategies that reduce both diagnostic delay and mortality.",
         "highlights": [
-          "Two-year fellowship with international mobility component",
-          "Clinical secondment at a partner hospital",
-          "Deliverables include an open evaluation benchmark"
+          "Generative AI for synthesising post-chemotherapy CT at diagnosis",
+          "Three-partner consortium: Politecnico di Milano, IEO and Università dell'Insubria",
+          "Directly addresses ovarian-cancer mortality in Lombardy"
+        ]
+      }
+    },
+    {
+      "slug": "ectr-ds",
+      "title": "ECTR-DS",
+      "subtitle": "Enhancing Clinical Trial Representativeness through Data Science",
+      "description": "Cariplo-funded programme using synthetic populations and in-silico trials to improve inclusion of underrepresented groups in clinical research.",
+      "tag": "funded",
+      "thumbnail": "/cariplo.png",
+      "accent": "#ffffff",
+      "tech": ["Synthetic Data", "GANs", "Clinical Trials"],
+      "meta": { "funder": "Fondazione Cariplo · Data Science for Health", "amount": "2024-0173", "year": "2024 — 2027" },
+      "actions": [
+        { "label": "Project Site", "href": "https://nearlab.polimi.it/neuroengineering-and-medical-robotics/medical/cariplo/", "icon": "Globe" }
+      ],
+      "details": {
+        "body": "ECTR-DS tackles a critical limitation of randomized controlled trials: the systematic under-representation of social, ethnic and clinical minorities. The project develops data-science tools that simulate trial outcomes on synthetic populations, quantify how well a trial generalises beyond its enrolled cohort, and propose concrete strategies for broadening inclusion.\n\nFunded by Fondazione Cariplo under the Data Science for Health call (grant 2024-0173) and led from NEARLab at Politecnico di Milano, the work combines data harmonisation, deep-learning eligibility models and GAN-based in-silico trial simulation into a unified representativeness framework.",
+        "highlights": [
+          "GAN-based synthetic populations for in-silico trial simulation",
+          "Deep-learning eligibility models and harmonisation pipelines",
+          "Quantitative representativeness metrics for trial design"
         ]
       }
     }
+
   ]
 }
