@@ -10,7 +10,9 @@ export function middleware(request: NextRequest) {
 
   const ua = request.headers.get("user-agent") ?? "";
   if (CLI_USER_AGENTS.test(ua)) {
-    return NextResponse.rewrite(new URL("/api/cli", request.url));
+    const target = new URL("/api/cli", request.url);
+    target.search = request.nextUrl.search; // preserve ?w= / ?cols=
+    return NextResponse.rewrite(target);
   }
 
   return NextResponse.next();
