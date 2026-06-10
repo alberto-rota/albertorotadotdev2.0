@@ -116,7 +116,7 @@
       "subtitle": "3D Hyperspectral Mapping of Lumpectomy Specimens",
       "description": "A Lightweight Fiducial-Based Pipeline for 3D Hyperspectral Mapping of ex-vivo Lumpectomy Specimens",
       "tag": "research",
-      "thumbnail": "/spectra-breast.png",
+      "thumbnail": "/spectra.png",
       "accent": "#6b4ea8",
       "tech": ["MASt3R-SfM", "ArUco"],
       "meta": { "venue": "Ital-IA 2026", "year": "2026" },
