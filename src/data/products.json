@@ -53,7 +53,7 @@
       "actions": [
         { "label": "Project Page", "href": "https://alberto-rota.github.io/UnReflectAnything/", "icon": "Globe" },
         { "label": "GitHub", "href": "https://github.com/alberto-rota/UnReflectAnything", "icon": "Github" },
-        { "label": "Paper", "href": "https://doi.org/10.48550/arXiv.2512.09583", "icon": "FileText" },
+        { "label": "Paper", "href": "https://openaccess.thecvf.com/content/CVPR2026/papers/Rota_UnReflectAnything_RGB-Only_Highlight_Removal_by_Rendering_Synthetic_Specular_Supervision_CVPR_2026_paper.pdf", "icon": "FileText" },
         { "label": "Demo", "href": "https://huggingface.co/spaces/AlbeRota/UnReflectAnything", "icon": "Hand" }
       ],
       "details": {
