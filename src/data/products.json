@@ -5,8 +5,8 @@
   "announcement": {
     "enabled": true,
     "label": "CVPR 2026 · Denver",
-    "title": "attending cvpr 2026? ",
-    "body": "I'll be presenting <b>UnReflectAnything</b>, a method for removing specular highlights trained on synthetic specular supervision. Join <b>Oral Session 1D - Computational Imaging</b> for the oral presentation and <b>Poster Session 1</b> for the poster!",
+    "title": "Attended cvpr 2026? ",
+    "body": "II've presented <b>UnReflectAnything</b>, a method for removing specular highlights trained on synthetic specular supervision. <b>Oral Session 1D - Computational Imaging</b> for the oral presentation and <b>Poster Session 1</b> for the poster!",
     "dates": "Friday June 5th, 2026 ⋅ 9:15 AM - 10:30 AM",
     "location": "ORAL: Mile High Ballroom 3A - 4A ⋅ POSTER: Exhibit Hall (ExHall A-F) ⋅ Denver, CO",
     "actions": [
@@ -47,13 +47,14 @@
       "description": "RGB-only highlight removal by rendering synthetic specular supervision.",
       "tag": "research",
       "thumbnail": "/unreflect.png",
-      "accent": "#a99dec",
-      "tech": ["self-supervision", ""],
+      "accent": "#d08656",
+      "tech": ["image-to-image", "syntetic specular supervision"],
       "meta": { "venue": "CVPR 2026 ⋅ ORAL", "year": "2026" },
       "actions": [
         { "label": "Project Page", "href": "https://alberto-rota.github.io/UnReflectAnything/", "icon": "Globe" },
         { "label": "GitHub", "href": "https://github.com/alberto-rota/UnReflectAnything", "icon": "Github" },
-        { "label": "Paper", "href": "https://doi.org/10.48550/arXiv.2512.09583", "icon": "FileText" }
+        { "label": "Paper", "href": "https://doi.org/10.48550/arXiv.2512.09583", "icon": "FileText" },
+        { "label": "Demo", "href": "https://huggingface.co/spaces/AlbeRota/UnReflectAnything", "icon": "Hand" }
       ],
       "details": {
         "body": "UnReflect Anything is an RGB-only method that removes specular highlights from arbitrary scenes. Instead of relying on multi-view captures or polarization, we render synthetic supervision — pairs of clean and highlighted images — by composing physically-plausible specular layers on top of real images, then train a network to invert the process.\n\nThe result is a fast, single-image pipeline that transfers cleanly to surgical, automotive and macro photography domains, where traditional dichromatic methods break down.",
@@ -67,6 +68,89 @@
         ]
       },
       "detailComponent": "unreflect-demo"
+    },
+    {
+      "slug": "scale-em",
+      "title": "SCALE-EM",
+      "subtitle": "Self-supervised embeddings for endoscopic matching",
+      "description": "Self-Supervised Contrastive Embedding Adaptation for Endoscopic Image Matching.",
+      "tag": "research",
+      "thumbnail": "/match.png",
+      "accent": "#a9dc76",
+      "tech": ["PyTorch", "Contrastive Learning", "Endoscopy"],
+      "meta": { "venue": "IEEE TMI 2026", "year": "2026" },
+      "actions": [
+        { "label": "GitHub", "href": "https://github.com/alberto-rota/SCALE-EM", "icon": "Github" },
+        { "label": "Paper", "href": "https://arxiv.org/abs/2512.10379", "icon": "FileText" }
+      ],
+      "details": {
+        "body": "SCALE-EM adapts visual foundation embeddings to the endoscopic domain using a contrastive scheme tailored to surgical video. Without labels, the model learns local descriptors that survive non-rigid tissue deformation and specular interference — unlocking robust frame-to-frame matching for downstream SLAM and registration."
+      }
+    },
+    {
+      "slug": "mesa",
+      "title": "MESA",
+      "subtitle": "Adnexal Mass Segmentation in US images",
+      "description": "Adapting Foundation Models for Annotation-Efficient Adnexal Mass Segmentation in Cine Images",
+      "tag": "research",
+      "thumbnail": "/mesa.png",
+      "accent": "#4595a9",
+      "tech": ["DINOv3", "Segmentation",""],
+      "meta": { "venue": "CVPR 2026 ⋅ SVC Workshop", "year": "2026" },
+      "actions": [
+        { "label": "GitHub", "href": "https://github.com/FrancescaFati/MESA", "icon": "Github" },
+        { "label": "Paper", "href": "https://openaccess.thecvf.com/content/CVPR2026W/SVC/papers/Fati_Adapting_Foundation_Models_for_Annotation-Efficient_Adnexal_Mass_Segmentation_in_Cine_CVPRW_2026_paper.pdf", "icon": "FileText" }
+      ],
+      "details": {
+        "body": "MESA is a label-efficient framework for segmenting adnexal masses in ultrasound cine images. Rather than training a convolutional encoder-decoder from scratch, it adapts a frozen DINOv3 foundation backbone with a DPT-style decoder that hierarchically reassembles multi-scale features, combining global semantic priors with fine-grained boundary detail. Grayscale US frames are mapped to pseudo-RGB via channel replication so the pretrained backbone transfers directly, and only the decoder is trained under a combined BCE and Dice objective.\n\nOn a clinical dataset of 7,777 annotated frames from 112 patients, MESA reaches a Dice of 0.945 and reduces the 95th-percentile Hausdorff distance by 11.4% relative to the strongest convolutional baseline. The self-supervised priors make it markedly more robust to data scarcity: performance holds up even when trained on just 25% of the data, a regime where U-Net, U-Net++, DeepLabV3, and MAnet degrade sharply.",
+        "highlights": [
+          "Frozen DINOv3 backbone with a DPT-style decoder, no task-specific pretraining required",
+          "State-of-the-art accuracy and boundary fidelity (Dice 0.945, 11.4% lower HD95 vs. best CNN)",
+          "Resilient under data starvation, retaining strong performance at 25% of training labels"
+        ]
+      }
+    },
+    {
+      "slug": "spectra-breast",
+      "title": "Spectra-BREAST",
+      "subtitle": "3D Hyperspectral Mapping of Lumpectomy Specimens",
+      "description": "A Lightweight Fiducial-Based Pipeline for 3D Hyperspectral Mapping of ex-vivo Lumpectomy Specimens",
+      "tag": "research",
+      "thumbnail": "/spectra-breast.png",
+      "accent": "#6b4ea8",
+      "tech": ["MASt3R-SfM", "ArUco"],
+      "meta": { "venue": "Ital-IA 2026", "year": "2026" },
+      "actions": [
+        { "label": "Paper", "href": "", "icon": "FileText" },
+        { "label": "Code", "href": "https://github.com/Leo11P/SpectraBreast-Registration", "icon": "Github" },
+        { "label": "Project", "href": "", "icon": "Globe" }
+      ],
+      "details": {
+        "body": "This work fuses a single hyperspectral acquisition with a photogrammetric 3D reconstruction of an ex-vivo lumpectomy specimen, producing a spectral point cloud where every measurement is anchored to a physical coordinate on the tissue surface. The geometry is recovered from consumer RGB photos using a deep-learning Structure-from-Motion backbone (MASt3R-SfM), then stabilized in a metric reference frame by a custom bundle adjustment that enforces consistency on the corners of four ArUco markers placed around the specimen.\n\nThe key idea is registering the HSI cube without ever recovering the HSI camera pose. The markers, visible in both modalities, define 16 corner correspondences that drive a planar homography, and 3D coordinates are recovered by lookup on an orthographically rendered depth map. The result is fully automated and calibration-free, requiring no dedicated geometric hardware. On two ex-vivo specimens it achieves a median 3D registration error below 1 mm and a 2D reprojection error below 0.02 mm, with total per-specimen processing under 4 minutes, supporting integration of HSI-guided localization into intraoperative margin assessment for breast-conserving surgery.",
+        "highlights": [
+          "Calibration-free: consumer RGB images plus a single top-down HSI scan, no HSI camera pose recovered",
+          "ArUco-anchored bundle adjustment yields a metric reconstruction and a 2D-2D homography for registration",
+          "Sub-millimeter 3D accuracy and under 4 minutes per specimen, compatible with intraoperative timing"
+        ]
+      }
+    },
+    {
+      "slug": "muves",
+      "title": "muVES",
+      "subtitle": "3D analysis of microvasculature on-chip",
+      "description": "A three-dimensional method for morphological analysis and flow velocity estimation in microvasculature on-a-chip.",
+      "tag": "research",
+      "thumbnail": "/muves.png",
+      "accent": "#78dce8",
+      "tech": ["MATLAB", "Microfluidics", "3D Imaging"],
+      "meta": { "venue": "BTM", "year": "2023" },
+      "actions": [
+        { "label": "GitHub", "href": "https://github.com/alberto-rota/muVES", "icon": "Github" },
+        { "label": "Paper", "href": "https://doi.org/10.1002/btm2.10557", "icon": "FileText" }
+      ],
+      "details": {
+        "body": "μVES is an open pipeline for quantifying micro-vessel morphology and flow inside organs-on-chip. It reconstructs the 3D vascular network from confocal stacks and extracts diameter, tortuosity and velocity — metrics that previously required manual tracing."
+      }
     },
     {
       "slug": "steve",
@@ -89,42 +173,6 @@
           "Validated across multiple operator cohorts at ICRA 2024",
           "Open hardware/software stack for replication"
         ]
-      }
-    },
-    {
-      "slug": "scale-em",
-      "title": "SCALE-EM",
-      "subtitle": "Self-supervised embeddings for endoscopic matching",
-      "description": "Self-Supervised Contrastive Embedding Adaptation for Endoscopic Image Matching.",
-      "tag": "research",
-      "thumbnail": "/match.png",
-      "accent": "#a9dc76",
-      "tech": ["PyTorch", "Contrastive Learning", "Endoscopy"],
-      "meta": { "venue": "IEEE TMI 2026", "year": "2026" },
-      "actions": [
-        { "label": "GitHub", "href": "https://github.com/alberto-rota/SCALE-EM", "icon": "Github" },
-        { "label": "Paper", "href": "https://arxiv.org/abs/2512.10379", "icon": "FileText" }
-      ],
-      "details": {
-        "body": "SCALE-EM adapts visual foundation embeddings to the endoscopic domain using a contrastive scheme tailored to surgical video. Without labels, the model learns local descriptors that survive non-rigid tissue deformation and specular interference — unlocking robust frame-to-frame matching for downstream SLAM and registration."
-      }
-    },
-    {
-      "slug": "muves",
-      "title": "muVES",
-      "subtitle": "3D analysis of microvasculature on-chip",
-      "description": "A three-dimensional method for morphological analysis and flow velocity estimation in microvasculature on-a-chip.",
-      "tag": "research",
-      "thumbnail": "/muves.png",
-      "accent": "#78dce8",
-      "tech": ["MATLAB", "Microfluidics", "3D Imaging"],
-      "meta": { "venue": "BTM", "year": "2023" },
-      "actions": [
-        { "label": "GitHub", "href": "https://github.com/alberto-rota/muVES", "icon": "Github" },
-        { "label": "Paper", "href": "https://doi.org/10.1002/btm2.10557", "icon": "FileText" }
-      ],
-      "details": {
-        "body": "μVES is an open pipeline for quantifying micro-vessel morphology and flow inside organs-on-chip. It reconstructs the 3D vascular network from confocal stacks and extracts diameter, tortuosity and velocity — metrics that previously required manual tracing."
       }
     },
     {
