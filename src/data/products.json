@@ -95,7 +95,7 @@
       "tag": "research",
       "thumbnail": "/mesa.png",
       "accent": "#4595a9",
-      "tech": ["DINOv3", "Segmentation",""],
+      "tech": ["DINOv3", "Segmentation","US"],
       "meta": { "venue": "CVPR 2026 ⋅ SVC Workshop", "year": "2026" },
       "actions": [
         { "label": "GitHub", "href": "https://github.com/FrancescaFati/MESA", "icon": "Github" },
