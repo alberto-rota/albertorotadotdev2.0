@@ -62,12 +62,7 @@
           "Single-image input — no multi-view or polarization required",
           "Synthetic supervision pipeline generalizes across domains",
           "Real-time inference on a single consumer GPU"
-        ],
-        "media": [
-          { "type": "image", "src": "/unreflect.png", "caption": "Method overview" }
         ]
-      },
-      "detailComponent": "unreflect-demo"
     },
     {
       "slug": "scale-em",
