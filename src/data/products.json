@@ -6,9 +6,9 @@
     "enabled": true,
     "label": "CVPR 2026 · Denver",
     "title": "Attended cvpr 2026? ",
-    "body": "II've presented <b>UnReflectAnything</b>, a method for removing specular highlights trained on synthetic specular supervision. <b>Oral Session 1D - Computational Imaging</b> for the oral presentation and <b>Poster Session 1</b> for the poster!",
+    "body": "I've presented <b>UnReflectAnything</b>, a method for removing specular highlights trained on synthetic specular supervision. <b>Oral Session 1D - Computational Imaging</b> for the oral presentation and <b>Poster Session 1</b> for the poster!",
     "dates": "Friday June 5th, 2026 ⋅ 9:15 AM - 10:30 AM",
-    "location": "ORAL: Mile High Ballroom 3A - 4A ⋅ POSTER: Exhibit Hall (ExHall A-F) ⋅ Denver, CO",
+    "location": "ORAL: Mile High Ballroom 3A - 4A ⋅ POSTER: Exhibit Hall (ExHall A-F) ⋅ Denver, CO",
     "actions": [
       { "label": "Get in touch", "href": "mailto:alberto_rota@outlook.com?subject=CVPR%202026%20-%20meet%20at%20Denver", "icon": "Mail" },
       { "label": "Read the 'UnReflectAnything' paper", "href": "https://doi.org/10.48550/arXiv.2512.09583", "icon": "FileText" }
@@ -63,6 +63,7 @@
           "Synthetic supervision pipeline generalizes across domains",
           "Real-time inference on a single consumer GPU"
         ]
+      }
     },
     {
       "slug": "scale-em",
