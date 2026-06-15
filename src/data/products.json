@@ -116,9 +116,9 @@
       "tech": ["MASt3R-SfM", "ArUco"],
       "meta": { "venue": "Ital-IA 2026", "year": "2026" },
       "actions": [
-        { "label": "Paper", "href": "", "icon": "FileText" },
+        { "label": "Paper", "href": "http://arxiv.org/abs/2606.14534", "icon": "FileText" },
         { "label": "Code", "href": "https://github.com/Leo11P/SpectraBreast-Registration", "icon": "Github" },
-        { "label": "Project", "href": "", "icon": "Globe" }
+        { "label": "Project", "href": "https://spectrabreast.eu/", "icon": "Globe" }
       ],
       "details": {
         "body": "This work fuses a single hyperspectral acquisition with a photogrammetric 3D reconstruction of an ex-vivo lumpectomy specimen, producing a spectral point cloud where every measurement is anchored to a physical coordinate on the tissue surface. The geometry is recovered from consumer RGB photos using a deep-learning Structure-from-Motion backbone (MASt3R-SfM), then stabilized in a metric reference frame by a custom bundle adjustment that enforces consistency on the corners of four ArUco markers placed around the specimen.\n\nThe key idea is registering the HSI cube without ever recovering the HSI camera pose. The markers, visible in both modalities, define 16 corner correspondences that drive a planar homography, and 3D coordinates are recovered by lookup on an orthographically rendered depth map. The result is fully automated and calibration-free, requiring no dedicated geometric hardware. On two ex-vivo specimens it achieves a median 3D registration error below 1 mm and a 2D reprojection error below 0.02 mm, with total per-specimen processing under 4 minutes, supporting integration of HSI-guided localization into intraoperative margin assessment for breast-conserving surgery.",
