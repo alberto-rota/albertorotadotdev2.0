@@ -278,7 +278,7 @@ function Footer() {
           className="text-xs text-white/40"
           style={{ fontFamily: "var(--font-body)" }}
         >
-          © {new Date().getFullYear()} Alberto Rota. Built with Claude Code because I'm surely not a web dev
+          © {new Date().getFullYear()} Alberto Rota. Built with Claude Code because I'm definitely not a web dev
         </div>
         <div
           className="text-[10px] uppercase tracking-[0.24em] text-white/35"
