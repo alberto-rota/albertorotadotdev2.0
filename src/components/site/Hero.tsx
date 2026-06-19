@@ -3,7 +3,7 @@
 import * as React from "react";
 import { motion } from "motion/react";
 import { ArrowDown, Check, Copy, FileDown, Github, Mail, MapPin } from "lucide-react";
-import { ParticleField } from "./ParticleField";
+import { RepelGrid } from "./particles/RepelGrid";
 
 const CURL_TARGET = "https://albertorota.dev";
 const DEFAULT_TAGLINE =
@@ -42,8 +42,8 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
       className="relative isolate overflow-hidden min-h-[42vh] sm:min-h-[68vh]"
       aria-label="Introduction"
     >
-      {/* 3D particle backdrop */}
-      <ParticleField className="pointer-events-none absolute inset-0 -z-10" />
+      {/* Cursor-interactive 3D particle grid backdrop */}
+      <RepelGrid className="pointer-events-none absolute inset-0 -z-10" />
 
       {/* Subtle bottom fade so the field eases into the page below */}
       <div
