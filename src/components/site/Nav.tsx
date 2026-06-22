@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion } from "motion/react";
-import { FileDown, Mail, Menu as MenuIcon, X } from "lucide-react";
+import { FileDown, Gamepad2, Mail, Menu as MenuIcon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SectionId } from "./types";
 
@@ -67,7 +67,7 @@ export function Nav() {
           <div className="pointer-events-auto flex items-center justify-between gap-3 rounded-full border border-white/12 bg-black/60 backdrop-blur-xl px-2 py-2 shadow-[0_8px_30px_rgb(0,0,0,0.4)] md:grid md:grid-cols-[1fr_auto_1fr]">
             <button
               onClick={() => scrollToId("top")}
-              className="shrink-0 font-display text-lg sm:text-xl tracking-[0.18em] pl-3 pr-2 py-1 text-white/90 hover:text-white transition-colors md:justify-self-start"
+              className="shrink-0 font-display text-lg sm:text-xl tracking-[0.18em] pl-3 pr-2 py-1 text-white/90 md:hover:text-white transition-colors md:justify-self-start"
               aria-label="Back to top"
             >
               AR
@@ -99,6 +99,14 @@ export function Nav() {
             </nav>
 
             <div className="flex shrink-0 items-center justify-end gap-1.5 md:col-start-3 md:justify-self-end">
+              <a
+                href="/game"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium tracking-wider uppercase text-white/85 hover:text-white border border-white/15 hover:border-white/40 transition-colors"
+                aria-label="Play Gravity Well"
+              >
+                <Gamepad2 className="h-4 w-4" />
+                <span className="hidden lg:inline">Play</span>
+              </a>
               <a
                 href="/CV_Alberto_Rota.pdf"
                 download
@@ -172,6 +180,18 @@ export function Nav() {
                 </button>
               </li>
             ))}
+            <li>
+              <a
+                href="/game"
+                onClick={() => setOpen(false)}
+                className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/4 px-4 py-3 font-display tracking-[0.14em] text-base uppercase text-white"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <Gamepad2 className="h-4 w-4" /> Play
+                </span>
+                <span aria-hidden className="text-white/40 text-xl">→</span>
+              </a>
+            </li>
           </ul>
 
           <div className="mt-4 grid grid-cols-2 gap-2">
