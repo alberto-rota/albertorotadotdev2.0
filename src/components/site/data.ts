@@ -1,7 +1,10 @@
 import raw from "@/data/products.json";
 import type {
   Announcement,
+  Collaborator,
+  ContactLink,
   HeroConfig,
+  Institution,
   Product,
   ProductAction,
   ProductMedia,
@@ -28,6 +31,31 @@ function parseActions(raw: unknown): ProductAction[] | undefined {
     .filter((a) => a.label || a.href || a.icon);
 }
 
+function parseCollaborators(raw: unknown): Collaborator[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const list = (raw as Array<Record<string, unknown>>)
+    .map((c) => ({
+      name: typeof c.name === "string" ? c.name : "",
+      href: typeof c.href === "string" ? c.href : undefined,
+      role: typeof c.role === "string" ? c.role : undefined,
+      affiliation: typeof c.affiliation === "string" ? c.affiliation : undefined,
+    }))
+    .filter((c) => c.name);
+  return list.length ? list : undefined;
+}
+
+function parseInstitutions(raw: unknown): Institution[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const list = (raw as Array<Record<string, unknown>>)
+    .map((i) => ({
+      name: typeof i.name === "string" ? i.name : "",
+      href: typeof i.href === "string" ? i.href : undefined,
+      logo: typeof i.logo === "string" ? i.logo : undefined,
+    }))
+    .filter((i) => i.name);
+  return list.length ? list : undefined;
+}
+
 function parseAnnouncement(raw: unknown): Announcement | undefined {
   if (!raw || typeof raw !== "object") return undefined;
   const r = raw as Record<string, unknown>;
@@ -43,6 +71,19 @@ function parseAnnouncement(raw: unknown): Announcement | undefined {
   };
 }
 
+function parseContacts(raw: unknown): ContactLink[] {
+  if (!Array.isArray(raw)) return [];
+  return (raw as Array<Record<string, unknown>>)
+    .map((c) => ({
+      id: typeof c.id === "string" ? c.id : undefined,
+      label: typeof c.label === "string" ? c.label : undefined,
+      href: typeof c.href === "string" ? c.href : undefined,
+      icon: typeof c.icon === "string" ? c.icon : undefined,
+      pinned: c.pinned === true,
+    }))
+    .filter((c) => c.href);
+}
+
 function parseHero(raw: unknown): HeroConfig | undefined {
   if (!raw || typeof raw !== "object") return undefined;
   const r = raw as Record<string, unknown>;
@@ -56,12 +97,14 @@ export function loadSiteData(): SiteData {
   const data = raw as {
     hero?: unknown;
     announcement?: unknown;
+    contacts?: unknown;
     sections?: Partial<Record<SectionId, SectionConfig>>;
     products?: Array<Record<string, unknown>>;
   };
 
   const hero = parseHero(data.hero);
   const announcement = parseAnnouncement(data.announcement);
+  const contacts = parseContacts(data.contacts);
 
   const sections: Partial<Record<SectionId, SectionConfig>> = {};
   for (const id of VALID) {
@@ -98,9 +141,12 @@ export function loadSiteData(): SiteData {
                 )
               ) as Record<string, string>)
             : undefined,
+        collaborators: parseCollaborators(p.collaborators),
+        institutions: parseInstitutions(p.institutions),
         actions: parseActions(p.actions),
         tag,
         compact: p.compact === true,
+        pinned: p.pinned === true,
         cardAspect: typeof p.cardAspect === "string" ? p.cardAspect : undefined,
         cardFit:
           p.cardFit === "contain" || p.cardFit === "cover" ? p.cardFit : undefined,
@@ -141,7 +187,7 @@ export function loadSiteData(): SiteData {
     })
     .filter((p): p is Product => p !== null);
 
-  return { hero, announcement, sections, products };
+  return { hero, announcement, sections, products, contacts };
 }
 
 export function bySection(products: Product[]): Record<SectionId, Product[]> {

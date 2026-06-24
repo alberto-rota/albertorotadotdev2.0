@@ -94,6 +94,79 @@ html {
   color-scheme: dark;
 }
 
+/* On precise pointers (desktop) the page scrollbar is replaced by the custom
+   JS overlay (see `CustomScrollbar`). Inner scroll areas keep the styled pill. */
+@media (pointer: fine) {
+  html {
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  /* Custom cursor — native pointer hidden while `CustomCursor` is active. */
+  html.cursor-none,
+  html.cursor-none * {
+    cursor: none !important;
+  }
+}
+
+/* Custom cursor overlay (desktop / fine pointer only). */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  opacity: 0;
+  transition: opacity 220ms ease-out;
+}
+
+.cursor-dot {
+  z-index: 10001;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #fff;
+  mix-blend-mode: difference;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
+}
+
+.cursor-ring {
+  z-index: 10000;
+}
+
+.cursor-ring > span {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(2px);
+  transition:
+    width 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 220ms ease-out,
+    background-color 220ms ease-out;
+}
+
+.cursor-ring[data-hover="true"] > span {
+  width: 44px;
+  height: 44px;
+  border-color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cursor-ring[data-press="true"] > span {
+  width: 18px;
+  height: 18px;
+  border-color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.14);
+}
+
 @layer base {
   * {
     border-color: var(--border);

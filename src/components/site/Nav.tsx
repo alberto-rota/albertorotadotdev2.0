@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import { motion } from "motion/react";
-import { FileDown, Gamepad2, Mail, Menu as MenuIcon, X } from "lucide-react";
+import { FileDown, Gamepad2, Menu as MenuIcon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ContactMorph } from "./ContactOverlay";
 import type { SectionId } from "./types";
 
 type NavItem = { id: SectionId | "contact"; label: string };
@@ -27,6 +28,8 @@ function scrollToId(id: string) {
 export function Nav() {
   const [activeId, setActiveId] = React.useState<string>("");
   const [open, setOpen] = React.useState(false);
+  const [contactOpen, setContactOpen] = React.useState(false);
+  const [mobileContactOpen, setMobileContactOpen] = React.useState(false);
 
   React.useEffect(() => {
     const ids = ITEMS.map((i) => i.id);
@@ -49,7 +52,8 @@ export function Nav() {
     return () => observer.disconnect();
   }, []);
 
-  // Lock body scroll when mobile menu is open.
+  // Lock body scroll when the mobile menu is open. The contact popover is a
+  // lightweight anchored menu and closes on scroll, so it doesn't lock scroll.
   React.useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = open ? "hidden" : prev;
@@ -79,7 +83,10 @@ export function Nav() {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => scrollToId(item.id)}
+                    onClick={() => {
+                      if (item.id === "contact") setContactOpen(true);
+                      else scrollToId(item.id);
+                    }}
                     className={cn(
                       "relative font-display tracking-[0.12em] text-sm px-3 py-2 rounded-full transition-colors",
                       active ? "text-black" : "text-white/70 hover:text-white"
@@ -100,14 +107,6 @@ export function Nav() {
 
             <div className="flex shrink-0 items-center justify-end gap-1.5 md:col-start-3 md:justify-self-end">
               <a
-                href="/game"
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium tracking-wider uppercase text-white/85 hover:text-white border border-white/15 hover:border-white/40 transition-colors"
-                aria-label="Play Gravity Well"
-              >
-                <Gamepad2 className="h-4 w-4" />
-                <span className="hidden lg:inline">Play</span>
-              </a>
-              <a
                 href="/CV_Alberto_Rota.pdf"
                 download
                 className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium tracking-wider uppercase text-white/85 hover:text-white border border-white/15 hover:border-white/40 transition-colors"
@@ -115,13 +114,9 @@ export function Nav() {
                 <FileDown className="h-4 w-4" />
                 <span className="hidden lg:inline">CV</span>
               </a>
-              <button
-                onClick={() => scrollToId("contact")}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium tracking-wider uppercase bg-white text-black hover:bg-white/90 transition-colors"
-              >
-                <Mail className="h-4 w-4" />
-                <span className="hidden sm:inline">Get in touch</span>
-              </button>
+              <div className="hidden md:block">
+                <ContactMorph open={contactOpen} onOpenChange={setContactOpen} />
+              </div>
 
               <button
                 onClick={() => setOpen(true)}
@@ -166,7 +161,7 @@ export function Nav() {
           </div>
 
           <ul className="flex flex-col gap-1.5">
-            {ITEMS.map((item) => (
+            {ITEMS.filter((item) => item.id !== "contact").map((item) => (
               <li key={item.id}>
                 <button
                   onClick={() => {
@@ -180,18 +175,6 @@ export function Nav() {
                 </button>
               </li>
             ))}
-            <li>
-              <a
-                href="/game"
-                onClick={() => setOpen(false)}
-                className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/4 px-4 py-3 font-display tracking-[0.14em] text-base uppercase text-white"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <Gamepad2 className="h-4 w-4" /> Play
-                </span>
-                <span aria-hidden className="text-white/40 text-xl">→</span>
-              </a>
-            </li>
           </ul>
 
           <div className="mt-4 grid grid-cols-2 gap-2">
@@ -203,16 +186,19 @@ export function Nav() {
             >
               <FileDown className="h-4 w-4" /> Download CV
             </a>
-            <button
-              onClick={() => {
-                setOpen(false);
-                setTimeout(() => scrollToId("contact"), 120);
-              }}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm uppercase tracking-wider text-black"
-            >
-              <Mail className="h-4 w-4" /> Contact
-            </button>
+            <div className="flex items-center justify-center">
+              <ContactMorph open={mobileContactOpen} onOpenChange={setMobileContactOpen} mobile />
+            </div>
           </div>
+
+          {/* Play sits at the very bottom of the menu. */}
+          <a
+            href="/game"
+            onClick={() => setOpen(false)}
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/[0.04] px-4 py-3 text-sm uppercase tracking-[0.14em] text-white"
+          >
+            <Gamepad2 className="h-4 w-4" /> Play a game
+          </a>
         </div>
       </motion.aside>
     </>

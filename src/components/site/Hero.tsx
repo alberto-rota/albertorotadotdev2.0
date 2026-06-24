@@ -1,9 +1,22 @@
 "use client";
 
 import * as React from "react";
+import NextImage from "next/image";
 import { motion } from "motion/react";
-import { ArrowDown, Check, Copy, FileDown, Github, Mail, MapPin } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowRight,
+  Check,
+  Copy,
+  FileDown,
+  Gamepad2,
+  Github,
+  Mail,
+  MapPin,
+} from "lucide-react";
 import { RepelGrid } from "./particles/RepelGrid";
+import { Icon } from "./Icon";
+import type { ContactLink, Product } from "./types";
 
 const CURL_TARGET = "https://albertorota.dev";
 const DEFAULT_TAGLINE =
@@ -14,6 +27,29 @@ const glassBtn =
 const glassBtnPrimary =
   "rounded-full border border-white/20 bg-white/90 backdrop-blur-xl text-black shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:bg-white transition-colors";
 
+function CircleLink({
+  href,
+  label,
+  children,
+}: {
+  href: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  const external = href.startsWith("http");
+  return (
+    <a
+      href={href}
+      {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+      aria-label={label}
+      title={label}
+      className={`inline-flex h-10.5 w-10.5 items-center justify-center text-white/85 hover:text-white hover:border-white/25 ${glassBtn}`}
+    >
+      {children}
+    </a>
+  );
+}
+
 function scrollToId(id: string) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -22,9 +58,57 @@ function scrollToId(id: string) {
   window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
 }
 
-export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
+export function Hero({
+  tagline = DEFAULT_TAGLINE,
+  pinned = [],
+  contacts = [],
+}: {
+  tagline?: string;
+  pinned?: Product[];
+  contacts?: ContactLink[];
+}) {
   const [copied, setCopied] = React.useState(false);
+  const sectionRef = React.useRef<HTMLElement | null>(null);
+  const [showGameCta, setShowGameCta] = React.useState(false);
   const curlCommand = `curl ${CURL_TARGET}`;
+
+  // Desktop easter-egg: once the visitor has actively played with the cursor
+  // particle field for a few seconds, reveal a clickable nudge to the game.
+  // (The particle field is desktop-only — see RepelGrid `hidden md:block`.)
+  React.useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const desktop = window.matchMedia("(min-width: 768px) and (pointer: fine)");
+    if (!desktop.matches) return;
+
+    const THRESHOLD_MS = 5000; // active interaction time before the nudge shows
+    const MOVE_WINDOW_MS = 300; // counts as "interacting" if moved this recently
+    let engaged = 0;
+    let lastMove = 0;
+    let lastTick = 0;
+    let raf = 0;
+
+    const onMove = () => {
+      lastMove = performance.now();
+    };
+    section.addEventListener("pointermove", onMove, { passive: true });
+
+    const tick = (now: number) => {
+      if (lastTick && now - lastMove < MOVE_WINDOW_MS) engaged += now - lastTick;
+      lastTick = now;
+      if (engaged >= THRESHOLD_MS) {
+        setShowGameCta(true);
+        return; // stop the loop; the nudge stays put
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      section.removeEventListener("pointermove", onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
   const copyCurl = React.useCallback(async () => {
     try {
@@ -38,12 +122,14 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
 
   return (
     <section
+      ref={sectionRef}
       id="top"
       className="relative isolate overflow-hidden min-h-[42vh] sm:min-h-[68vh]"
       aria-label="Introduction"
     >
-      {/* Cursor-interactive 3D particle grid backdrop */}
-      <RepelGrid className="pointer-events-none absolute inset-0 -z-10" />
+      {/* Cursor-interactive particle grid backdrop — desktop only. On mobile the
+          background animation lives behind the whole page (see ScrollField). */}
+      <RepelGrid className="pointer-events-none absolute inset-0 -z-10 hidden md:block" />
 
       {/* Subtle bottom fade so the field eases into the page below */}
       <div
@@ -163,6 +249,42 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
               <FileDown className="h-4 w-4" />
               Download my CV
             </a>
+
+            {contacts.length > 0 || pinned.length > 0 ? (
+              <div className="flex w-full sm:w-auto flex-wrap items-center justify-center gap-2.5">
+                <span
+                  aria-hidden
+                  className="hidden sm:block h-7 w-px bg-white/15 mx-1"
+                />
+                {contacts.map((c) => (
+                  <CircleLink
+                    key={c.id ?? c.href}
+                    href={c.href as string}
+                    label={c.label ?? c.id ?? c.href ?? ""}
+                  >
+                    <Icon name={c.icon} size={16} className="h-4 w-4" />
+                  </CircleLink>
+                ))}
+                {pinned.map((p) => (
+                  <CircleLink
+                    key={p.slug ?? p.title}
+                    href={p.link as string}
+                    label={p.title}
+                  >
+                    <span className="relative inline-flex h-5 w-5 items-center justify-center overflow-hidden rounded-full">
+                      <NextImage
+                        src={p.thumbnail}
+                        alt=""
+                        width={20}
+                        height={20}
+                        className="object-contain"
+                        unoptimized={p.thumbnail.toLowerCase().endsWith(".svg")}
+                      />
+                    </span>
+                  </CircleLink>
+                ))}
+              </div>
+            ) : null}
           </motion.div>
 
           {/* curl pill */}
@@ -189,6 +311,25 @@ export function Hero({ tagline = DEFAULT_TAGLINE }: { tagline?: string }) {
           </motion.button>
         </div>
       </div>
+
+      {/* Desktop nudge: appears after the visitor has played with the particle
+          field for a while. Clickable — takes them to the game. */}
+      {showGameCta ? (
+        <motion.a
+          href="/game"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className={`group absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 md:inline-flex items-center gap-2.5 px-4 py-2.5 text-xs sm:text-sm text-white/85 hover:text-white hover:border-white/25 ${glassBtn}`}
+          aria-label="Play the gravity game"
+        >
+          <Gamepad2 className="h-4 w-4" />
+          <span className="uppercase tracking-[0.14em]">
+            Like the particles? Come play with gravity
+          </span>
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+        </motion.a>
+      ) : null}
 
       {/* divider */}
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />

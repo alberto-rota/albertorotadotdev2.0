@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata } from "next";
 import "./globals.css";
+import { CustomCursor } from "@/components/site/CustomCursor";
 
 export const metadata: Metadata = {
   title: "Alberto Rota",
@@ -35,6 +36,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased bg-black text-white font-sans">
+        <CustomCursor />
         {children}
       </body>
     </html>

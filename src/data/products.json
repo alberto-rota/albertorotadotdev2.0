@@ -2,6 +2,9 @@
   "hero": {
     "tagline": "PhD candidate in Bioengineering at Politecnico di Milano. I research visual systems for enhanced awareness in surgical robotics and medical AI."
   },
+  "contacts": [
+    { "id": "linkedin", "label": "LinkedIn", "href": "https://www.linkedin.com/in/albe-rota/", "icon": "Linkedin", "pinned": true }
+  ],
   "announcement": {
     "enabled": true,
     "label": "CVPR 2026 · Denver",
@@ -50,6 +53,13 @@
       "accent": "#d08656",
       "tech": ["image-to-image", "syntetic specular supervision"],
       "meta": { "venue": "CVPR 2026 ⋅ ORAL", "year": "2026" },
+      "institutions": [
+        { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" },
+        { "name": "NEARLab", "href": "https://nearlab.polimi.it/", "logo": "/nearlablogo.png" }
+      ],
+      "collaborators": [
+        { "name": "Mert Kiray", "href": "", "role": "Co-author" }
+      ],
       "actions": [
         { "label": "Project Page", "href": "https://alberto-rota.github.io/UnReflectAnything/", "icon": "Globe" },
         { "label": "GitHub", "href": "https://github.com/alberto-rota/UnReflectAnything", "icon": "Github" },
@@ -93,6 +103,13 @@
       "accent": "#4595a9",
       "tech": ["DINOv3", "Segmentation","US"],
       "meta": { "venue": "CVPR 2026 ⋅ SVC Workshop", "year": "2026" },
+      "collaborators": [
+        { "name": "Francesca Fati", "href": "https://github.com/FrancescaFati", "role": "Co-author" }
+      ],
+      "institutions": [
+        { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" },
+        { "name": "NEARLab", "href": "https://nearlab.polimi.it/", "logo": "/nearlablogo.png" }
+      ],
       "actions": [
         { "label": "GitHub", "href": "https://github.com/FrancescaFati/MESA", "icon": "Github" },
         { "label": "Paper", "href": "https://openaccess.thecvf.com/content/CVPR2026W/SVC/papers/Fati_Adapting_Foundation_Models_for_Annotation-Efficient_Adnexal_Mass_Segmentation_in_Cine_CVPRW_2026_paper.pdf", "icon": "FileText" }
@@ -190,6 +207,23 @@
       }
     },
     {
+      "slug": "hamlynworkshop",
+      "title": "Robotic Colonoscopy",
+      "subtitle": "World Models for robotic colonoscopy",
+      "description": "Coverage-Optimal Robotic Colonoscopy via Patient-Specific Digital-Twin World Models",
+      "tag": "research",
+      "thumbnail": "/hamlynposter.png",
+      "tech": ["World Models", "Digital Twin", "Colonoscopy"],
+      "accent": "#a9dc76",
+      "meta": { "venue": "Hamlyn Symposium", "year": "2026" },
+      "actions": [
+        { "label": "Paper", "href": "https://doi.org/10.3390/act12080323", "icon": "FileText" }
+      ],
+      "details": {
+        "body": "A concept for a digital twin for robotic colonoscopy navigation based on patient-specific world models"
+      }
+    },
+    {
       "slug": "surgical-ar-review",
       "title": "Surgical AR Review",
       "subtitle": "Recent advancements in AR for robotic surgery",
@@ -278,7 +312,8 @@
       "tag": "resources",
       "thumbnail": "/githublogo.png",
       "link": "https://github.com/alberto-rota",
-      "compact": true
+      "compact": true,
+      "pinned": true
     },
     {
       "slug": "huggingface",
@@ -287,7 +322,8 @@
       "tag": "resources",
       "thumbnail": "/hflogo.png",
       "link": "https://huggingface.co/AlbeRota",
-      "compact": true
+      "compact": true,
+      "pinned": false
     },
     {
       "slug": "pypi",
@@ -296,7 +332,8 @@
       "tag": "resources",
       "thumbnail": "/pypilogo.png",
       "link": "https://pypi.org/user/alberto-rota/",
-      "compact": true
+      "compact": true,
+      "pinned": false
     },
     {
       "slug": "scholar",
@@ -305,7 +342,8 @@
       "tag": "resources",
       "thumbnail": "/academialogo.png",
       "link": "https://scholar.google.com/citations?user=VyC48nkAAAAJ&hl=en",
-      "compact": true
+      "compact": true,
+      "pinned": true
     },
     {
       "slug": "nearlab",
@@ -314,7 +352,8 @@
       "tag": "resources",
       "thumbnail": "/nearlablogo.png",
       "link": "https://nearlab.polimi.it/neuroengineering-and-medical-robotics/medical/alberto-rota/",
-      "compact": true
+      "compact": true,
+      "pinned": false
     },
     {
       "slug": "nearlab-logo",

@@ -8,6 +8,18 @@ export type ProductAction = {
   ariaLabel?: string;
 };
 
+export type ContactLink = {
+  /** Stable id (e.g. "email", "linkedin"). */
+  id?: string;
+  /** Accessible label / tooltip. */
+  label?: string;
+  href?: string;
+  /** Lucide icon name (e.g. "Mail") or image path (e.g. "/logo.png"). */
+  icon?: string;
+  /** When true, also surfaced as a circular icon button in the hero. */
+  pinned?: boolean;
+};
+
 export type ProductMedia = {
   type: "image" | "video" | "embed";
   src: string;
@@ -20,6 +32,26 @@ export type ProductDetails = {
   body?: string;
   highlights?: string[];
   media?: ProductMedia[];
+};
+
+export type Collaborator = {
+  /** Display name, e.g. "Francesca Fati". */
+  name: string;
+  /** Optional profile / homepage link. */
+  href?: string;
+  /** Optional role, e.g. "Co-author", "Advisor". */
+  role?: string;
+  /** Optional short affiliation shown under the name. */
+  affiliation?: string;
+};
+
+export type Institution = {
+  /** Display name, e.g. "Politecnico di Milano". */
+  name: string;
+  /** Optional homepage link. */
+  href?: string;
+  /** Optional logo (image path), shown as a small badge. */
+  logo?: string;
 };
 
 export type Product = {
@@ -38,11 +70,20 @@ export type Product = {
   tech?: string[];
   /** Optional metadata block (venue, year, authors, ...). */
   meta?: Record<string, string>;
+  /** People who contributed, shown as linkable chips in the detail panel. */
+  collaborators?: Collaborator[];
+  /** Institutions involved, shown as badges in the detail panel. */
+  institutions?: Institution[];
   /** Pill buttons displayed in the card overlay and detail panel. */
   actions?: ProductAction[];
   tag?: SectionId;
   /** Compact "logo only" rendering in the resources row. */
   compact?: boolean;
+  /**
+   * When true, this entry is also surfaced as a circular icon-only button in
+   * the page header. It still appears in its section / footer as usual.
+   */
+  pinned?: boolean;
   /**
    * Aspect ratio for the card thumbnail. Examples: "5/6" (portrait, default),
    * "1/1" (square), "16/9" (wide), "9/16" (tall mobile screenshot).
@@ -101,4 +142,6 @@ export type SiteData = {
   announcement?: Announcement;
   sections: Partial<Record<SectionId, SectionConfig>>;
   products: Product[];
+  /** Quick "get in touch" links (email, LinkedIn, ...) usable in the hero. */
+  contacts: ContactLink[];
 };

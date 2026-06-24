@@ -7,20 +7,24 @@ import { Announcement } from "./Announcement";
 import { Section } from "./Section";
 import { DetailPanel } from "./DetailPanel";
 import { Contact } from "./Contact";
+import { CustomScrollbar } from "./CustomScrollbar";
 import { bySection, orderedSections, SECTION_FALLBACK_TITLES, loadSiteData } from "./data";
 import type { Product } from "./types";
 
 const data = loadSiteData();
 const grouped = bySection(data.products);
 const order = orderedSections(data.sections);
+const pinned = data.products.filter((p) => p.pinned && p.link && p.link !== "#");
+const pinnedContacts = data.contacts.filter((c) => c.pinned && c.href);
 
 export function SitePage() {
   const [active, setActive] = React.useState<Product | null>(null);
 
   return (
     <>
+      <CustomScrollbar />
       <Nav />
-      <Hero tagline={data.hero?.tagline} />
+      <Hero tagline={data.hero?.tagline} pinned={pinned} contacts={pinnedContacts} />
       <Announcement data={data.announcement} />
 
       <main>
