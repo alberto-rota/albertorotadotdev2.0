@@ -21,7 +21,10 @@
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('C:/Users/alber/albertorotadotdev/src/data/products.json', 'utf8'\\)\\); console.log\\('OK'\\)\")",
       "WebFetch(domain:github.com)",
       "Bash(gh repo *)",
-      "Bash(gh api *)"
+      "Bash(gh api *)",
+      "Bash(curl -s -o /dev/null -w \"home:%{http_code}\\\\n\" http://localhost:3007/)",
+      "Bash(curl -s -o /dev/null -w \"predict:%{http_code}\\\\n\" http://localhost:3007/predict)",
+      "Bash(npx tsc *)"
     ]
   }
 }

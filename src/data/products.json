@@ -253,6 +253,7 @@
       "tech": ["Generative AI", "CT Imaging", "Oncology"],
       "meta": { "funder": "Regione Lombardia · FRRB", "amount": "012024R0055", "year": "2025" },
       "actions": [
+        { "label": "View page", "href": "/predict", "icon": "ArrowUpRight" },
         { "label": "Project Site", "href": "https://nearlab.polimi.it/neuroengineering-and-medical-robotics/medical/predict/", "icon": "Globe" }
       ],
       "details": {

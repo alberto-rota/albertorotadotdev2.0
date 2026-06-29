@@ -109,9 +109,19 @@ html {
   }
   h1, h2, h3, h4, h5, h6, .font-display {
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 400;
     letter-spacing: 0.01em;
   }
+}
+
+/* Montserrat scope — applied to the PREDICT page only. Overrides the font
+   variables so all descendants using var(--font-*) switch to Montserrat. */
+.font-montserrat {
+  --font-display: "Montserrat", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-body: "Montserrat", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "Montserrat", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-body);
+  font-weight: 400;
 }
 
 /* Hide horizontal scrollbars on row tracks (we provide our own affordances). */
