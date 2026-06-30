@@ -3,6 +3,10 @@ export type SectionId = "research" | "open-source" | "resources" | "designs";
 export type ProductAction = {
   label?: string;
   href?: string;
+  /** DOI landing page — used by the Paper morph button. */
+  doi?: string;
+  /** Direct PDF URL — used by the Paper morph button. */
+  pdf?: string;
   /** Lucide icon name (e.g. "Github") or image path (e.g. "/icon.png"). */
   icon?: string;
   ariaLabel?: string;
@@ -28,10 +32,30 @@ export type ProductMedia = {
   poster?: string;
 };
 
+/** A single block inside a research detail section (text, bullet list, or image). */
+export type DetailBlock =
+  | { type: "paragraph"; text: string }
+  | { type: "list"; items: string[] }
+  | { type: "image"; src: string; alt?: string; caption?: string };
+
+/** Named section on a research detail page (Abstract, Overview, …). */
+export type DetailSection = {
+  title: string;
+  blocks: DetailBlock[];
+};
+
 export type ProductDetails = {
   body?: string;
   highlights?: string[];
   media?: ProductMedia[];
+  /** DOI landing page for the Paper morph button. */
+  doi?: string;
+  /** Direct PDF path or URL for the Paper morph button. */
+  pdf?: string;
+  /** Citation filename or path (e.g. "unreflect-anything" → `/bibtex/unreflect-anything.bib`). */
+  citation?: string;
+  /** Structured sections with inline images. When set, overrides body/highlights layout. */
+  sections?: DetailSection[];
 };
 
 export type Collaborator = {
@@ -120,6 +144,8 @@ export type SectionConfig = {
 
 export type Announcement = {
   enabled?: boolean;
+  /** CSS color used for the label pill tag. */
+  accent?: string;
   /** Small uppercase pill shown at top of the banner. */
   label?: string;
   /** Headline. */
@@ -131,6 +157,9 @@ export type Announcement = {
   location?: string;
   /** CTA buttons. */
   actions?: ProductAction[];
+  /** Optional image path (e.g. `/images/unreflect.png`). */
+  image?: string;
+  imageAlt?: string;
 };
 
 export type HeroConfig = {
@@ -139,7 +168,7 @@ export type HeroConfig = {
 
 export type SiteData = {
   hero?: HeroConfig;
-  announcement?: Announcement;
+  announcements: Announcement[];
   sections: Partial<Record<SectionId, SectionConfig>>;
   products: Product[];
   /** Quick "get in touch" links (email, LinkedIn, ...) usable in the hero. */

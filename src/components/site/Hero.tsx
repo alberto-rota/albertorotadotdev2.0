@@ -242,7 +242,7 @@ export function Hero({
               <ArrowDown className="h-4 w-4" />
             </button>
             <a
-              href="/CV_Alberto_Rota.pdf"
+              href="/pdfs/CV_Alberto_Rota.pdf"
               download
               className={`inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium uppercase tracking-[0.14em] text-white/85 hover:text-white hover:border-white/25 ${glassBtn}`}
             >

@@ -11,8 +11,8 @@ import type { DetailComponentProps } from "./registry";
  *
  * If the images don't exist yet, the slider still demonstrates the interaction.
  */
-const BEFORE_SRC = "/unreflect.png";
-const AFTER_SRC = "/unreflect.png";
+const BEFORE_SRC = "/images/unreflect.png";
+const AFTER_SRC = "/images/unreflect.png";
 
 export function UnReflectDemo(_props: DetailComponentProps) {
   const x = useMotionValue(0.5);

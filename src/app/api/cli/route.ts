@@ -25,6 +25,7 @@ type SiteData = {
   hero?: { tagline?: string };
   announcement?: {
     enabled?: boolean;
+    accent?: string;
     label?: string;
     title?: string;
     body?: string;
@@ -32,6 +33,16 @@ type SiteData = {
     location?: string;
     actions?: Action[];
   };
+  announcements?: Array<{
+    enabled?: boolean;
+    accent?: string;
+    label?: string;
+    title?: string;
+    body?: string;
+    dates?: string;
+    location?: string;
+    actions?: Action[];
+  }>;
   sections?: Record<string, SectionCfg>;
   products?: Product[];
 };
@@ -432,7 +443,7 @@ function buildHero(data: SiteData): string[] {
     `${fg(PALETTE.white)}${BOLD}[ 🌐 albertorota.dev ]${RESET}`
   );
   const cvPill = hyperlink(
-    "https://albertorota.dev/CV_Alberto_Rota.pdf",
+    "https://albertorota.dev/pdfs/CV_Alberto_Rota.pdf",
     `${fg(PALETTE.grey)}[ ⬇ Download my CV ]${RESET}`
   );
   out.push(center(webPill + "   " + cvPill));
@@ -452,11 +463,17 @@ function buildHero(data: SiteData): string[] {
   return out;
 }
 
-function buildAnnouncement(data: SiteData): string[] {
-  const a = data.announcement;
-  if (!a || a.enabled === false || (!a.title && !a.body)) return [];
+function getAnnouncements(data: SiteData): NonNullable<SiteData["announcement"]>[] {
+  if (Array.isArray(data.announcements) && data.announcements.length) {
+    return data.announcements;
+  }
+  return data.announcement ? [data.announcement] : [];
+}
 
-  const accent = PALETTE.green;
+function buildAnnouncementBlock(a: NonNullable<SiteData["announcement"]>): string[] {
+  if (a.enabled === false || (!a.title && !a.body)) return [];
+
+  const accent = a.accent || PALETTE.green;
   const side = fg(accent) + "│" + RESET;
   const inner = W - 4; // "│ " + content + " │"
   const out: string[] = [];
@@ -490,12 +507,20 @@ function buildAnnouncement(data: SiteData): string[] {
   const actions = (a.actions ?? []).filter((x) => x.href);
   if (actions.length) {
     row();
-    const chips = actions.map((x) => linkChip(x, PALETTE.green));
+    const chips = actions.map((x) => linkChip(x, accent));
     for (const ln of wrapChips(chips, inner, "    ")) row(ln);
   }
 
   out.push(padLine(fg(accent) + "└" + "─".repeat(W - 2) + "┘" + RESET));
   return out;
+}
+
+function buildAnnouncements(data: SiteData): string[] {
+  return getAnnouncements(data).flatMap((a, i) => {
+    const block = buildAnnouncementBlock(a);
+    if (!block.length) return [];
+    return i > 0 ? ["", ...block] : block;
+  });
 }
 
 function buildSectionHeader(title: string, subtitle: string | undefined, accent: string): string[] {
@@ -649,7 +674,7 @@ export async function GET(request: Request) {
   const lines: string[] = [];
 
   lines.push(...buildHero(data));
-  lines.push(...buildAnnouncement(data));
+  lines.push(...buildAnnouncements(data));
 
   for (const tag of SECTION_ORDER) {
     const items = bySection(products, tag);

@@ -7,9 +7,9 @@ export const metadata: Metadata = {
   title: "Alberto Rota",
   description: "Research, open-source, and selected projects by Alberto Rota.",
   icons: {
-    icon: [{ url: "/AR.png", type: "image/png" }],
-    shortcut: [{ url: "/AR.png", type: "image/png" }],
-    apple: [{ url: "/AR.png", type: "image/png" }],
+    icon: [{ url: "/icons/AR.png", type: "image/png" }],
+    shortcut: [{ url: "/icons/AR.png", type: "image/png" }],
+    apple: [{ url: "/icons/AR.png", type: "image/png" }],
   },
 };
 

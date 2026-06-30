@@ -3,6 +3,8 @@ import type {
   Announcement,
   Collaborator,
   ContactLink,
+  DetailBlock,
+  DetailSection,
   HeroConfig,
   Institution,
   Product,
@@ -25,6 +27,8 @@ function parseActions(raw: unknown): ProductAction[] | undefined {
     .map((a) => ({
       label: typeof a.label === "string" ? a.label : undefined,
       href: typeof a.href === "string" ? a.href : undefined,
+      doi: typeof a.doi === "string" ? a.doi : undefined,
+      pdf: typeof a.pdf === "string" ? a.pdf : undefined,
       icon: typeof a.icon === "string" ? a.icon : undefined,
       ariaLabel: typeof a.ariaLabel === "string" ? a.ariaLabel : undefined,
     }))
@@ -56,19 +60,35 @@ function parseInstitutions(raw: unknown): Institution[] | undefined {
   return list.length ? list : undefined;
 }
 
-function parseAnnouncement(raw: unknown): Announcement | undefined {
+function parseAnnouncementItem(raw: unknown): Announcement | undefined {
   if (!raw || typeof raw !== "object") return undefined;
   const r = raw as Record<string, unknown>;
   if (r.enabled === false) return undefined;
   return {
     enabled: r.enabled !== false,
+    accent: typeof r.accent === "string" ? r.accent : undefined,
     label: typeof r.label === "string" ? r.label : undefined,
     title: typeof r.title === "string" ? r.title : undefined,
     body: typeof r.body === "string" ? r.body : undefined,
     dates: typeof r.dates === "string" ? r.dates : undefined,
     location: typeof r.location === "string" ? r.location : undefined,
     actions: parseActions(r.actions),
+    image: typeof r.image === "string" ? r.image : undefined,
+    imageAlt: typeof r.imageAlt === "string" ? r.imageAlt : undefined,
   };
+}
+
+function parseAnnouncements(raw: {
+  announcement?: unknown;
+  announcements?: unknown;
+}): Announcement[] {
+  if (Array.isArray(raw.announcements)) {
+    return raw.announcements
+      .map(parseAnnouncementItem)
+      .filter((a): a is Announcement => a !== undefined);
+  }
+  const single = parseAnnouncementItem(raw.announcement);
+  return single ? [single] : [];
 }
 
 function parseContacts(raw: unknown): ContactLink[] {
@@ -84,6 +104,48 @@ function parseContacts(raw: unknown): ContactLink[] {
     .filter((c) => c.href);
 }
 
+function parseDetailBlocks(raw: unknown): DetailBlock[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const blocks = (raw as Array<Record<string, unknown>>)
+    .map((b): DetailBlock | null => {
+      const type = b.type;
+      if (type === "paragraph" && typeof b.text === "string" && b.text.trim()) {
+        return { type: "paragraph", text: b.text };
+      }
+      if (type === "list" && Array.isArray(b.items)) {
+        const items = b.items.filter(
+          (item): item is string => typeof item === "string" && item.trim().length > 0
+        );
+        if (items.length === 0) return null;
+        return { type: "list", items };
+      }
+      if (type === "image" && typeof b.src === "string" && b.src) {
+        return {
+          type: "image",
+          src: b.src,
+          alt: typeof b.alt === "string" ? b.alt : undefined,
+          caption: typeof b.caption === "string" ? b.caption : undefined,
+        };
+      }
+      return null;
+    })
+    .filter((b): b is DetailBlock => b !== null);
+  return blocks.length ? blocks : undefined;
+}
+
+function parseDetailSections(raw: unknown): DetailSection[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const sections = (raw as Array<Record<string, unknown>>)
+    .map((s): DetailSection | null => {
+      const title = typeof s.title === "string" ? s.title.trim() : "";
+      const blocks = parseDetailBlocks(s.blocks);
+      if (!title || !blocks?.length) return null;
+      return { title, blocks };
+    })
+    .filter((s): s is DetailSection => s !== null);
+  return sections.length ? sections : undefined;
+}
+
 function parseHero(raw: unknown): HeroConfig | undefined {
   if (!raw || typeof raw !== "object") return undefined;
   const r = raw as Record<string, unknown>;
@@ -97,13 +159,14 @@ export function loadSiteData(): SiteData {
   const data = raw as {
     hero?: unknown;
     announcement?: unknown;
+    announcements?: unknown;
     contacts?: unknown;
     sections?: Partial<Record<SectionId, SectionConfig>>;
     products?: Array<Record<string, unknown>>;
   };
 
   const hero = parseHero(data.hero);
-  const announcement = parseAnnouncement(data.announcement);
+  const announcements = parseAnnouncements(data);
   const contacts = parseContacts(data.contacts);
 
   const sections: Partial<Record<SectionId, SectionConfig>> = {};
@@ -162,6 +225,19 @@ export function loadSiteData(): SiteData {
                       (h) => typeof h === "string"
                     ) as string[])
                   : undefined,
+                sections: parseDetailSections((p.details as Record<string, unknown>).sections),
+                doi:
+                  typeof (p.details as Record<string, unknown>).doi === "string"
+                    ? ((p.details as Record<string, unknown>).doi as string)
+                    : undefined,
+                pdf:
+                  typeof (p.details as Record<string, unknown>).pdf === "string"
+                    ? ((p.details as Record<string, unknown>).pdf as string)
+                    : undefined,
+                citation:
+                  typeof (p.details as Record<string, unknown>).citation === "string"
+                    ? ((p.details as Record<string, unknown>).citation as string)
+                    : undefined,
                 media: Array.isArray((p.details as Record<string, unknown>).media)
                   ? (((p.details as Record<string, unknown>).media as Array<Record<string, unknown>>)
                       .map((m): ProductMedia | null => {
@@ -187,7 +263,7 @@ export function loadSiteData(): SiteData {
     })
     .filter((p): p is Product => p !== null);
 
-  return { hero, announcement, sections, products, contacts };
+  return { hero, announcements, sections, products, contacts };
 }
 
 export function bySection(products: Product[]): Record<SectionId, Product[]> {

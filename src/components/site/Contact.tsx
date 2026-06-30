@@ -210,7 +210,7 @@ export function Contact({ profiles = [] }: { profiles?: Product[] }) {
             Send me an email
           </a>
           <a
-            href="/CV_Alberto_Rota.pdf"
+            href="/pdfs/CV_Alberto_Rota.pdf"
             download
             className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-3 text-sm font-medium uppercase tracking-[0.14em] text-white hover:bg-white/10 transition-colors"
           >

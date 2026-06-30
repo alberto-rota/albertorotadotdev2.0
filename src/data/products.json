@@ -5,8 +5,10 @@
   "contacts": [
     { "id": "linkedin", "label": "LinkedIn", "href": "https://www.linkedin.com/in/albe-rota/", "icon": "Linkedin", "pinned": true }
   ],
-  "announcement": {
+  "announcements": [
+    {
     "enabled": true,
+    "accent": "#d08656",
     "label": "CVPR 2026 · Denver",
     "title": "Attended cvpr 2026? ",
     "body": "I've presented <b>UnReflectAnything</b>, a method for removing specular highlights trained on synthetic specular supervision. <b>Oral Session 1D - Computational Imaging</b> for the oral presentation and <b>Poster Session 1</b> for the poster!",
@@ -16,7 +18,21 @@
       { "label": "Get in touch", "href": "mailto:alberto_rota@outlook.com?subject=CVPR%202026%20-%20meet%20at%20Denver", "icon": "Mail" },
       { "label": "Read the 'UnReflectAnything' paper", "href": "https://doi.org/10.48550/arXiv.2512.09583", "icon": "FileText" }
     ]
-  },
+    },
+    {
+      "enabled": true,
+      "accent": "#7ebb9a",
+      "label": "Award · Hamlyn Symposium",
+      "imageAlt": "Best Poster — Coverage-Optimal Robotic Colonoscopy",
+      "title": "Best Poster at Hamlyn Symposium",
+      "body": "Our poster <b>Coverage-Optimal Robotic Colonoscopy via Patient-Specific Digital-Twin World Models</b> received the <b>Best Poster Award</b> at the Hamlyn workshop on Physics- and AI-Driven Digital Twins for Patient-Specific Robotic Diagnosis, Interventions and Therapies. The prize — an <b>NVIDIA DGX Spark</b> — was generously sponsored by NVIDIA.",
+      "dates": "Hamlyn Symposium 2026",
+      "location": "Workshop on Physics- and AI-Driven Digital Twins · Imperial College London",
+      "actions": [
+        { "label": "View in Research", "href": "#research", "icon": "FileText" }
+      ]
+    }
+  ],
   "sections": {
     "research": {
       "title": "Research",
@@ -49,13 +65,13 @@
       "subtitle": "RGB-only highlight removal by rendering synthetic specular supervision",
       "description": "RGB-only highlight removal by rendering synthetic specular supervision.",
       "tag": "research",
-      "thumbnail": "/unreflect.png",
+      "thumbnail": "/images/unreflect.png",
       "accent": "#d08656",
       "tech": ["image-to-image", "syntetic specular supervision"],
       "meta": { "venue": "CVPR 2026 ⋅ ORAL", "year": "2026" },
       "institutions": [
         { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" },
-        { "name": "NEARLab", "href": "https://nearlab.polimi.it/", "logo": "/nearlablogo.png" }
+        { "name": "NEARLab", "href": "https://nearlab.polimi.it/", "logo": "/icons/nearlablogo.png" }
       ],
       "collaborators": [
         { "name": "Mert Kiray", "href": "", "role": "Co-author" }
@@ -67,11 +83,47 @@
         { "label": "Demo", "href": "https://huggingface.co/spaces/AlbeRota/UnReflectAnything", "icon": "Hand" }
       ],
       "details": {
-        "body": "UnReflect Anything is an RGB-only method that removes specular highlights from arbitrary scenes. Instead of relying on multi-view captures or polarization, we render synthetic supervision — pairs of clean and highlighted images — by composing physically-plausible specular layers on top of real images, then train a network to invert the process.\n\nThe result is a fast, single-image pipeline that transfers cleanly to surgical, automotive and macro photography domains, where traditional dichromatic methods break down.",
-        "highlights": [
-          "Single-image input — no multi-view or polarization required",
-          "Synthetic supervision pipeline generalizes across domains",
-          "Real-time inference on a single consumer GPU"
+        "doi": "https://doi.org/10.48550/arXiv.2512.09583",
+        "pdf": "https://openaccess.thecvf.com/content/CVPR2026/papers/Rota_UnReflectAnything_RGB-Only_Highlight_Removal_by_Rendering_Synthetic_Specular_Supervision_CVPR_2026_paper.pdf",
+        "citation": "unreflect-anything",
+        "sections": [
+          {
+            "title": "Abstract",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "UnReflect Anything is an RGB-only method that removes specular highlights from arbitrary scenes. Instead of relying on multi-view captures or polarization, we render synthetic supervision — pairs of clean and highlighted images — by composing physically-plausible specular layers on top of real images, then train a network to invert the process."
+              },
+              {
+                "type": "image",
+                "src": "/images/unreflect.png",
+                "alt": "UnReflectAnything method overview",
+                "caption": "Synthetic specular supervision pipeline: clean and highlighted image pairs train a single-image highlight removal network."
+              }
+            ]
+          },
+          {
+            "title": "Key Contributions",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Single-image input — no multi-view or polarization required",
+                  "Synthetic supervision pipeline generalizes across domains",
+                  "Real-time inference on a single consumer GPU"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Overview",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "The result is a fast, single-image pipeline that transfers cleanly to surgical, automotive and macro photography domains, where traditional dichromatic methods break down."
+              }
+            ]
+          }
         ]
       }
     },
@@ -81,7 +133,7 @@
       "subtitle": "Self-supervised embeddings for endoscopic matching",
       "description": "Self-Supervised Contrastive Embedding Adaptation for Endoscopic Image Matching.",
       "tag": "research",
-      "thumbnail": "/match.png",
+      "thumbnail": "/images/match.png",
       "accent": "#a9dc76",
       "tech": ["PyTorch", "Contrastive Learning", "Endoscopy"],
       "meta": { "venue": "IEEE TMI 2026", "year": "2026" },
@@ -99,7 +151,7 @@
       "subtitle": "Adnexal Mass Segmentation in US images",
       "description": "Adapting Foundation Models for Annotation-Efficient Adnexal Mass Segmentation in Cine Images",
       "tag": "research",
-      "thumbnail": "/mesa.png",
+      "thumbnail": "/images/mesa.png",
       "accent": "#4595a9",
       "tech": ["DINOv3", "Segmentation","US"],
       "meta": { "venue": "CVPR 2026 ⋅ SVC Workshop", "year": "2026" },
@@ -108,7 +160,7 @@
       ],
       "institutions": [
         { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" },
-        { "name": "NEARLab", "href": "https://nearlab.polimi.it/", "logo": "/nearlablogo.png" }
+        { "name": "NEARLab", "href": "https://nearlab.polimi.it/", "logo": "/icons/nearlablogo.png" }
       ],
       "actions": [
         { "label": "GitHub", "href": "https://github.com/FrancescaFati/MESA", "icon": "Github" },
@@ -129,7 +181,7 @@
       "subtitle": "3D Hyperspectral Mapping of Lumpectomy Specimens",
       "description": "A Lightweight Fiducial-Based Pipeline for 3D Hyperspectral Mapping of ex-vivo Lumpectomy Specimens",
       "tag": "research",
-      "thumbnail": "/spectra.png",
+      "thumbnail": "/images/spectra.png",
       "accent": "#6b4ea8",
       "tech": ["MASt3R-SfM", "ArUco"],
       "meta": { "venue": "Ital-IA 2026", "year": "2026" },
@@ -153,7 +205,7 @@
       "subtitle": "3D analysis of microvasculature on-chip",
       "description": "A three-dimensional method for morphological analysis and flow velocity estimation in microvasculature on-a-chip.",
       "tag": "research",
-      "thumbnail": "/muves.png",
+      "thumbnail": "/images/muves.png",
       "accent": "#78dce8",
       "tech": ["MATLAB", "Microfluidics", "3D Imaging"],
       "meta": { "venue": "BTM", "year": "2023" },
@@ -171,7 +223,7 @@
       "subtitle": "Augmented training curriculum for surgical robotics",
       "description": "Implementation and assessment of an augmented training curriculum for surgical robotics.",
       "tag": "research",
-      "thumbnail": "/icra.png",
+      "thumbnail": "/images/icra.png",
       "accent": "#78dce8",
       "tech": ["Unity", "C#", "da Vinci Research Kit"],
       "meta": { "venue": "ICRA 2024", "year": "2024" },
@@ -194,7 +246,7 @@
       "subtitle": "Decision support in ovarian cancer treatment",
       "description": "Deep Learning for decision support in ovarian cancer treatment planning.",
       "tag": "research",
-      "thumbnail": "/nature.png",
+      "thumbnail": "/images/nature.png",
       "accent": "#78dce8",
       "tech": ["PyTorch", "Explainable AI", "Medical Imaging"],
       "meta": { "venue": "Nature WH", "year": "2024" },
@@ -209,18 +261,33 @@
     {
       "slug": "hamlynworkshop",
       "title": "Robotic Colonoscopy",
-      "subtitle": "World Models for robotic colonoscopy",
+      "subtitle": "Patient-specific digital-twin world models",
       "description": "Coverage-Optimal Robotic Colonoscopy via Patient-Specific Digital-Twin World Models",
       "tag": "research",
-      "thumbnail": "/hamlynposter.png",
+      "thumbnail": "/images/hamlynposter.png",
       "tech": ["World Models", "Digital Twin", "Colonoscopy"],
       "accent": "#a9dc76",
-      "meta": { "venue": "Hamlyn Symposium", "year": "2026" },
-      "actions": [
-        { "label": "Paper", "href": "https://doi.org/10.3390/act12080323", "icon": "FileText" }
+      "meta": { "venue": "Hamlyn Symposium · Best Poster", "year": "2026" },
+      "institutions": [
+        { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" },
+        { "name": "NEARLab", "href": "https://nearlab.polimi.it/", "logo": "/icons/nearlablogo.png" }
+      ],
+      "collaborators": [
+        { "name": "Sofia Breschi", "href": "", "role": "Co-author" },
+        { "name": "Laura Cruciani", "href": "", "role": "Co-author" },
+        { "name": "Alessandra Marasi", "href": "", "role": "Co-author" },
+        { "name": "Nicola Ancellotti", "href": "", "role": "Co-author" },
+        { "name": "Leonardo Passoni", "href": "", "role": "Co-author" },
+        { "name": "Matteo Di Mauro", "href": "", "role": "Co-author" },
+        { "name": "Elena De Momi", "href": "", "role": "Co-author" }
       ],
       "details": {
-        "body": "A concept for a digital twin for robotic colonoscopy navigation based on patient-specific world models"
+        "body": "Robotic colonoscopy must balance thorough luminal coverage with patient-specific anatomy and motion. We present patient-specific digital-twin world models that capture individualized colon dynamics and enable coverage-optimal navigation policies tailored to each case.\n\nPresented at the Hamlyn Symposium workshop on Physics- and AI-Driven Digital Twins for Patient-Specific Robotic Diagnosis, Interventions and Therapies, the poster received the Best Poster Award. The prize — an NVIDIA DGX Spark — was generously sponsored by NVIDIA.",
+        "highlights": [
+          "Best Poster Award at the Hamlyn digital-twins workshop",
+          "Patient-specific world models for coverage-optimal robotic colonoscopy",
+          "Award sponsored by NVIDIA"
+        ]
       }
     },
     {
@@ -229,7 +296,7 @@
       "subtitle": "Recent advancements in AR for robotic surgery",
       "description": "Recent advancements in augmented reality for robotic applications: a survey.",
       "tag": "research",
-      "thumbnail": "/review.png",
+      "thumbnail": "/images/review.png",
       "accent": "#fc9867",
       "meta": { "venue": "MDPI Actuators", "year": "2023" },
       "actions": [
@@ -245,7 +312,7 @@
       "subtitle": "Beautiful system monitoring in your terminal",
       "description": "Rich visualization and monitoring of system metrics in the terminal.",
       "tag": "open-source",
-      "thumbnail": "/groundcontrol.png",
+      "thumbnail": "/images/groundcontrol.png",
       "cardAspect": "16/9",
       "cardFit": "cover",
       "accent": "#ffd866",
@@ -274,7 +341,7 @@
       "thumbnail": "https://raw.githubusercontent.com/alberto-rota/DaSSHboard/master/overview.png",
       "cardAspect": "16/9",
       "cardFit": "cover",
-      "icon": "/dasshboard_icon.png",
+      "icon": "/icons/dasshboard_icon.png",
       "accent": "#fc9867",
       "tech": ["TypeScript", "VS Code API"],
       "actions": [
@@ -291,10 +358,10 @@
       "subtitle": "NIfTI / DICOM viewer for VS Code",
       "description": "A medical image viewer for NIfTI and DICOM formats.",
       "tag": "open-source",
-      "thumbnail": "/medview.png",
+      "thumbnail": "/images/medview.png",
       "cardAspect": "16/10",
       "cardFit": "cover",
-      "icon": "/medview_icon.png",
+      "icon": "/icons/medview_icon.png",
       "accent": "#ff6188",
       "tech": ["TypeScript", "VS Code API"],
       "actions": [
@@ -310,7 +377,7 @@
       "title": "GitHub",
       "description": "GitHub profile",
       "tag": "resources",
-      "thumbnail": "/githublogo.png",
+      "thumbnail": "/icons/githublogo.png",
       "link": "https://github.com/alberto-rota",
       "compact": true,
       "pinned": true
@@ -320,7 +387,7 @@
       "title": "Hugging Face",
       "description": "Hugging Face profile",
       "tag": "resources",
-      "thumbnail": "/hflogo.png",
+      "thumbnail": "/icons/hflogo.png",
       "link": "https://huggingface.co/AlbeRota",
       "compact": true,
       "pinned": false
@@ -330,7 +397,7 @@
       "title": "PyPI",
       "description": "PyPI packages",
       "tag": "resources",
-      "thumbnail": "/pypilogo.png",
+      "thumbnail": "/icons/pypilogo.png",
       "link": "https://pypi.org/user/alberto-rota/",
       "compact": true,
       "pinned": false
@@ -340,7 +407,7 @@
       "title": "Google Scholar",
       "description": "Google Scholar profile",
       "tag": "resources",
-      "thumbnail": "/academialogo.png",
+      "thumbnail": "/icons/academialogo.png",
       "link": "https://scholar.google.com/citations?user=VyC48nkAAAAJ&hl=en",
       "compact": true,
       "pinned": true
@@ -350,7 +417,7 @@
       "title": "NEARLab",
       "description": "Medical Robotics group at Politecnico di Milano",
       "tag": "resources",
-      "thumbnail": "/nearlablogo.png",
+      "thumbnail": "/icons/nearlablogo.png",
       "link": "https://nearlab.polimi.it/neuroengineering-and-medical-robotics/medical/alberto-rota/",
       "compact": true,
       "pinned": false
@@ -361,7 +428,7 @@
       "subtitle": "Logo for the medical-robotics group",
       "description": "Logo design for NEARLab at Politecnico di Milano.",
       "tag": "designs",
-      "thumbnail": "/near_design.png",
+      "thumbnail": "/images/near_design.png",
       "accent": "#ffffff",
       "actions": [
         { "label": "Visit NEARLab", "href": "https://nearlab.polimi.it/", "icon": "Globe" }
@@ -376,7 +443,7 @@
       "subtitle": "Identity for IEEE ICRA in Milan",
       "description": "Logo design for ICRA 2029, to be hosted in Milan.",
       "tag": "designs",
-      "thumbnail": "/icra29_design.png",
+      "thumbnail": "/images/icra29_design.png",
       "accent": "#a9dc76",
       "actions": [
         { "label": "Announcement", "href": "https://www.linkedin.com/posts/department-deib-polimi_ieee-icra-2029-la-conferenza-internazionale-activity-7401983609907085312-WQqI/?originalSubdomain=it", "icon": "ExternalLink" }
@@ -391,7 +458,7 @@
       "subtitle": "Brand mark for the UNDERXAI project",
       "description": "Logo design for the UNDERXAI project.",
       "tag": "designs",
-      "thumbnail": "/underxai.png",
+      "thumbnail": "/images/underxai.png",
       "accent": "#a99dec",
       "actions": [
         { "label": "Project", "href": "https://nearlab.polimi.it/underxai/", "icon": "Globe" }
@@ -406,7 +473,7 @@
       "subtitle": "Logo design for the PREDICT project",
       "description": "Logo design for the UNDERXAI project.",
       "tag": "designs",
-      "thumbnail": "/predict.png",
+      "thumbnail": "/images/predict.png",
       "accent": "#4595a9",
       "actions": [
         { "label": "Project", "icon": "Globe" }

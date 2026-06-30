@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Nav } from "./Nav";
 import { Hero } from "./Hero";
-import { Announcement } from "./Announcement";
+import { Announcements } from "./Announcement";
 import { Section } from "./Section";
 import { DetailPanel } from "./DetailPanel";
 import { Contact } from "./Contact";
@@ -25,7 +25,7 @@ export function SitePage() {
       <CustomScrollbar />
       <Nav />
       <Hero tagline={data.hero?.tagline} pinned={pinned} contacts={pinnedContacts} />
-      <Announcement data={data.announcement} />
+      <Announcements items={data.announcements} />
 
       <main>
         {order

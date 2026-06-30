@@ -13,8 +13,15 @@ import {
 import { ArrowUpRight, User, X } from "lucide-react";
 import { Icon } from "./Icon";
 import { CustomScrollbar } from "./CustomScrollbar";
-import type { Collaborator, Institution, Product, ProductMedia } from "./types";
+import { CiteButton } from "./CiteButton";
+import { getCitationPath } from "./citation-utils";
+import { PaperMorphButton } from "./PaperMorphButton";
+import type { Collaborator, DetailBlock, DetailSection, Institution, Product, ProductMedia } from "./types";
 import { getDetailComponent } from "./detail-components/registry";
+import { getPaperLinks, getResearchSections, hasPaperMorph } from "./paper-utils";
+
+const bodyTextClass =
+  "text-white/80 text-[15px] sm:text-base leading-relaxed [font-family:var(--font-body)]";
 
 function useMediaQuery(query: string) {
   const get = React.useCallback(() => {
@@ -258,20 +265,23 @@ function TitleBlock({ product, accent }: { product: Product; accent: string }) {
   );
 }
 
+const actionPillClass =
+  "inline-flex h-9 items-center gap-2 rounded-full bg-white px-4 text-sm font-display tracking-[0.12em] uppercase leading-none text-black hover:bg-white/90 transition-colors";
+
 function ActionsRow({ product }: { product: Product }) {
   if (!product.actions || product.actions.length === 0) return null;
+  const actions = product.actions.filter((a) => a.href);
+  if (actions.length === 0) return null;
   return (
     <div className="flex flex-wrap gap-2">
-      {product.actions
-        .filter((a) => a.href)
-        .map((a, i) => (
+      {actions.map((a, i) => (
           <a
             key={`${a.href}-${i}`}
             href={a.href}
             target={a.href?.startsWith("http") ? "_blank" : undefined}
             rel={a.href?.startsWith("http") ? "noreferrer" : undefined}
             aria-label={a.ariaLabel ?? a.label ?? "Open link"}
-            className="inline-flex items-center gap-2 rounded-full bg-white text-black px-4 py-2 text-sm font-medium uppercase tracking-[0.12em] hover:bg-white/90 transition-colors"
+            className={actionPillClass}
           >
             <Icon name={a.icon} size={16} className="h-4 w-4 object-contain" />
             {a.label ?? "Open"}
@@ -397,38 +407,211 @@ function FooterAccent({ accent }: { accent: string }) {
 
 /* ─── RESEARCH layout ─── */
 
+function ResearchActionsRow({
+  product,
+  details,
+}: {
+  product: Product;
+  details: Product["details"];
+}) {
+  const paperLinks = getPaperLinks(product, details);
+  const useMorph = hasPaperMorph(product, details);
+  const citationPath = getCitationPath(product, details);
+  const actions = product.actions?.filter((a) => a.href) ?? [];
+
+  if (actions.length === 0 && !useMorph && !citationPath) return null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {actions.map((a, i) => {
+        const isPaper = a.label?.toLowerCase() === "paper";
+        if (isPaper && useMorph && paperLinks.doi && paperLinks.pdf) {
+          return (
+            <PaperMorphButton
+              key={`paper-morph-${i}`}
+              doi={paperLinks.doi}
+              pdf={paperLinks.pdf}
+              label={a.label}
+              icon={a.icon}
+            />
+          );
+        }
+
+        return (
+          <a
+            key={`${a.href}-${i}`}
+            href={a.href}
+            target={a.href?.startsWith("http") ? "_blank" : undefined}
+            rel={a.href?.startsWith("http") ? "noreferrer" : undefined}
+            aria-label={a.ariaLabel ?? a.label ?? "Open link"}
+            className={actionPillClass}
+          >
+            <Icon name={a.icon} size={16} className="h-4 w-4 object-contain" />
+            {a.label ?? "Open"}
+            <ArrowUpRight className="h-4 w-4 opacity-70" />
+          </a>
+        );
+      })}
+      {citationPath ? <CiteButton key="cite" citationPath={citationPath} /> : null}
+    </div>
+  );
+}
+
+function PaperCover({ product }: { product: Product }) {
+  return (
+    <div className="relative shrink-0 w-full sm:w-48 md:w-56">
+      <div className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+        <NextImage
+          src={product.thumbnail}
+          alt={`${product.title} paper preview`}
+          fill
+          sizes="(min-width: 768px) 224px, 100vw"
+          className="object-contain"
+          unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
+          priority
+        />
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/5 pointer-events-none" />
+      </div>
+    </div>
+  );
+}
+
+function SectionImageBlock({
+  block,
+  accent,
+}: {
+  block: Extract<DetailBlock, { type: "image" }>;
+  accent: string;
+}) {
+  const isSvg = block.src.toLowerCase().endsWith(".svg");
+  return (
+    <figure className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+      <div className="relative aspect-[16/10] w-full">
+        <NextImage
+          src={block.src}
+          alt={block.alt ?? block.caption ?? ""}
+          fill
+          sizes="(min-width: 768px) 640px, 90vw"
+          className="object-contain p-2 sm:p-3"
+          unoptimized={isSvg}
+        />
+      </div>
+      {block.caption ? (
+        <figcaption
+          className="px-4 py-3 text-xs text-white/55 border-t border-white/8 leading-relaxed [font-family:var(--font-body)]"
+        >
+          <span
+            className="mr-2 inline-block h-1.5 w-1.5 rounded-full align-middle"
+            style={{ background: accent }}
+            aria-hidden
+          />
+          {block.caption}
+        </figcaption>
+      ) : null}
+    </figure>
+  );
+}
+
+function SectionListBlock({
+  items,
+  accent,
+}: {
+  items: string[];
+  accent: string;
+}) {
+  return (
+    <ul className="grid gap-2.5 sm:grid-cols-2">
+      {items.map((item, i) => (
+        <li
+          key={i}
+          className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5"
+        >
+          <div className="flex items-start gap-3">
+            <span
+              aria-hidden
+              className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0"
+              style={{ background: accent }}
+            />
+            <span className={bodyTextClass}>{item}</span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function DetailBlockView({
+  block,
+  accent,
+}: {
+  block: DetailBlock;
+  accent: string;
+}) {
+  if (block.type === "paragraph") {
+    return <p className={bodyTextClass}>{block.text}</p>;
+  }
+  if (block.type === "list") {
+    return <SectionListBlock items={block.items} accent={accent} />;
+  }
+  return <SectionImageBlock block={block} accent={accent} />;
+}
+
+function ResearchSectionView({
+  section,
+  accent,
+}: {
+  section: DetailSection;
+  accent: string;
+}) {
+  return (
+    <section className="space-y-4 [font-family:var(--font-body)]">
+      <SectionLabel>{section.title}</SectionLabel>
+      <div className="space-y-4">
+        {section.blocks.map((block, i) => (
+          <DetailBlockView key={i} block={block} accent={accent} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ResearchSections({
+  sections,
+  accent,
+}: {
+  sections: DetailSection[];
+  accent: string;
+}) {
+  if (sections.length === 0) return null;
+  return (
+    <div className="space-y-7">
+      {sections.map((section, i) => (
+        <ResearchSectionView key={`${section.title}-${i}`} section={section} accent={accent} />
+      ))}
+    </div>
+  );
+}
+
 function ResearchLayout({ product, accent, details, Custom, compact }: LayoutProps) {
+  const researchSections = getResearchSections(details, product.description);
+
   return (
     <>
-      {/* Two-column: portrait paper preview + title/meta */}
       <div className={compact ? "px-4 py-5 space-y-5" : "px-4 sm:px-6 py-6 sm:py-8 space-y-7"}>
         <div className="flex flex-col sm:flex-row gap-5 sm:gap-7">
-          {/* Paper thumbnail — portrait A4 ratio */}
-          <div className="relative shrink-0 w-full sm:w-48 md:w-56 aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
-            <NextImage
-              src={product.thumbnail}
-              alt={product.title}
-              fill
-              sizes="(min-width: 768px) 224px, 100vw"
-              className="object-contain"
-              unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
-              priority
-            />
-            <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/5 pointer-events-none" />
-          </div>
+          <PaperCover product={product} />
 
-          {/* Title & meta stacked beside the paper */}
           <div className="flex flex-col gap-4 min-w-0 flex-1">
             <TitleBlock product={product} accent={accent} />
             <MetaGrid product={product} />
-            <ActionsRow product={product} />
+            <ResearchActionsRow product={product} details={details} />
           </div>
         </div>
 
+        <ResearchSections sections={researchSections} accent={accent} />
         <CollaboratorsBlock product={product} accent={accent} />
         <InstitutionsBlock product={product} />
-        <BodyText product={product} details={details} />
-        <Highlights details={details} accent={accent} />
         <MediaGallery details={details} accent={accent} />
         <CustomSlot Custom={Custom} product={product} />
         <FooterAccent accent={accent} />

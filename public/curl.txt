@@ -17,7 +17,7 @@
                <b><u><#ffffff>https://albertorota.dev</></u></b>
 
 <#0a9396>┌────────────────────────┐</><#ca6702>┌────────────────────────┐</>
-<#0a9396>│</>       <a href="https://albertorota.dev"><#0a9396><b>My Webpage</b></></a>       <#0a9396>│</><#ca6702>│</>     <a href="https://albertorota.dev/CV_Alberto_Rota.pdf"><#ca6702><b>Download my CV</b></></a>     <#ca6702>│</>
+<#0a9396>│</>       <a href="https://albertorota.dev"><#0a9396><b>My Webpage</b></></a>       <#0a9396>│</><#ca6702>│</>     <a href="https://albertorota.dev/pdfs/CV_Alberto_Rota.pdf"><#ca6702><b>Download my CV</b></></a>     <#ca6702>│</>
 <#0a9396>└────────────────────────┘</><#ca6702>└────────────────────────┘</>
 <#9b2226>┌────────────────────────┐</><#e9d8a6>┌────────────────────────┐</>
 <#9b2226>│</>         <a href="https://albertorota.dev"><#9b2226><b>GitHub</b></></a>         <#9b2226>│</><#e9d8a6>│</>        <a href="https://scholar.google.com/citations?user=VyC48nkAAAAJ&hl=en"><#e9d8a6><b>Research</b></></a>        <#e9d8a6>│</>
