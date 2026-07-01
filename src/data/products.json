@@ -399,7 +399,7 @@
       "details": {
         "citation": "robotic-colonoscopy",
         "pdf": "/pdfs/Coverage-Optimal%20Robotic%20Colonoscopy%20via%20Patient-Specific%20Digital-Twin%20World%20Models.pdf",
-        "body": "Robotic colonoscopy must balance thorough luminal coverage with patient-specific anatomy and motion. We present patient-specific digital-twin world models that capture individualized colon dynamics and enable coverage-optimal navigation policies tailored to each case.\n\nPresented at the Hamlyn Symposium workshop on Physics- and AI-Driven Digital Twins for Patient-Specific Robotic Diagnosis, Interventions and Therapies, the poster received the Best Poster Award. The prize — an NVIDIA DGX Spark — was generously sponsored by NVIDIA.",
+        "body": "Robotic colonoscopy must balance thorough luminal coverage with patient-specific anatomy and motion.  We present patient-specific digital-twin world models that capture individualized colon dynamics and enable coverage-optimal navigation policies tailored to each case.\n\nPresented at the Hamlyn Symposium workshop on Physics- and AI-Driven Digital Twins for Patient-Specific Robotic Diagnosis, Interventions and Therapies, the poster received the Best Poster Award. The prize — an NVIDIA DGX Spark — was generously sponsored by NVIDIA.",
         "highlights": [
           "Best Poster Award at the Hamlyn digital-twins workshop",
           "Patient-specific world models for coverage-optimal robotic colonoscopy",
