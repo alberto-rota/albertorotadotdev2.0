@@ -1,19 +1,32 @@
 "use client";
 
 import * as React from "react";
+import dynamic from "next/dynamic";
 import NextImage from "next/image";
 import { motion } from "motion/react";
 import { ArrowUpRight, Plus } from "lucide-react";
 import { Icon } from "./Icon";
 import type { Product, SectionId } from "./types";
 import { cn } from "@/lib/utils";
+import { getPaperLinks } from "./paper-utils";
+
+const PdfThumbnail = dynamic(
+  () => import("./PdfThumbnail").then((m) => m.PdfThumbnail),
+  { ssr: false }
+);
+
+/** Only render PDF pages we serve ourselves — remote hosts (arXiv, etc.) may block canvas/CORS rendering. */
+function localPdfThumbnail(product: Product): string | null {
+  const { pdf } = getPaperLinks(product, product.details);
+  return pdf && pdf.startsWith("/") ? pdf : null;
+}
 
 type CardSize = "default" | "compact";
 
 const actionBtnBase =
   "inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors";
 const actionBtnResearch =
-  "bg-black border-black/20 text-white hover:bg-black/85";
+  "bg-black/80 border-white/25 text-white hover:bg-black hover:border-white/40";
 const actionBtnDefault =
   "bg-white/10 border-white/15 backdrop-blur text-white hover:bg-white hover:text-black";
 
@@ -47,14 +60,61 @@ export function ProductCard({
   // Card sizing: fixed height per breakpoint, width derived from `cardAspect`.
   // Default ratio is portrait 5/6 so existing portrait thumbnails stay edge-to-edge.
   const aspect = (product.cardAspect ?? defaultCardAspect ?? "5/6").trim();
-  const fit = product.cardFit ?? defaultCardFit ?? "cover";
-  const isContain = fit === "contain";
   const isResearch = sectionId === "research";
   const isDesigns = sectionId === "designs";
+  const [pdfFailed, setPdfFailed] = React.useState(false);
+  const pdfSrc = isResearch ? localPdfThumbnail(product) : null;
+  const showPdfThumbnail = Boolean(pdfSrc) && !pdfFailed;
+  const fit = product.cardFit ?? defaultCardFit ?? "cover";
+  const isContain = fit === "contain" && !showPdfThumbnail;
   const actionBtn = cn(actionBtnBase, isResearch ? actionBtnResearch : actionBtnDefault);
   const cardHeight = isDesigns
     ? "h-[clamp(380px,58vh,620px)]"
     : "h-[clamp(360px,52vh,560px)]";
+
+  const venueChip = product.meta?.venue ? (
+    <div
+      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs sm:text-sm uppercase tracking-[0.16em] text-white"
+      style={{ borderColor: `${accent}66` }}
+    >
+      <span
+        className="h-2 w-2 rounded-full"
+        style={{ background: accent, boxShadow: `0 0 12px ${accent}` }}
+      />
+      {product.meta.venue}
+    </div>
+  ) : null;
+
+  const actionButtons = (
+    <div className="flex items-center gap-1.5">
+      {externalHref ? (
+        <a
+          href={externalHref}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`Open ${product.title} link`}
+          onClick={(e) => e.stopPropagation()}
+          className={actionBtn}
+        >
+          <ArrowUpRight className="h-4 w-4" />
+        </a>
+      ) : null}
+      {isResearch ? (
+        <button
+          type="button"
+          aria-label={`Open details for ${product.title}`}
+          onClick={() => onOpenDetail(product)}
+          className={actionBtn}
+        >
+          <Plus className="h-4 w-4" />
+        </button>
+      ) : (
+        <span aria-hidden className={actionBtn}>
+          <Plus className="h-4 w-4" />
+        </span>
+      )}
+    </div>
+  );
 
   return (
     <motion.article
@@ -62,14 +122,21 @@ export function ProductCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-10%" }}
       transition={{ duration: 0.5, delay: Math.min(index * 0.04, 0.3) }}
-      className={cn("group relative shrink-0 snap-start max-w-[88vw]", cardHeight)}
+      className={cn("group relative flex shrink-0 snap-start max-w-[88vw] flex-col", cardHeight)}
       style={{ aspectRatio: aspect }}
     >
+      {isResearch ? (
+        <div className="mb-2 flex shrink-0 items-center justify-between gap-2">
+          {venueChip ?? <span aria-hidden />}
+          {actionButtons}
+        </div>
+      ) : null}
+
       <button
         type="button"
         onClick={() => onOpenDetail(product)}
         aria-label={`Open details for ${product.title}`}
-        className="block w-full h-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 rounded-3xl"
+        className="block min-h-0 w-full flex-1 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 rounded-3xl"
       >
         <div
           className="relative h-full w-full overflow-hidden rounded-3xl border border-white/10 bg-black"
@@ -93,19 +160,31 @@ export function ProductCard({
             />
           ) : null}
 
-          {/* Image */}
-          <NextImage
-            src={product.thumbnail}
-            alt={product.title}
-            fill
-            sizes="(min-width: 768px) 700px, 90vw"
-            className={cn(
-              "absolute inset-0 h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.04]",
-              isContain ? "object-contain p-4 sm:p-6" : "object-cover"
-            )}
-            unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
-            loading="lazy"
-          />
+          {/* Image — first page of the paper PDF for research cards, falling back to the static thumbnail */}
+          {showPdfThumbnail ? (
+            <div className="absolute inset-0">
+              <PdfThumbnail
+                src={pdfSrc!}
+                fit="cover"
+                anchor="top"
+                className="origin-top transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                onFail={() => setPdfFailed(true)}
+              />
+            </div>
+          ) : (
+            <NextImage
+              src={product.thumbnail}
+              alt={product.title}
+              fill
+              sizes="(min-width: 768px) 700px, 90vw"
+              className={cn(
+                "absolute inset-0 h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.04]",
+                isContain ? "object-contain p-4 sm:p-6" : "object-cover"
+              )}
+              unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
+              loading="lazy"
+            />
+          )}
 
           {/* Gradient — softer when image is contained so it isn't darkened */}
           <div
@@ -123,38 +202,15 @@ export function ProductCard({
             style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
           />
 
-          {/* Meta chip — venue / journal / conference tag */}
-          {product.meta?.venue ? (
-            <div
-              className="absolute top-3 left-3 inline-flex items-center gap-2 rounded-full bg-black/65 border backdrop-blur px-3 py-1.5 text-xs sm:text-sm uppercase tracking-[0.16em] text-white"
-              style={{ borderColor: `${accent}66` }}
-            >
-              <span
-                className="h-2 w-2 rounded-full"
-                style={{ background: accent, boxShadow: `0 0 12px ${accent}` }}
-              />
-              {product.meta.venue}
-            </div>
+          {/* Meta chip — venue / journal / conference tag (non-research only) */}
+          {!isResearch && venueChip ? (
+            <div className="absolute top-3 left-3">{venueChip}</div>
           ) : null}
 
-          {/* Hover/Tap actions row (visible always on mobile, on hover desktop) */}
-          <div className="absolute top-3 right-3 flex items-center gap-1.5">
-            {externalHref ? (
-              <a
-                href={externalHref}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={`Open ${product.title} link`}
-                onClick={(e) => e.stopPropagation()}
-                className={actionBtn}
-              >
-                <ArrowUpRight className="h-4 w-4" />
-              </a>
-            ) : null}
-            <span aria-hidden className={actionBtn}>
-              <Plus className="h-4 w-4" />
-            </span>
-          </div>
+          {/* Hover/Tap actions row (non-research only; research actions sit above the card) */}
+          {!isResearch ? (
+            <div className="absolute top-3 right-3">{actionButtons}</div>
+          ) : null}
 
           {/* Title block */}
           <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">

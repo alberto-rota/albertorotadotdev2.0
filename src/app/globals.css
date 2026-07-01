@@ -275,11 +275,31 @@ button, a {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Cite button copy feedback — snap inverted, then fade back to default. */
+@keyframes cite-button-flash {
+  0%,
+  12% {
+    background-color: #000000;
+    border-color: #ffffff;
+    color: #ffffff;
+  }
+  100% {
+    background-color: #ffffff;
+    border-color: transparent;
+    color: #000000;
+  }
+}
+
+.cite-button--flash {
+  animation: cite-button-flash 3s ease-out forwards;
+}
+
 /* Reduced-motion friendly: kill ambient animations. */
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,
   .animate-soft-pulse,
-  .shimmer-sweep {
+  .shimmer-sweep,
+  .cite-button--flash {
     animation: none !important;
   }
 }

@@ -14,7 +14,8 @@
       "Bash(curl -sS -H \"User-Agent: Mozilla/5.0\" -o /tmp/page2.html -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" http://localhost:3000/)",
       "Bash(curl -sS -H \"User-Agent: Mozilla/5.0\" -o /tmp/page3.html -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" http://localhost:3000/)",
       "Bash(curl -sS -H \"User-Agent: Mozilla/5.0\" http://localhost:3000/ -o /tmp/page4.html)",
-      "Bash(curl -sS -H \"User-Agent: Mozilla/5.0\" http://localhost:3000/ -o /tmp/p5.html)"
+      "Bash(curl -sS -H \"User-Agent: Mozilla/5.0\" http://localhost:3000/ -o /tmp/p5.html)",
+      "Bash(xargs grep -l \"pdf\\\\|bibtex\\\\|citation\")"
     ]
   }
 }

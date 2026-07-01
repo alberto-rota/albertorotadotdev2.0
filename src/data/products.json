@@ -71,10 +71,17 @@
       "meta": { "venue": "CVPR 2026 ⋅ ORAL", "year": "2026" },
       "institutions": [
         { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" },
-        { "name": "NEARLab", "href": "https://nearlab.polimi.it/", "logo": "/icons/nearlablogo.png" }
+        { "name": "Technical University of Munich", "href": "https://www.tum.de/" },
+        { "name": "Munich Center for Machine Learning", "href": "https://mcml.ai/" },
+        { "name": "ImFusion", "href": "https://www.imfusion.com/" }
       ],
       "collaborators": [
-        { "name": "Mert Kiray", "href": "", "role": "Co-author" }
+        { "name": "Mert Kiray", "href": "", "role": "Co-author" },
+        { "name": "Mert Asim Karaoglu", "href": "", "role": "Co-author" },
+        { "name": "Patrick Ruhkamp", "href": "", "role": "Co-author" },
+        { "name": "Elena De Momi", "href": "", "role": "Co-author" },
+        { "name": "Nassir Navab", "href": "", "role": "Co-author" },
+        { "name": "Benjamin Busam", "href": "", "role": "Co-author" }
       ],
       "actions": [
         { "label": "Project Page", "href": "https://alberto-rota.github.io/UnReflectAnything/", "icon": "Globe" },
@@ -84,7 +91,7 @@
       ],
       "details": {
         "doi": "https://doi.org/10.48550/arXiv.2512.09583",
-        "pdf": "https://openaccess.thecvf.com/content/CVPR2026/papers/Rota_UnReflectAnything_RGB-Only_Highlight_Removal_by_Rendering_Synthetic_Specular_Supervision_CVPR_2026_paper.pdf",
+        "pdf": "/pdfs/UnReflectAnything%20-%20RGB-Only%20Highlight%20Removal%20by%20Rendering%20Synthetic%20Specular%20Supervision.pdf",
         "citation": "unreflect-anything",
         "sections": [
           {
@@ -93,12 +100,6 @@
               {
                 "type": "paragraph",
                 "text": "UnReflect Anything is an RGB-only method that removes specular highlights from arbitrary scenes. Instead of relying on multi-view captures or polarization, we render synthetic supervision — pairs of clean and highlighted images — by composing physically-plausible specular layers on top of real images, then train a network to invert the process."
-              },
-              {
-                "type": "image",
-                "src": "/images/unreflect.png",
-                "alt": "UnReflectAnything method overview",
-                "caption": "Synthetic specular supervision pipeline: clean and highlighted image pairs train a single-image highlight removal network."
               }
             ]
           },
@@ -137,12 +138,25 @@
       "accent": "#a9dc76",
       "tech": ["PyTorch", "Contrastive Learning", "Endoscopy"],
       "meta": { "venue": "IEEE TMI 2026", "year": "2026" },
+      "institutions": [
+        { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" }
+      ],
+      "collaborators": [
+        { "name": "Elena De Momi", "href": "", "role": "Co-author" }
+      ],
       "actions": [
         { "label": "GitHub", "href": "https://github.com/alberto-rota/SCALE-EM", "icon": "Github" },
         { "label": "Paper", "href": "https://arxiv.org/abs/2512.10379", "icon": "FileText" }
       ],
       "details": {
-        "body": "SCALE-EM adapts visual foundation embeddings to the endoscopic domain using a contrastive scheme tailored to surgical video. Without labels, the model learns local descriptors that survive non-rigid tissue deformation and specular interference — unlocking robust frame-to-frame matching for downstream SLAM and registration."
+        "pdf": "/pdfs/Self-Supervised%20Contrastive%20Embedding%20Adaptation%20for%20Endoscopic%20Image%20Matching.pdf",
+        "citation": "scale-em",
+        "body": "SCALE-EM is a self-supervised pipeline for finding feature correspondences between endoscopic image pairs without any manual annotation. It augments a frozen DINOv2 backbone with a lightweight trainable adaptation layer, optimized via contrastive (triplet) learning so that matching points across frames land close in embedding space while non-matches are pushed apart. Pseudo-ground-truth correspondences are generated through novel-view synthesis: a monocular depth estimate back-projects one frame into 3D, applies a randomly sampled rigid transform, and re-projects it to synthesize a geometrically consistent second view — removing the need for calibrated stereo rigs or hand-labeled matches.\n\nAt inference, correspondences are extracted via cosine similarity with mutual nearest-neighbor matching and refined to sub-pixel precision with Fourier phase correlation. Evaluated on the SCARED stereo endoscopy dataset, SCALE-EM achieves the lowest mean epipolar error among all tested methods (8.63 px, ~17% better than the next-best classical descriptor) and the fewest spurious matches under a cross-sequence robustness test, while remaining competitive in runtime with other learning-based matchers.",
+        "highlights": [
+          "Self-supervised: pseudo-ground-truth correspondences from novel-view synthesis, no manual annotation needed",
+          "Trainable adaptation layer on a frozen DINOv2 backbone, tuned via triplet contrastive learning",
+          "Lowest mean epipolar error and highest robustness to spurious matches on the SCARED dataset"
+        ]
       }
     },
     {
@@ -156,17 +170,29 @@
       "tech": ["DINOv3", "Segmentation","US"],
       "meta": { "venue": "CVPR 2026 ⋅ SVC Workshop", "year": "2026" },
       "collaborators": [
-        { "name": "Francesca Fati", "href": "https://github.com/FrancescaFati", "role": "Co-author" }
+        { "name": "Francesca Fati", "href": "https://github.com/FrancescaFati", "role": "Co-author" },
+        { "name": "Adriana V. Gregory", "href": "", "role": "Co-author" },
+        { "name": "Anna Catozzo", "href": "", "role": "Co-author" },
+        { "name": "Maria C. Giuliano", "href": "", "role": "Co-author" },
+        { "name": "Mrinal Dhar", "href": "", "role": "Co-author" },
+        { "name": "Luigi De Vitis", "href": "", "role": "Co-author" },
+        { "name": "Annie T. Packard", "href": "", "role": "Co-author" },
+        { "name": "Francesco Multinu", "href": "", "role": "Co-author" },
+        { "name": "Elena De Momi", "href": "", "role": "Co-author" },
+        { "name": "Carrie L. Langstraat", "href": "", "role": "Co-author" },
+        { "name": "Timothy L. Kline", "href": "", "role": "Co-author" }
       ],
       "institutions": [
         { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" },
-        { "name": "NEARLab", "href": "https://nearlab.polimi.it/", "logo": "/icons/nearlablogo.png" }
+        { "name": "Mayo Clinic", "href": "https://www.mayoclinic.org/" },
+        { "name": "Istituto Europeo di Oncologia", "href": "https://www.ieo.it/" }
       ],
       "actions": [
         { "label": "GitHub", "href": "https://github.com/FrancescaFati/MESA", "icon": "Github" },
-        { "label": "Paper", "href": "https://openaccess.thecvf.com/content/CVPR2026W/SVC/papers/Fati_Adapting_Foundation_Models_for_Annotation-Efficient_Adnexal_Mass_Segmentation_in_Cine_CVPRW_2026_paper.pdf", "icon": "FileText" }
+        { "label": "Paper", "href": "/pdfs/Adapting%20Foundation%20Models%20for%20Annotation-Efficient%20Adnexal%20Mass%20Segmentation%20in%20Cine%20Images.pdf", "icon": "FileText" }
       ],
       "details": {
+        "citation": "mesa",
         "body": "MESA is a label-efficient framework for segmenting adnexal masses in ultrasound cine images. Rather than training a convolutional encoder-decoder from scratch, it adapts a frozen DINOv3 foundation backbone with a DPT-style decoder that hierarchically reassembles multi-scale features, combining global semantic priors with fine-grained boundary detail. Grayscale US frames are mapped to pseudo-RGB via channel replication so the pretrained backbone transfers directly, and only the decoder is trained under a combined BCE and Dice objective.\n\nOn a clinical dataset of 7,777 annotated frames from 112 patients, MESA reaches a Dice of 0.945 and reduces the 95th-percentile Hausdorff distance by 11.4% relative to the strongest convolutional baseline. The self-supervised priors make it markedly more robust to data scarcity: performance holds up even when trained on just 25% of the data, a regime where U-Net, U-Net++, DeepLabV3, and MAnet degrade sharply.",
         "highlights": [
           "Frozen DINOv3 backbone with a DPT-style decoder, no task-specific pretraining required",
@@ -185,12 +211,26 @@
       "accent": "#6b4ea8",
       "tech": ["MASt3R-SfM", "ArUco"],
       "meta": { "venue": "Ital-IA 2026", "year": "2026" },
+      "collaborators": [
+        { "name": "Anna Bicchi", "href": "", "role": "Co-author" },
+        { "name": "Leonardo Passoni", "href": "", "role": "Co-author" },
+        { "name": "Nicola Ancellotti", "href": "", "role": "Co-author" },
+        { "name": "Andrea Peroni", "href": "", "role": "Co-author" },
+        { "name": "Lorenzo Vinco", "href": "", "role": "Co-author" },
+        { "name": "Dario Polli", "href": "", "role": "Co-author" },
+        { "name": "Elena De Momi", "href": "", "role": "Co-author" }
+      ],
+      "institutions": [
+        { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" }
+      ],
       "actions": [
         { "label": "Paper", "href": "http://arxiv.org/abs/2606.14534", "icon": "FileText" },
         { "label": "Code", "href": "https://github.com/Leo11P/SpectraBreast-Registration", "icon": "Github" },
         { "label": "Project", "href": "https://spectrabreast.eu/", "icon": "Globe" }
       ],
       "details": {
+        "pdf": "/pdfs/A%20Lightweight%20Fiducial-Based%20Pipeline%20for%203D%20Hyperspectral%20Mapping%20of%20Ex-Vivo%20Lumpectomy%20Specimens.pdf",
+        "citation": "spectra-breast",
         "body": "This work fuses a single hyperspectral acquisition with a photogrammetric 3D reconstruction of an ex-vivo lumpectomy specimen, producing a spectral point cloud where every measurement is anchored to a physical coordinate on the tissue surface. The geometry is recovered from consumer RGB photos using a deep-learning Structure-from-Motion backbone (MASt3R-SfM), then stabilized in a metric reference frame by a custom bundle adjustment that enforces consistency on the corners of four ArUco markers placed around the specimen.\n\nThe key idea is registering the HSI cube without ever recovering the HSI camera pose. The markers, visible in both modalities, define 16 corner correspondences that drive a planar homography, and 3D coordinates are recovered by lookup on an orthographically rendered depth map. The result is fully automated and calibration-free, requiring no dedicated geometric hardware. On two ex-vivo specimens it achieves a median 3D registration error below 1 mm and a 2D reprojection error below 0.02 mm, with total per-specimen processing under 4 minutes, supporting integration of HSI-guided localization into intraoperative margin assessment for breast-conserving surgery.",
         "highlights": [
           "Calibration-free: consumer RGB images plus a single top-down HSI scan, no HSI camera pose recovered",
@@ -209,12 +249,36 @@
       "accent": "#78dce8",
       "tech": ["MATLAB", "Microfluidics", "3D Imaging"],
       "meta": { "venue": "BTM", "year": "2023" },
+      "collaborators": [
+        { "name": "Luca Possenti", "href": "", "role": "Co-author" },
+        { "name": "Giovanni S. Offeddu", "href": "", "role": "Co-author" },
+        { "name": "Martina Senesi", "href": "", "role": "Co-author" },
+        { "name": "Adelaide Stucchi", "href": "", "role": "Co-author" },
+        { "name": "Irene Venturelli", "href": "", "role": "Co-author" },
+        { "name": "Tiziana Rancati", "href": "", "role": "Co-author" },
+        { "name": "Paolo Zunino", "href": "", "role": "Co-author" },
+        { "name": "Roger D. Kamm", "href": "", "role": "Co-author" },
+        { "name": "Maria Laura Costantino", "href": "", "role": "Co-author" }
+      ],
+      "institutions": [
+        { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" },
+        { "name": "Fondazione IRCCS Istituto Nazionale dei Tumori", "href": "https://www.istitutotumori.mi.it/" },
+        { "name": "Massachusetts Institute of Technology", "href": "https://www.mit.edu/" }
+      ],
       "actions": [
         { "label": "GitHub", "href": "https://github.com/alberto-rota/muVES", "icon": "Github" },
         { "label": "Paper", "href": "https://doi.org/10.1002/btm2.10557", "icon": "FileText" }
       ],
       "details": {
-        "body": "μVES is an open pipeline for quantifying micro-vessel morphology and flow inside organs-on-chip. It reconstructs the 3D vascular network from confocal stacks and extracts diameter, tortuosity and velocity — metrics that previously required manual tracing."
+        "pdf": "/pdfs/A%20Three-Dimensional%20Method%20for%20Morphological%20Analysis%20and%20Flow%20Velocity%20Estimation%20in%20Microvasculature-on-a-Chip.pdf",
+        "citation": "muves",
+        "body": "μVES (micro-Vasculature Evaluation System) is a fully 3D image-analysis pipeline for microvasculature-on-a-chip models, addressing a gap left by the field's usual reliance on 2D projections of confocal image stacks. Starting from a segmented 3D volume, it aligns the network to the horizontal plane, skeletonizes it, splits it into branches, and computes per-branch geometry — radius, length, tortuosity, eccentricity — together with intravascular flow velocity and wall shear stress under an assumed pressure drop, by solving a Poiseuille flow and mass-conservation system over the reconstructed vascular graph.\n\nValidated against the REAVER algorithm and manual tracing on 2D projections, μVES matches established methods before exploiting the full 3D volume, where it reveals that microvessels are markedly non-circular (mean eccentricity 0.833 ± 0.125) — information invisible to 2D analysis that changes radius and surface-to-volume estimates substantially. Applied to fibrin-gel microvascular networks, the tool reproduces literature-consistent capillary morphology (diameter 31.4 ± 16.2 μm, tortuosity 1.18) and, combined with bead-tracking velocimetry, computes flow velocities and wall shear stresses under three imposed pressure gradients (100/200/400 Pa) that agree with experimental measurements — showing the in vitro networks reach physiological flow velocities but lower wall shear stress than in vivo microvasculature. A deep-learning segmentation alternative is also benchmarked against the active-contour pipeline, cutting computation time substantially with comparable morphological output.",
+        "highlights": [
+          "Full 3D pipeline — segmentation, skeletonization, branch processing, morphology and velocity estimation from confocal stacks",
+          "3D analysis exposes non-circular vessel cross-sections (eccentricity 0.833) that 2D projections cannot capture",
+          "Poiseuille-based flow solver estimates per-vessel velocity and wall shear stress, validated against bead-tracking experiments",
+          "Open-source MATLAB implementation (github.com/alberto-rota/muVES)"
+        ]
       }
     },
     {
@@ -227,11 +291,20 @@
       "accent": "#78dce8",
       "tech": ["Unity", "C#", "da Vinci Research Kit"],
       "meta": { "venue": "ICRA 2024", "year": "2024" },
+      "collaborators": [
+        { "name": "Ke Fan", "href": "", "role": "Co-author" },
+        { "name": "Elena De Momi", "href": "", "role": "Co-author" }
+      ],
+      "institutions": [
+        { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" }
+      ],
       "actions": [
         { "label": "GitHub", "href": "https://github.com/alberto-rota/STEVE", "icon": "Github" },
         { "label": "Paper", "href": "https://doi.org/10.1109/ICRA57147.2024.10610411", "icon": "FileText" }
       ],
       "details": {
+        "pdf": "/pdfs/Implementation%20and%20Assessment%20of%20an%20Augmented%20Training%20Curriculum%20for%20Surgical%20Robotics.pdf",
+        "citation": "steve",
         "body": "STEVE pairs the da Vinci Research Kit with a structured AR curriculum that progressively scaffolds operator skill — from basic spatial awareness to bimanual tasks under cognitive load. We measured technical and non-technical skill gains across cohorts and showed that augmented feedback shortens the learning curve.",
         "highlights": [
           "AR curriculum integrated with the da Vinci Research Kit",
@@ -250,12 +323,52 @@
       "accent": "#78dce8",
       "tech": ["PyTorch", "Explainable AI", "Medical Imaging"],
       "meta": { "venue": "Nature WH", "year": "2024" },
+      
+      "collaborators": [
+        { "name": "Francesca Fati", "href": "https://github.com/FrancescaFati", "role": "Co-author" },
+        { "name": "Marina Rosanu", "href": "", "role": "Co-author" },
+        { "name": "Luigi De Vitis", "href": "", "role": "Co-author" },
+        { "name": "Alice Traversa", "href": "", "role": "Co-author" },
+        { "name": "Lucia Ribero", "href": "", "role": "Co-author" },
+        { "name": "Gabriella Schivardi", "href": "", "role": "Co-author" },
+        { "name": "Giuseppe Petralia", "href": "", "role": "Co-author" },
+        { "name": "Giovanni Damiano Aletti", "href": "", "role": "Co-author" },
+        { "name": "Nicoletta Colombo", "href": "", "role": "Co-author" },
+        { "name": "Michele Peiretti", "href": "", "role": "Co-author" },
+        { "name": "Stefano Angioni", "href": "", "role": "Co-author" },
+        { "name": "Jvan Casarin", "href": "", "role": "Co-author" },
+        { "name": "Roberto Veraldi", "href": "", "role": "Co-author" },
+        { "name": "Paolo Zaffino", "href": "", "role": "Co-author" },
+        { "name": "Maria Francesca Spadea", "href": "", "role": "Co-author" },
+        { "name": "Francesco Multinu", "href": "", "role": "Co-author" },
+        { "name": "Elena De Momi", "href": "", "role": "Co-author" }
+      ],
+      "institutions": [
+        { "name": "European Institute of Oncology (IEO)", "href": "https://www.ieo.it/" },
+        { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" },
+        { "name": "Mayo Clinic", "href": "https://www.mayoclinic.org/" },
+        { "name": "Azienda Ospedaliero-Universitaria di Cagliari", "href": "https://www.aoucagliari.it/" },
+        { "name": "Università degli Studi dell'Insubria", "href": "https://www.uninsubria.it/" },
+        { "name": "Università degli Studi Magna Graecia di Catanzaro", "href": "https://www.unicz.it/" },
+        { "name": "Karlsruhe Institute of Technology", "href": "https://www.kit.edu/" },
+        { "name": "University of Milan", "href": "https://www.unimi.it/" },
+        { "name": "University of Milan-Bicocca", "href": "https://www.unimib.it/" }
+      ],
       "actions": [
         { "label": "GitHub", "href": "https://github.com/FrancescaFati/UnderXAI-OVIT", "icon": "Github" },
-        { "label": "Project", "href": "https://nearlab.polimi.it/underxai/", "icon": "Globe" }
+        { "label": "Project", "href": "https://nearlab.polimi.it/underxai/", "icon": "Globe" },
+        { "label": "Paper", "href": "https://doi.org/10.21203/rs.3.rs-7434368/v1", "icon": "FileText" }
       ],
       "details": {
-        "body": "UnderXAI-OVIT couples a clinical-grade segmentation backbone with a counterfactual explanation module so oncologists can interrogate why the network suggests a given treatment route."
+        "pdf": "/pdfs/Deep%20Learning%20for%20Decision%20Support%20in%20Ovarian%20Cancer%20Treatment%20Planning.pdf",
+        "citation": "underxai-ovit",
+        "body": "OVIT is a fully automated deep-learning decision-support system that predicts, at diagnosis, whether a patient with high-grade serous ovarian cancer will achieve complete tumor resection during primary debulking surgery — without manual tumor segmentation or expert-driven radiological scoring. Preoperative contrast-enhanced CT volumes are first segmented into pelvic/ovarian and omental lesion masks by an open-source segmentation model, then sliced into 2D images and encoded slice-by-slice with a frozen, pretrained Vision Transformer. The resulting per-slice classification tokens are aggregated with an attention module and fused with clinical variables (age, CA125, HE4) through a lightweight MLP classification head, keeping the ViT backbone frozen and training only the fusion and classification layers.\n\nDeveloped and validated on a retrospective cohort of 465 patients from the European Institute of Oncology, the best configuration (a Google-32 ViT encoder combined with clinical data) reached an AUC of 0.80 and a recall of 0.86 on an independent 75-patient test set, correctly flagging 24 of 28 non-resectable cases — including 13 of 14 surgeries that were intraoperatively aborted due to unforeseen unresectable disease. Ablations across four ViT backbones (DINOv2-small/base, Google-16/32) show that the benefit of fusing clinical variables is architecture-dependent, and analysis of misclassifications links false negatives to older, lower-biomarker patients and false positives to elevated HE4 and higher surgical complexity scores.",
+        "highlights": [
+          "Fully automated pipeline — no manual segmentation or radiological scoring needed to predict resectability",
+          "Frozen ViT encoder with attention pooling and clinical-variable fusion, validated on 465 patients",
+          "AUC 0.80, recall 0.86 on the held-out test set; correctly flagged 13/14 intraoperatively aborted surgeries",
+          "Part of the Under-XAI project (PNRR-funded) on explainable AI for ovarian cancer"
+        ]
       }
     },
     {
@@ -268,9 +381,11 @@
       "tech": ["World Models", "Digital Twin", "Colonoscopy"],
       "accent": "#a9dc76",
       "meta": { "venue": "Hamlyn Symposium · Best Poster", "year": "2026" },
+      "actions": [
+        { "label": "Abstract and Poster", "href": "pdfs/Coverage-Optimal%20Robotic%20Colonoscopy%20via%20Patient-Specific%20Digital-Twin%20World%20Models.pdf", "icon": "FileText" }
+      ],
       "institutions": [
-        { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" },
-        { "name": "NEARLab", "href": "https://nearlab.polimi.it/", "logo": "/icons/nearlablogo.png" }
+        { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" }
       ],
       "collaborators": [
         { "name": "Sofia Breschi", "href": "", "role": "Co-author" },
@@ -282,6 +397,8 @@
         { "name": "Elena De Momi", "href": "", "role": "Co-author" }
       ],
       "details": {
+        "citation": "robotic-colonoscopy",
+        "pdf": "/pdfs/Coverage-Optimal%20Robotic%20Colonoscopy%20via%20Patient-Specific%20Digital-Twin%20World%20Models.pdf",
         "body": "Robotic colonoscopy must balance thorough luminal coverage with patient-specific anatomy and motion. We present patient-specific digital-twin world models that capture individualized colon dynamics and enable coverage-optimal navigation policies tailored to each case.\n\nPresented at the Hamlyn Symposium workshop on Physics- and AI-Driven Digital Twins for Patient-Specific Robotic Diagnosis, Interventions and Therapies, the poster received the Best Poster Award. The prize — an NVIDIA DGX Spark — was generously sponsored by NVIDIA.",
         "highlights": [
           "Best Poster Award at the Hamlyn digital-twins workshop",
@@ -299,11 +416,33 @@
       "thumbnail": "/images/review.png",
       "accent": "#fc9867",
       "meta": { "venue": "MDPI Actuators", "year": "2023" },
+      "collaborators": [
+        { "name": "Junling Fu", "href": "", "role": "Co-author" },
+        { "name": "Shufei Li", "href": "", "role": "Co-author" },
+        { "name": "Jianzhuang Zhao", "href": "", "role": "Co-author" },
+        { "name": "Qingsheng Liu", "href": "", "role": "Co-author" },
+        { "name": "Elisa Iovene", "href": "", "role": "Co-author" },
+        { "name": "Giancarlo Ferrigno", "href": "", "role": "Co-author" },
+        { "name": "Elena De Momi", "href": "", "role": "Co-author" }
+      ],
+      "institutions": [
+        { "name": "Politecnico di Milano", "href": "https://www.polimi.it/" },
+        { "name": "The Hong Kong Polytechnic University", "href": "https://www.polyu.edu.hk/" },
+        { "name": "Ocean University of China", "href": "https://en.ouc.edu.cn/" },
+        { "name": "Asensus Surgical Inc.", "href": "https://asensus.com/" }
+      ],
       "actions": [
         { "label": "Paper", "href": "https://doi.org/10.3390/act12080323", "icon": "FileText" }
       ],
       "details": {
-        "body": "A comprehensive survey covering display modalities, registration pipelines and human-factors evidence for AR in robotic surgery. Written as a primer for engineers entering the field."
+        "pdf": "/pdfs/Recent%20Advancements%20in%20Augmented%20Reality%20for%20Robotic%20Applications%20-%20A%20Survey.pdf",
+        "citation": "surgical-ar-review",
+        "body": "This survey reviews how augmented reality (AR) has been integrated into robotic systems across medical and industrial domains. For medical robotics, it organizes the literature into four themes: preoperative and surgical task planning (registering CT/MRI data, optimizing robot and port placement), image-guided robotic surgery (rigid and deformable registration for overlaying anatomy on da Vinci and custom platforms), surgical training and simulation (AR-guided curricula, BCI-driven feedback, haptic augmentation), and telesurgery (remote visualization, teleoperation control, and latency/motion-prediction strategies such as predictive displays and digital twins).\n\nFor industrial robotics, it covers human-robot interaction and collaboration (gesture-, gaze- and BCI-driven AR interfaces for shared workspaces), path planning and task allocation, training and simulation, and teleoperation control/assistance — spanning HMD, projector- and tablet-based AR mediums across platforms from HoloLens to KUKA and Universal Robots. The review closes by identifying challenges common to both domains — immersion and field-of-view limits, hardware and communication constraints, registration accuracy and safety, and simulation-to-real transfer — and outlines future directions in hardware comfort, multimodal (haptic, audio, gaze) interaction, and cost reduction as AR hardware matures.",
+        "highlights": [
+          "Structures medical AR literature into task planning, image-guided surgery, training/simulation and telesurgery",
+          "Covers industrial AR for human-robot collaboration, path planning, training and teleoperation",
+          "Synthesizes open challenges — registration accuracy, latency, hardware comfort — and future directions for AR-enabled robotics"
+        ]
       }
     },
     {
