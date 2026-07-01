@@ -471,25 +471,27 @@ function PaperCover({ product }: { product: Product }) {
   return (
     <div className="relative shrink-0 w-full sm:w-48 md:w-56">
       <div className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+        <NextImage
+          src={product.thumbnail}
+          alt={showPdfThumbnail ? "" : `${product.title} paper preview`}
+          fill
+          sizes="(min-width: 768px) 224px, 100vw"
+          className="object-contain"
+          unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
+          priority
+          aria-hidden={showPdfThumbnail || undefined}
+        />
         {showPdfThumbnail ? (
-          <PdfThumbnail
-            src={pdf!}
-            fit="contain"
-            anchor="top"
-            className="absolute inset-0"
-            onFail={() => setPdfFailed(true)}
-          />
-        ) : (
-          <NextImage
-            src={product.thumbnail}
-            alt={`${product.title} paper preview`}
-            fill
-            sizes="(min-width: 768px) 224px, 100vw"
-            className="object-contain"
-            unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
-            priority
-          />
-        )}
+          <div className="absolute inset-0 z-[1]">
+            <PdfThumbnail
+              src={pdf!}
+              fit="contain"
+              anchor="top"
+              className="absolute inset-0"
+              onFail={() => setPdfFailed(true)}
+            />
+          </div>
+        ) : null}
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
         <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/5 pointer-events-none" />
       </div>

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -44,6 +45,7 @@ export function PdfThumbnail({
   zoom = 1.05,
   className,
   onFail,
+  onReady,
 }: {
   src: string;
   fit?: "cover" | "contain";
@@ -52,8 +54,11 @@ export function PdfThumbnail({
   zoom?: number;
   className?: string;
   onFail?: () => void;
+  /** Called once the first page has finished rendering to canvas. */
+  onReady?: () => void;
 }) {
   const [failed, setFailed] = React.useState(false);
+  const [rendered, setRendered] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = React.useState<PageSize>({ width: 0, height: 0 });
   const [pageSize, setPageSize] = React.useState<PageSize | null>(null);
@@ -62,6 +67,15 @@ export function PdfThumbnail({
     setFailed(true);
     onFail?.();
   }, [onFail]);
+
+  const onRenderSuccess = React.useCallback(() => {
+    setRendered(true);
+    onReady?.();
+  }, [onReady]);
+
+  React.useEffect(() => {
+    setRendered(false);
+  }, [src]);
 
   React.useEffect(() => {
     const el = containerRef.current;
@@ -115,39 +129,47 @@ export function PdfThumbnail({
   return (
     <div
       ref={containerRef}
-      className={cn("relative h-full w-full overflow-hidden bg-white", className)}
+      className={cn("relative h-full w-full overflow-hidden", className)}
     >
       {containerSize.width > 0 ? (
-        <Document
-          file={src}
-          loading={null}
-          error={null}
-          onLoadError={fail}
-          onLoadSuccess={onDocumentLoadSuccess}
-          className="h-full w-full"
+        <motion.div
+          className="absolute inset-0 bg-white"
+          initial={false}
+          animate={{ opacity: rendered ? 1 : 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
         >
-          {layout ? (
-            <div
-              className="absolute"
-              style={{
-                top: layout.top,
-                left: layout.left,
-                width: layout.renderWidth,
-              }}
-            >
-              <Page
-                pageNumber={1}
-                width={layout.renderWidth}
-                renderTextLayer={false}
-                renderAnnotationLayer={false}
-                loading={null}
-                error={null}
-                onRenderError={fail}
-                className="[&_canvas]:block!"
-              />
-            </div>
-          ) : null}
-        </Document>
+          <Document
+            file={src}
+            loading={null}
+            error={null}
+            onLoadError={fail}
+            onLoadSuccess={onDocumentLoadSuccess}
+            className="h-full w-full"
+          >
+            {layout ? (
+              <div
+                className="absolute"
+                style={{
+                  top: layout.top,
+                  left: layout.left,
+                  width: layout.renderWidth,
+                }}
+              >
+                <Page
+                  pageNumber={1}
+                  width={layout.renderWidth}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                  loading={null}
+                  error={null}
+                  onRenderError={fail}
+                  onRenderSuccess={onRenderSuccess}
+                  className="[&_canvas]:block!"
+                />
+              </div>
+            ) : null}
+          </Document>
+        </motion.div>
       ) : null}
     </div>
   );

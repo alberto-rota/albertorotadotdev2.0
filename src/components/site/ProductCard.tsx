@@ -64,9 +64,9 @@ export function ProductCard({
   const isDesigns = sectionId === "designs";
   const [pdfFailed, setPdfFailed] = React.useState(false);
   const pdfSrc = isResearch ? localPdfThumbnail(product) : null;
-  const showPdfThumbnail = Boolean(pdfSrc) && !pdfFailed;
+  const usePdfOverlay = Boolean(pdfSrc) && !pdfFailed;
   const fit = product.cardFit ?? defaultCardFit ?? "cover";
-  const isContain = fit === "contain" && !showPdfThumbnail;
+  const isContain = fit === "contain" && !usePdfOverlay;
   const actionBtn = cn(actionBtnBase, isResearch ? actionBtnResearch : actionBtnDefault);
   const cardHeight = isDesigns
     ? "h-[clamp(380px,58vh,620px)]"
@@ -160,31 +160,31 @@ export function ProductCard({
             />
           ) : null}
 
-          {/* Image — first page of the paper PDF for research cards, falling back to the static thumbnail */}
-          {showPdfThumbnail ? (
-            <div className="absolute inset-0">
+          {/* Image — static thumbnail first; PDF first page fades in on top for research cards */}
+          <NextImage
+            src={product.thumbnail}
+            alt={usePdfOverlay ? "" : product.title}
+            fill
+            sizes="(min-width: 768px) 700px, 90vw"
+            className={cn(
+              "absolute inset-0 h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.04]",
+              isContain ? "object-contain p-4 sm:p-6" : "object-cover"
+            )}
+            unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
+            loading="lazy"
+            aria-hidden={usePdfOverlay || undefined}
+          />
+          {usePdfOverlay ? (
+            <div className="absolute inset-0 z-[1] transition-transform duration-700 ease-out group-hover:scale-[1.04]">
               <PdfThumbnail
                 src={pdfSrc!}
                 fit="cover"
                 anchor="top"
-                className="origin-top transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                className="origin-top"
                 onFail={() => setPdfFailed(true)}
               />
             </div>
-          ) : (
-            <NextImage
-              src={product.thumbnail}
-              alt={product.title}
-              fill
-              sizes="(min-width: 768px) 700px, 90vw"
-              className={cn(
-                "absolute inset-0 h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.04]",
-                isContain ? "object-contain p-4 sm:p-6" : "object-cover"
-              )}
-              unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
-              loading="lazy"
-            />
-          )}
+          ) : null}
 
           {/* Gradient — softer when image is contained so it isn't darkened */}
           <div
