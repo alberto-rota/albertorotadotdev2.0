@@ -1,34 +1,94 @@
 "use client";
 
 import * as React from "react";
-import dynamic from "next/dynamic";
 import NextImage from "next/image";
 import { motion } from "motion/react";
 import { ArrowUpRight, Plus } from "lucide-react";
 import { Icon } from "./Icon";
 import type { Product, SectionId } from "./types";
 import { cn } from "@/lib/utils";
-import { getPaperLinks } from "./paper-utils";
-
-const PdfThumbnail = dynamic(
-  () => import("./PdfThumbnail").then((m) => m.PdfThumbnail),
-  { ssr: false }
-);
-
-/** Only render PDF pages we serve ourselves — remote hosts (arXiv, etc.) may block canvas/CORS rendering. */
-function localPdfThumbnail(product: Product): string | null {
-  const { pdf } = getPaperLinks(product, product.details);
-  return pdf && pdf.startsWith("/") ? pdf : null;
-}
 
 type CardSize = "default" | "compact";
+type ActionVariant = "research" | "default";
 
 const actionBtnBase =
-  "inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors";
+  "inline-flex h-9 min-w-9 items-center rounded-full border overflow-hidden transition-all duration-500 ease-out";
 const actionBtnResearch =
-  "bg-black/80 border-white/25 text-white hover:bg-black hover:border-white/40";
+  "bg-black/80 border-white/25 text-white hover:bg-white hover:border-white hover:text-black";
 const actionBtnDefault =
-  "bg-white/10 border-white/15 backdrop-blur text-white hover:bg-white hover:text-black";
+  "bg-white/10 border-white/15 backdrop-blur text-white hover:bg-white hover:border-white hover:text-black";
+
+const actionLabelBase =
+  "overflow-hidden whitespace-nowrap font-display text-sm uppercase tracking-[0.12em] leading-none transition-all duration-500 ease-out";
+
+function actionLabelClasses(expandOn: "self" | "card") {
+  return cn(
+    actionLabelBase,
+    "max-w-0 opacity-0",
+    expandOn === "card"
+      ? "group-hover:max-w-[9rem] group-hover:opacity-100 group-hover:pr-3.5"
+      : "group-hover/btn:max-w-[9rem] group-hover/btn:opacity-100 group-hover/btn:pr-3.5"
+  );
+}
+
+function CardActionButton({
+  label,
+  variant,
+  expandOn = "self",
+  icon,
+  className,
+  ...props
+}: {
+  label: string;
+  variant: ActionVariant;
+  expandOn?: "self" | "card";
+  icon: React.ReactNode;
+} & React.ComponentPropsWithoutRef<"button">) {
+  return (
+    <button
+      type="button"
+      {...props}
+      className={cn(
+        actionBtnBase,
+        expandOn === "self" && "group/btn",
+        variant === "research" ? actionBtnResearch : actionBtnDefault,
+        className
+      )}
+    >
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center">{icon}</span>
+      <span className={actionLabelClasses(expandOn)}>{label}</span>
+    </button>
+  );
+}
+
+function CardActionLink({
+  label,
+  variant,
+  expandOn = "self",
+  icon,
+  className,
+  ...props
+}: {
+  label: string;
+  variant: ActionVariant;
+  expandOn?: "self" | "card";
+  icon: React.ReactNode;
+} & React.ComponentPropsWithoutRef<"a">) {
+  return (
+    <a
+      {...props}
+      className={cn(
+        actionBtnBase,
+        expandOn === "self" && "group/btn",
+        variant === "research" ? actionBtnResearch : actionBtnDefault,
+        className
+      )}
+    >
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center">{icon}</span>
+      <span className={actionLabelClasses(expandOn)}>{label}</span>
+    </a>
+  );
+}
 
 export function ProductCard({
   product,
@@ -62,12 +122,9 @@ export function ProductCard({
   const aspect = (product.cardAspect ?? defaultCardAspect ?? "5/6").trim();
   const isResearch = sectionId === "research";
   const isDesigns = sectionId === "designs";
-  const [pdfFailed, setPdfFailed] = React.useState(false);
-  const pdfSrc = isResearch ? localPdfThumbnail(product) : null;
-  const usePdfOverlay = Boolean(pdfSrc) && !pdfFailed;
   const fit = product.cardFit ?? defaultCardFit ?? "cover";
-  const isContain = fit === "contain" && !usePdfOverlay;
-  const actionBtn = cn(actionBtnBase, isResearch ? actionBtnResearch : actionBtnDefault);
+  const isContain = fit === "contain";
+  const actionVariant: ActionVariant = isResearch ? "research" : "default";
   const cardHeight = isDesigns
     ? "h-[clamp(380px,58vh,620px)]"
     : "h-[clamp(360px,52vh,560px)]";
@@ -88,29 +145,38 @@ export function ProductCard({
   const actionButtons = (
     <div className="flex items-center gap-1.5">
       {externalHref ? (
-        <a
+        <CardActionLink
           href={externalHref}
           target="_blank"
           rel="noreferrer"
-          aria-label={`Open ${product.title} link`}
+          aria-label={`Open ${primaryAction?.label ?? product.title} link`}
+          label={primaryAction?.label ?? "Open"}
+          variant={actionVariant}
+          icon={<ArrowUpRight className="h-4 w-4" />}
           onClick={(e) => e.stopPropagation()}
-          className={actionBtn}
-        >
-          <ArrowUpRight className="h-4 w-4" />
-        </a>
+        />
       ) : null}
       {isResearch ? (
-        <button
-          type="button"
+        <CardActionButton
           aria-label={`Open details for ${product.title}`}
+          label="Details"
+          variant={actionVariant}
+          icon={<Plus className="h-4 w-4" />}
           onClick={() => onOpenDetail(product)}
-          className={actionBtn}
-        >
-          <Plus className="h-4 w-4" />
-        </button>
+        />
       ) : (
-        <span aria-hidden className={actionBtn}>
-          <Plus className="h-4 w-4" />
+        <span
+          aria-hidden
+          className={cn(
+            actionBtnBase,
+            actionVariant === "research" ? actionBtnResearch : actionBtnDefault,
+            "group-hover:bg-white group-hover:border-white group-hover:text-black"
+          )}
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center">
+            <Plus className="h-4 w-4" />
+          </span>
+          <span className={actionLabelClasses("card")}>Details</span>
         </span>
       )}
     </div>
@@ -160,31 +226,22 @@ export function ProductCard({
             />
           ) : null}
 
-          {/* Image — static thumbnail first; PDF first page fades in on top for research cards */}
           <NextImage
             src={product.thumbnail}
-            alt={usePdfOverlay ? "" : product.title}
+            alt={product.title}
             fill
             sizes="(min-width: 768px) 700px, 90vw"
             className={cn(
               "absolute inset-0 h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.04]",
-              isContain ? "object-contain p-4 sm:p-6" : "object-cover"
+              isContain
+                ? "object-contain object-top p-4 sm:p-6"
+                : isResearch
+                  ? "object-cover object-top"
+                  : "object-cover"
             )}
             unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
             loading="lazy"
-            aria-hidden={usePdfOverlay || undefined}
           />
-          {usePdfOverlay ? (
-            <div className="absolute inset-0 z-[1] transition-transform duration-700 ease-out group-hover:scale-[1.04]">
-              <PdfThumbnail
-                src={pdfSrc!}
-                fit="cover"
-                anchor="top"
-                className="origin-top"
-                onFail={() => setPdfFailed(true)}
-              />
-            </div>
-          ) : null}
 
           {/* Gradient — softer when image is contained so it isn't darkened */}
           <div
@@ -209,7 +266,7 @@ export function ProductCard({
 
           {/* Hover/Tap actions row (non-research only; research actions sit above the card) */}
           {!isResearch ? (
-            <div className="absolute top-3 right-3">{actionButtons}</div>
+            <div className="absolute top-3 right-3 z-10">{actionButtons}</div>
           ) : null}
 
           {/* Title block */}
