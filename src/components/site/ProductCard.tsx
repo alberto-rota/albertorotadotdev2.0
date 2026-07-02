@@ -234,7 +234,7 @@ export function ProductCard({
             className={cn(
               "absolute inset-0 h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.04]",
               isContain
-                ? "object-contain object-top p-4 sm:p-6"
+                ? cn("object-contain p-4 sm:p-6", isResearch && "object-top")
                 : isResearch
                   ? "object-cover object-top"
                   : "object-cover"
