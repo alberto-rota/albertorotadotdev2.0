@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+      {
+        "source": "/setmeup.sh",
+        "destination": "https://raw.githubusercontent.com/alberto-rota/dotfiles/refs/heads/main/install.sh"
+      }
+    ]
+  }
