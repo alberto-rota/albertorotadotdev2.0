@@ -1,9 +1,15 @@
 "use client";
-import { HeroParallax } from "@/components/ui/hero-parallax";
+import { HeroParallax, type HeroParallaxAnnouncement } from "@/components/ui/hero-parallax";
 import productsData from "@/data/products.json";
 
 export default function HeroParallaxDemo() {
-  return <HeroParallax products={products} sections={sections} />;
+  return (
+    <HeroParallax
+      products={products}
+      sections={sections}
+      announcements={announcements}
+    />
+  );
 }
 
 type HeroParallaxSectionId = "links" | "research" | "open-source" | "resources" | "designs";
@@ -12,7 +18,7 @@ type Product = {
   title: string;
   description?: string;
   link: string;
-  thumbnail: string;
+  thumbnail?: string;
   aspectRatio?: string | number;
   icon?: string;
   borderColor?: string;
@@ -47,6 +53,7 @@ type SectionConfig = {
 
 type ProductsJsonV2 = {
   sections?: Partial<Record<HeroParallaxSectionId, SectionConfig>>;
+  announcements?: unknown[];
   products: Product[];
 };
 
@@ -55,6 +62,7 @@ type ProductsJsonV1 = Product[];
 function parseProductsJson(input: unknown): {
   products: Product[];
   sections?: Partial<Record<HeroParallaxSectionId, SectionConfig>>;
+  announcements?: unknown[];
 } {
   if (Array.isArray(input)) {
     return { products: input as ProductsJsonV1 };
@@ -63,7 +71,11 @@ function parseProductsJson(input: unknown): {
   if (input && typeof input === "object") {
     const maybe = input as Partial<ProductsJsonV2>;
     if (Array.isArray(maybe.products)) {
-      return { products: maybe.products, sections: maybe.sections };
+      return {
+        products: maybe.products,
+        sections: maybe.sections,
+        announcements: maybe.announcements,
+      };
     }
   }
 
@@ -107,8 +119,10 @@ if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
   });
 }
 
-// Backwards-compatible: keep the same named export as before.
+// Backwards-compatible: keep the same named exports as before.
 export const products = parsed.products;
 export const sections = parsed.sections;
+export const announcements =
+  parsed.announcements as HeroParallaxAnnouncement[];
 
 

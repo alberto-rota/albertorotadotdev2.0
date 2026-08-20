@@ -26,6 +26,31 @@
       "initialScrollPx": 600
     }
   },
+  "announcements": [
+    {
+      "enabled": true,
+      "accent": "#d08656",
+      "label": "CVPR 2026 · Denver",
+      "title": "Attended CVPR 2026?",
+      "body": "I presented UnReflectAnything — Oral Session 1D (Computational Imaging) and Poster Session 1.",
+      "dates": "Friday June 5th, 2026 · 9:15 AM – 10:30 AM",
+      "location": "ORAL: Mile High Ballroom 3A – 4A · POSTER: Exhibit Hall A – F · Denver, CO",
+      "image": "/announcements/cvpr2026.jpeg",
+      "imageAlt": "UnReflectAnything at CVPR 2026 in Denver",
+      "actions": [
+        {
+          "label": "Get in touch",
+          "href": "mailto:alberto_rota@outlook.com?subject=CVPR%202026%20-%20meet%20at%20Denver",
+          "icon": "Mail"
+        },
+        {
+          "label": "Read the paper",
+          "href": "https://doi.org/10.48550/arXiv.2512.09583",
+          "icon": "FileText"
+        }
+      ]
+    }
+  ],
   "products": [
     {
       "title": "UnReflect Anything",
@@ -171,6 +196,37 @@
       "aspectRatio": "1515 / 1122",
       "icon": "/medview_icon.png",
       "borderColor": "#ff6188"
+    },
+    {
+      "title": "DaSSHboard TUI",
+      "description": "A home screen for your terminal: every SSH host becomes a tile you can connect to",
+      "actions": [
+        { "label": "GitHub", "href": "https://github.com/alberto-rota/dasshboard-tui", "icon": "Github" },
+        { "label": "pip install", "href": "https://pypi.org/project/dasshboard/", "icon": "Download" }
+      ],
+      "tag": "open-source",
+      "thumbnail": "",
+      "borderColor": "#fc9867"
+    },
+    {
+      "title": "sekrt",
+      "description": "Safely sync and store secrets, keys and .env files across devices, through GitHub",
+      "actions": [
+        { "label": "GitHub", "href": "https://github.com/alberto-rota/sekrt", "icon": "Github" }
+      ],
+      "tag": "open-source",
+      "thumbnail": "",
+      "borderColor": "#a9dc76"
+    },
+    {
+      "title": "dotfiles",
+      "description": "Set up any machine with all my tools and customizations, including dotfiles",
+      "actions": [
+        { "label": "GitHub", "href": "https://github.com/alberto-rota/dotfiles", "icon": "Github" }
+      ],
+      "tag": "open-source",
+      "thumbnail": "",
+      "borderColor": "#78dce8"
     },
     {
       "title": "",

@@ -12,12 +12,14 @@ import {
 } from "motion/react";
 import {
   ArrowDown,
+  CalendarDays,
   Check,
   ChevronLeft,
   ChevronRight,
   Copy,
   ExternalLink,
   FileDown,
+  MapPin,
   Pause,
   Play,
   Send,
@@ -225,7 +227,11 @@ type HeroParallaxProduct = {
   /** Short description shown on hover in section view. */
   description?: string;
   link: string;
-  thumbnail: string;
+  /**
+   * Optional thumbnail image. Required by the parallax ProductCard, but
+   * compact sections (e.g. the Open Source grid) may omit it.
+   */
+  thumbnail?: string;
   /**
    * Optional aspect ratio for the product card, overriding auto-detection.
    *
@@ -384,6 +390,30 @@ type HeroParallaxSectionConfig = {
 
 export type { HeroParallaxSectionId, HeroParallaxSectionConfig };
 
+type HeroParallaxAnnouncement = {
+  /** Set to false to hide this announcement without deleting it. */
+  enabled?: boolean;
+  /** Accent color (any valid CSS color) used for the label pill and details. */
+  accent?: string;
+  /** Small pill label, e.g. "CVPR 2026 · Denver". */
+  label?: string;
+  title: string;
+  body?: string;
+  dates?: string;
+  location?: string;
+  /** Optional photo path/URL rendered next to the text. */
+  image?: string;
+  imageAlt?: string;
+  actions?: Array<{
+    label?: string;
+    href: string;
+    icon?: string;
+    ariaLabel?: string;
+  }>;
+};
+
+export type { HeroParallaxAnnouncement };
+
 function arrangeProducts(products: HeroParallaxProduct[]) {
   type WithIdx = HeroParallaxProduct & { __idx: number };
   const rows: WithIdx[][] = [[], [], [], []]; // [research, open-source, resources, designs]
@@ -445,9 +475,11 @@ function arrangeProducts(products: HeroParallaxProduct[]) {
 export const HeroParallax = ({
   products,
   sections,
+  announcements,
 }: {
   products: HeroParallaxProduct[];
   sections?: Partial<Record<HeroParallaxSectionId, HeroParallaxSectionConfig>>;
+  announcements?: HeroParallaxAnnouncement[];
 }) => {
   const isCoarsePointer = useIsCoarsePointer();
   const DEFAULT_THUMB_HEIGHT_PX = isCoarsePointer ? 240 : 420;
@@ -456,11 +488,20 @@ export const HeroParallax = ({
     () => products.filter((p) => p.tag === "links"),
     [products]
   );
-  const otherProducts = React.useMemo(
-    () => products.filter((p) => p.tag !== "links"),
+  const openSourceRow = React.useMemo(
+    () => products.filter((p) => p.tag === "open-source"),
     [products]
   );
-  const { firstRow, secondRow, thirdRow, fourthRow } = arrangeProducts(otherProducts);
+  const otherProducts = React.useMemo(
+    () =>
+      products.filter((p) => p.tag !== "links" && p.tag !== "open-source"),
+    [products]
+  );
+  const visibleAnnouncements = React.useMemo(
+    () => (announcements ?? []).filter((a) => a.enabled !== false),
+    [announcements]
+  );
+  const { firstRow, thirdRow, fourthRow } = arrangeProducts(otherProducts);
 
   // Debug: Log designs products in development
   React.useEffect(() => {
@@ -551,16 +592,11 @@ export const HeroParallax = ({
   const gapVars = React.useMemo(() => {
     const links = getSectionCfg("links");
     const research = getSectionCfg("research");
-    const openSource = getSectionCfg("open-source");
     const resources = getSectionCfg("resources");
     const designs = getSectionCfg("designs");
     return {
       linksStyle: { ["--gap"]: `${links.gapPx}px`, ["--gap-md"]: `${links.gapMdPx}px` } as GapVarsStyle,
       researchStyle: { ["--gap"]: `${research.gapPx}px`, ["--gap-md"]: `${research.gapMdPx}px` } as GapVarsStyle,
-      openSourceStyle: {
-        ["--gap"]: `${openSource.gapPx}px`,
-        ["--gap-md"]: `${openSource.gapMdPx}px`,
-      } as GapVarsStyle,
       resourcesStyle: {
         ["--gap"]: `${resources.gapPx}px`,
         ["--gap-md"]: `${resources.gapMdPx}px`,
@@ -572,7 +608,6 @@ export const HeroParallax = ({
       initial: {
         links: links.initialScrollPx,
         research: research.initialScrollPx,
-        openSource: openSource.initialScrollPx,
         resources: resources.initialScrollPx,
         designs: designs.initialScrollPx,
       },
@@ -582,17 +617,14 @@ export const HeroParallax = ({
   // Per-row horizontal scroll offsets (driven by wheel/trackpad while hovering a row).
   const row0Ref = React.useRef<HTMLDivElement | null>(null);
   const row1Ref = React.useRef<HTMLDivElement | null>(null);
-  const row2Ref = React.useRef<HTMLDivElement | null>(null);
   const row3Ref = React.useRef<HTMLDivElement | null>(null);
   const row4Ref = React.useRef<HTMLDivElement | null>(null);
   const row0ScrollRaw = useMotionValue(gapVars.initial.links);
   const row1ScrollRaw = useMotionValue(gapVars.initial.research);
-  const row2ScrollRaw = useMotionValue(gapVars.initial.openSource);
   const row3ScrollRaw = useMotionValue(gapVars.initial.resources);
   const row4ScrollRaw = useMotionValue(gapVars.initial.designs);
   const row0Scroll = useSpring(row0ScrollRaw, { stiffness: 250, damping: 35 });
   const row1Scroll = useSpring(row1ScrollRaw, { stiffness: 250, damping: 35 });
-  const row2Scroll = useSpring(row2ScrollRaw, { stiffness: 250, damping: 35 });
   const row3Scroll = useSpring(row3ScrollRaw, { stiffness: 250, damping: 35 });
   const row4Scroll = useSpring(row4ScrollRaw, { stiffness: 250, damping: 35 });
 
@@ -617,10 +649,6 @@ export const HeroParallax = ({
     [translateX, row1Scroll],
     (latest: number[]) => (latest[0] ?? 0) + (latest[1] ?? 0)
   );
-  const row2Translate = useTransform(
-    [translateXReverse, row2Scroll],
-    (latest: number[]) => (latest[0] ?? 0) + (latest[1] ?? 0)
-  );
   const row3Translate = useTransform(
     [translateX, row3Scroll],
     (latest: number[]) => (latest[0] ?? 0) + (latest[1] ?? 0)
@@ -641,11 +669,6 @@ export const HeroParallax = ({
   });
   const row1Drag = useDragToScrollMotionValue({
     mv: row1ScrollRaw,
-    maxPx: MAX_ROW_SCROLL_PX,
-    enabled: isCoarsePointer,
-  });
-  const row2Drag = useDragToScrollMotionValue({
-    mv: row2ScrollRaw,
     maxPx: MAX_ROW_SCROLL_PX,
     enabled: isCoarsePointer,
   });
@@ -722,7 +745,6 @@ export const HeroParallax = ({
     const cleanups = [
       attach(row0Ref.current, row0ScrollRaw),
       attach(row1Ref.current, row1ScrollRaw),
-      attach(row2Ref.current, row2ScrollRaw),
       attach(row3Ref.current, row3ScrollRaw),
       attach(row4Ref.current, row4ScrollRaw),
     ].filter(Boolean) as Array<() => void>;
@@ -730,7 +752,7 @@ export const HeroParallax = ({
     return () => {
       cleanups.forEach((fn) => fn());
     };
-  }, [row0ScrollRaw, row1ScrollRaw, row2ScrollRaw, row3ScrollRaw, row4ScrollRaw]);
+  }, [row0ScrollRaw, row1ScrollRaw, row3ScrollRaw, row4ScrollRaw]);
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
@@ -842,6 +864,16 @@ export const HeroParallax = ({
       className="min-h-[185vh] sm:min-h-[220vh] md:min-h-[255vh] py-14 md:py-24 overflow-hidden antialiased relative flex flex-col self-auto perspective-[1000px] transform-3d"
     >
       <Header showScrollCue={showScrollCue} />
+      {visibleAnnouncements.length > 0 ? (
+        <div className="relative z-40 mx-auto flex w-full max-w-184 flex-col gap-4 px-4 pb-6">
+          {visibleAnnouncements.map((announcement, idx) => (
+            <AnnouncementBanner
+              key={`${announcement.title}-${idx}`}
+              announcement={announcement}
+            />
+          ))}
+        </div>
+      ) : null}
       <motion.div
         style={{
           rotateX: reduce3dMotion ? 0 : rotateX,
@@ -896,36 +928,11 @@ export const HeroParallax = ({
           Open Source
             </span>
           </div>
-          <motion.div
-            ref={row2Ref}
-            {...row2Drag}
-            onPointerEnter={() => {
-              if (isCoarsePointer) return;
-              hoveredRowRef.current.mv = row2ScrollRaw;
-            }}
-            onPointerLeave={() => {
-              if (isCoarsePointer) return;
-              if (hoveredRowRef.current.mv === row2ScrollRaw) {
-                hoveredRowRef.current.mv = null;
-              }
-            }}
-            style={gapVars.openSourceStyle}
-            className="flex flex-row gap-(--gap) md:gap-(--gap-md) touch-pan-y"
-          >
-            {secondRow.map((product, idx) => (
-              <ProductCard
-                product={product}
-                translate={row2Translate}
-                displayHeightPx={getDisplayHeightPx(product)}
-                scrollToId="open-source"
-                centerOnClickMv={row2ScrollRaw}
-                maxRowScrollPx={MAX_ROW_SCROLL_PX}
-                isHeaderVisible={isHeaderVisible}
-                isCoarsePointer={isCoarsePointer}
-                key={`${product.title}-${product.thumbnail}-${product.link}-${idx}`}
-              />
-            ))}
-          </motion.div>
+          <OpenSourceGrid
+            products={openSourceRow}
+            gapPx={getSectionCfg("open-source").gapPx}
+            gapMdPx={getSectionCfg("open-source").gapMdPx}
+          />
         </section>
 
         <section aria-label="Resources" className="mb-20">
@@ -1046,6 +1053,213 @@ export const HeroParallax = ({
           </motion.div>
         </section>
       </motion.div>
+    </div>
+  );
+};
+
+export const AnnouncementBanner = ({
+  announcement,
+}: {
+  announcement: HeroParallaxAnnouncement;
+}) => {
+  const accent = announcement.accent?.trim() || "#d08656";
+  const actions = (announcement.actions ?? []).filter((a) => Boolean(a.href));
+
+  return (
+    <div className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border bg-white/70 p-4 shadow-sm backdrop-blur sm:flex-row md:p-5 border-black/20 dark:border-white/20 dark:bg-black/40">
+      <div
+        aria-hidden="true"
+        className="absolute inset-y-0 left-0 w-1"
+        style={{ backgroundColor: accent }}
+      />
+      {announcement.image ? (
+        <NextImage
+          src={announcement.image}
+          alt={announcement.imageAlt ?? ""}
+          width={520}
+          height={340}
+          sizes="(min-width: 640px) 208px, 100vw"
+          className="h-36 w-full shrink-0 rounded-xl object-cover object-center border border-black/10 sm:h-auto sm:w-52 dark:border-white/10"
+          unoptimized={isSvgPath(announcement.image)}
+        />
+      ) : null}
+      <div className="flex min-w-0 flex-1 flex-col">
+        {announcement.label ? (
+          <span
+            className="mb-2 inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
+            style={{
+              color: accent,
+              backgroundColor: `color-mix(in srgb, ${accent} 14%, transparent)`,
+              border: `1px solid color-mix(in srgb, ${accent} 45%, transparent)`,
+            }}
+          >
+            {announcement.label}
+          </span>
+        ) : null}
+        <h2 className="text-lg font-bold leading-tight text-black md:text-xl dark:text-white">
+          {announcement.title}
+        </h2>
+        {announcement.body ? (
+          <p className="mt-1.5 text-sm leading-snug text-black/80 dark:text-white/80">
+            {announcement.body}
+          </p>
+        ) : null}
+        {announcement.dates || announcement.location ? (
+          <div className="mt-2 flex flex-col gap-1 text-xs text-black/60 dark:text-white/60">
+            {announcement.dates ? (
+              <span className="inline-flex items-center gap-1.5">
+                <CalendarDays className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                {announcement.dates}
+              </span>
+            ) : null}
+            {announcement.location ? (
+              <span className="inline-flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                {announcement.location}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+        {actions.length > 0 ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {actions.map((action, i) => (
+              <a
+                key={`${action.href}-${i}`}
+                href={action.href}
+                aria-label={action.ariaLabel ?? action.label ?? "Open"}
+                className={
+                  "inline-flex items-center gap-1.5 rounded-full border bg-white/70 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur transition-colors duration-250 ease-out " +
+                  "border-black/20 text-black hover:bg-black hover:text-white hover:border-black/70 " +
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 " +
+                  "dark:border-white/20 dark:bg-black/40 dark:text-white " +
+                  "dark:hover:bg-white dark:hover:text-black dark:hover:border-white/70 " +
+                  "dark:focus-visible:ring-white/40"
+                }
+              >
+                {renderIcon(action.icon, {
+                  size: 14,
+                  className: "h-3.5 w-3.5",
+                })}
+                {action.label ? <span>{action.label}</span> : null}
+              </a>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
+const OPEN_SOURCE_CARD_PILL_CLASSNAME =
+  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors duration-250 ease-out " +
+  "border-black/20 text-black hover:bg-black hover:text-white hover:border-black/70 " +
+  "dark:border-white/25 dark:text-white dark:hover:bg-white dark:hover:text-black dark:hover:border-white/70";
+
+export const OpenSourceGrid = ({
+  products,
+  gapPx,
+  gapMdPx,
+}: {
+  products: HeroParallaxProduct[];
+  gapPx: number;
+  gapMdPx: number;
+}) => {
+  type GapVarsStyle = React.CSSProperties & {
+    ["--gap"]?: string;
+    ["--gap-md"]?: string;
+  };
+
+  if (products.length === 0) return null;
+
+  return (
+    <div
+      className="overflow-x-auto overflow-y-hidden px-4 pb-4 snap-x snap-proximity [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20"
+      style={
+        {
+          ["--gap"]: `${gapPx}px`,
+          ["--gap-md"]: `${gapMdPx}px`,
+        } as GapVarsStyle
+      }
+    >
+      <div className="grid w-max grid-flow-col grid-rows-2 gap-(--gap) md:gap-(--gap-md)">
+        {products.map((product, idx) => (
+          <OpenSourceCard
+            key={`${product.title}-${product.link}-${idx}`}
+            product={product}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export const OpenSourceCard = ({ product }: { product: HeroParallaxProduct }) => {
+  const titleText = product.title?.trim() || "Project";
+  const descriptionText = product.description?.trim() ?? "";
+  const actions = Array.isArray(product.actions)
+    ? product.actions.filter(
+        (a): a is NonNullable<HeroParallaxProduct["actions"]>[number] & { href: string } =>
+          Boolean(a?.icon) && Boolean(a.href)
+      )
+    : [];
+
+  return (
+    <div
+      className={
+        "group relative flex h-full w-[270px] snap-start flex-col rounded-2xl border bg-white/70 p-4 shadow-sm backdrop-blur transition-all duration-250 ease-out md:w-[330px] md:p-5 " +
+        "border-black/20 text-black hover:-translate-y-1 hover:border-black/50 hover:shadow-lg " +
+        "dark:border-white/20 dark:bg-black/40 dark:text-white dark:hover:border-white/50"
+      }
+    >
+      {/* Whole-card click target */}
+      <a
+        href={product.link || "#"}
+        target={product.link?.startsWith("http") ? "_blank" : undefined}
+        rel={product.link?.startsWith("http") ? "noreferrer" : undefined}
+        aria-label={`Open ${titleText} on GitHub`}
+        className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"
+      />
+
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-base font-bold leading-tight md:text-lg">
+          {titleText}
+        </h3>
+        {product.icon ? (
+          <div className="shrink-0">
+            {renderIcon(product.icon, {
+              size: 28,
+              className: "h-7 w-7 rounded-md",
+            })}
+          </div>
+        ) : null}
+      </div>
+
+      {descriptionText ? (
+        <p className="mt-2 text-sm leading-snug text-black/75 dark:text-white/75">
+          {descriptionText}
+        </p>
+      ) : null}
+
+      {actions.length > 0 ? (
+        <div className="relative z-20 mt-auto flex flex-wrap items-center gap-2 pt-4">
+          {actions.map((action, i) => (
+            <a
+              key={`${action.href}-${action.icon}-${i}`}
+              href={action.href}
+              target={action.href.startsWith("http") ? "_blank" : undefined}
+              rel={action.href.startsWith("http") ? "noreferrer" : undefined}
+              aria-label={action.ariaLabel ?? action.label ?? `${titleText} action`}
+              className={OPEN_SOURCE_CARD_PILL_CLASSNAME}
+            >
+              {renderIcon(action.icon, {
+                size: 14,
+                className: "h-3.5 w-3.5",
+              })}
+              {action.label ? <span>{action.label}</span> : null}
+            </a>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };
@@ -1290,6 +1504,7 @@ export const ProductCard = ({
 }) => {
   const titleText = product.title?.trim?.() ?? "";
   const viewer = product.viewer;
+  const thumbnail = product.thumbnail ?? "";
   const [viewerOpen, setViewerOpen] = React.useState(false);
   const [aspectRatio, setAspectRatio] = React.useState<string>(() => {
     if (typeof product.aspectRatio === "string" && product.aspectRatio.trim()) {
@@ -1298,7 +1513,7 @@ export const ProductCard = ({
     if (typeof product.aspectRatio === "number" && Number.isFinite(product.aspectRatio)) {
       return String(product.aspectRatio);
     }
-    return aspectRatioCache.get(product.thumbnail) ?? "1 / 1";
+    return (thumbnail && aspectRatioCache.get(thumbnail)) || "1 / 1";
   });
   const [descHeightPx, setDescHeightPx] = React.useState<number>(0);
   const descRef = React.useRef<HTMLDivElement | null>(null);
@@ -1351,7 +1566,9 @@ export const ProductCard = ({
       return;
     }
 
-    const cached = aspectRatioCache.get(product.thumbnail);
+    if (!thumbnail) return;
+
+    const cached = aspectRatioCache.get(thumbnail);
     if (cached) {
       setAspectRatio(cached);
       return;
@@ -1360,12 +1577,12 @@ export const ProductCard = ({
     let cancelled = false;
     const img = new Image();
     img.decoding = "async";
-    img.src = product.thumbnail;
+    img.src = thumbnail;
     img.onload = () => {
       if (cancelled) return;
       if (img.naturalWidth > 0 && img.naturalHeight > 0) {
         const ar = `${img.naturalWidth} / ${img.naturalHeight}`;
-        aspectRatioCache.set(product.thumbnail, ar);
+        aspectRatioCache.set(thumbnail, ar);
         setAspectRatio(ar);
       }
     };
@@ -1373,7 +1590,7 @@ export const ProductCard = ({
     return () => {
       cancelled = true;
     };
-  }, [product.thumbnail, product.aspectRatio]);
+  }, [thumbnail, product.aspectRatio]);
 
   React.useEffect(() => {
     if (!revealDescription) return;
@@ -1563,17 +1780,19 @@ export const ProductCard = ({
               aria-label={titleText || "Open item"}
               className="absolute inset-0 z-20 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 dark:focus-visible:ring-white/40"
             />
-            <NextImage
-              src={product.thumbnail}
-              alt={titleText}
-              fill
-              sizes="(min-width: 768px) 480px, 90vw"
-              className="absolute inset-0 h-full w-full object-cover object-center rounded-2xl"
-              // Next's image optimizer doesn't support SVG; render them unoptimized.
-              unoptimized={isSvgPath(product.thumbnail)}
-              loading="lazy"
-              priority={false}
-            />
+            {thumbnail ? (
+              <NextImage
+                src={thumbnail}
+                alt={titleText}
+                fill
+                sizes="(min-width: 768px) 480px, 90vw"
+                className="absolute inset-0 h-full w-full object-cover object-center rounded-2xl"
+                // Next's image optimizer doesn't support SVG; render them unoptimized.
+                unoptimized={isSvgPath(thumbnail)}
+                loading="lazy"
+                priority={false}
+              />
+            ) : null}
 
             {/* Top stage (header visible): show a white border on hover. */}
             {topStageBorderEnabled ? (
