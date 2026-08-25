@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion } from "motion/react";
-import { FileDown, Gamepad2, Menu as MenuIcon, X } from "lucide-react";
+import { FileDown, Menu as MenuIcon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ContactMorph } from "./ContactOverlay";
 import type { SectionId } from "./types";
@@ -11,7 +11,8 @@ type NavItem = { id: SectionId | "contact"; label: string };
 
 const ITEMS: NavItem[] = [
   { id: "research", label: "Research" },
-  { id: "open-source", label: "Open Source" },
+  { id: "terminal-tools", label: "Terminal" },
+  { id: "vsc-extensions", label: "VS Code" },
   { id: "designs", label: "Designs" },
   { id: "contact", label: "Contact" },
 ];
@@ -190,15 +191,6 @@ export function Nav() {
               <ContactMorph open={mobileContactOpen} onOpenChange={setMobileContactOpen} mobile />
             </div>
           </div>
-
-          {/* Play sits at the very bottom of the menu. */}
-          <a
-            href="/game"
-            onClick={() => setOpen(false)}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/[0.04] px-4 py-3 text-sm uppercase tracking-[0.14em] text-white"
-          >
-            <Gamepad2 className="h-4 w-4" /> Play a game
-          </a>
         </div>
       </motion.aside>
     </>

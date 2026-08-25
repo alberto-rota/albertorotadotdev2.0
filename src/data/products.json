@@ -37,9 +37,9 @@
       "enabled": true,
       "accent": "#7ebb9a",
       "label": "Award · Hamlyn Symposium",
-      "imageAlt": "Best Poster — Coverage-Optimal Robotic Colonoscopy",
+      "imageAlt": "Best Poster: Coverage-Optimal Robotic Colonoscopy",
       "title": "Best Poster at Hamlyn Symposium",
-      "body": "Our poster <b>Coverage-Optimal Robotic Colonoscopy via Patient-Specific Digital-Twin World Models</b> received the <b>Best Poster Award</b> at the Hamlyn workshop on Physics- and AI-Driven Digital Twins for Patient-Specific Robotic Diagnosis, Interventions and Therapies. The prize — an <b>NVIDIA DGX Spark</b> — was generously sponsored by NVIDIA.",
+      "body": "Our poster <b>Coverage-Optimal Robotic Colonoscopy via Patient-Specific Digital-Twin World Models</b> received the <b>Best Poster Award</b> at the Hamlyn workshop on Physics- and AI-Driven Digital Twins for Patient-Specific Robotic Diagnosis, Interventions and Therapies. The prize, an <b>NVIDIA DGX Spark</b>, was generously sponsored by NVIDIA.",
       "dates": "Hamlyn Symposium 2026",
       "location": "Workshop on Physics- and AI-Driven Digital Twins · Imperial College London",
       "actions": [
@@ -57,21 +57,29 @@
       "subtitle": "Peer-reviewed work and ongoing projects",
       "order": 1
     },
-    "open-source": {
-      "title": "Open Source",
-      "subtitle": "Tools, packages and extensions I maintain or I have contributed to",
-      "order": 2
+    "terminal-tools": {
+      "title": "Terminal Tools",
+      "subtitle": "CLI and TUI tools I build for the terminal-first workflow",
+      "order": 2,
+      "layout": "grid",
+      "cardInset": true
+    },
+    "vsc-extensions": {
+      "title": "VS Code Extensions",
+      "subtitle": "Extensions that make the editor feel like home",
+      "order": 3,
+      "cardInset": true
     },
     "resources": {
       "title": "Profiles & Links",
       "subtitle": "Where else to find me",
-      "order": 3,
+      "order": 4,
       "layout": "compact"
     },
     "designs": {
       "title": "Designs",
       "subtitle": "Branding and visual identity work",
-      "order": 4,
+      "order": 5,
       "cardAspect": "2/3",
       "cardFit": "contain"
     }
@@ -185,6 +193,14 @@
               {
                 "type": "paragraph",
                 "text": "Specular highlights arise from mirror-like reflections on non-Lambertian surfaces, producing saturated, view-dependent artifacts that obscure scene content and corrupt downstream perception tasks such as segmentation, correspondence, and photometric inference. In natural images, these highlights distort color fidelity and degrade restoration or relighting pipelines. In endoscopic scenes, bodily fluids, moist tissue, and strong non-uniform lighting introduce intense specularities that occlude anatomy, bias texture cues, and hinder navigation and decision-making. Such artifacts critically impair depth estimation, optical flow, and stereo reconstruction in surgical robotics, where accurate scene understanding is essential and visual ambiguity can carry clinical impact."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/unreflect-anything/fig1.webp",
+                "alt": "UnReflectAnything, Figure 1",
+                "caption": "Fig. 1. UnReflectAnything removes specular highlights from a single RGB image with no paired supervision: a Virtual Highlight Synthesis pipeline renders physically plausible highlights onto arbitrary images to create the training pairs.",
+                "width": 1398,
+                "height": 519
               }
             ]
           },
@@ -194,6 +210,22 @@
               {
                 "type": "paragraph",
                 "text": "We integrate physically grounded virtual highlight synthesis with token-space inpainting to recover reflection-free images from a single RGB view. Given an input image, monocular geometry is estimated to obtain metric depth, surface normals, and intrinsics; a point light is sampled in camera space and a Blinn–Phong lobe with Fresnel modulation renders synthetic specularities on top of the real image, producing paired supervision without multi-view capture or polarization. A frozen ViT encoder extracts multi-scale features; a DPT-based highlight head localizes specular regions, corrupted tokens are inpainted, and a diffuse decoder reconstructs the reflection-free output. The full pipeline is trained end-to-end on synthetically highlighted images and transfers to unseen real domains at inference."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/unreflect-anything/fig2.webp",
+                "alt": "UnReflectAnything, Figure 2",
+                "caption": "Fig. 2. Synthetic highlight generation. Per-pixel depth and surface normals are estimated from a single RGB image, a point light is sampled in camera space, and a Blinn-Phong/Fresnel term renders the highlight layer.",
+                "width": 1398,
+                "height": 471
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/unreflect-anything/fig3.webp",
+                "alt": "UnReflectAnything, Figure 3",
+                "caption": "Fig. 3. Model architecture: a frozen DINOv3 encoder E, a highlight-localization head H, token-space inpainting over the masked features, and a DPT decoder D reconstructing the diffuse image.",
+                "width": 1398,
+                "height": 522
               }
             ]
           },
@@ -203,6 +235,14 @@
               {
                 "type": "paragraph",
                 "text": "UnReflectAnything is evaluated on datasets with paired diffuse-only ground truth (PSD, SHIQ, SSHR) and on surgical endoscopy, where it consistently suppresses and attenuates specular highlights while preserving structure. Across natural-scene benchmarks it matches or exceeds state-of-the-art diffusion and physics-based baselines on MSE, PSNR, and SSIM, and in challenging endoscopic scenes it avoids the over-dimming and residual highlights common to diffusion methods. Ablations confirm the contribution of virtual highlight synthesis, token inpainting, and the Fresnel-aware rendering model. The feedforward architecture runs in real time on a single consumer GPU, making deployment more plausible than iterative diffusion alternatives."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/unreflect-anything/fig6.webp",
+                "alt": "UnReflectAnything, Figure 6",
+                "caption": "Fig. 6. Qualitative results: raw input (left) against the UnReflectAnything reconstruction (right), across natural scenes and surgical endoscopy.",
+                "width": 1398,
+                "height": 593
               }
             ]
           },
@@ -250,11 +290,6 @@
       ],
       "actions": [
         {
-          "label": "GitHub",
-          "href": "https://github.com/alberto-rota/SCALE-EM",
-          "icon": "Github"
-        },
-        {
           "label": "Paper",
           "href": "https://arxiv.org/abs/2512.10379",
           "icon": "FileText"
@@ -278,7 +313,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "Minimally invasive surgery has revolutionized modern practice by reducing patient trauma and recovery times, but restricted vision and limited tactile feedback increase technical complexity. Real-time computer vision on the endoscopic feed can provide AR overlays, tool tracking, and 3D reconstruction — all of which depend on robust feature matching between frames. The surgical environment poses unique challenges: non-rigid tissue deformation, dynamic lighting, specular reflections, smoke, and blood make general-purpose descriptors insufficient. This investigation adapts pretrained vision transformer representations to produce matchable patch embeddings for endoscopic imagery without manual annotation."
+                "text": "Minimally invasive surgery has revolutionized modern practice by reducing patient trauma and recovery times, but restricted vision and limited tactile feedback increase technical complexity. Real-time computer vision on the endoscopic feed can provide AR overlays, tool tracking, and 3D reconstruction, all of which depend on robust feature matching between frames. The surgical environment poses unique challenges: non-rigid tissue deformation, dynamic lighting, specular reflections, smoke, and blood make general-purpose descriptors insufficient. This investigation adapts pretrained vision transformer representations to produce matchable patch embeddings for endoscopic imagery without manual annotation."
               }
             ]
           },
@@ -288,6 +323,22 @@
               {
                 "type": "paragraph",
                 "text": "The pipeline augments a frozen DINOv2 backbone Φ with a trainable adaptation layer Ψ. Pseudo-ground-truth correspondences are generated via novel-view synthesis: a source frame is back-projected into 3D using a monocular depth estimate, transformed with a randomly sampled rigid motion, and re-projected to synthesize a warped target view; pixel mappings between source and warped views provide geometrically consistent supervision. Triplets (anchor, positive, negative) are mined in embedding space and optimized with contrastive (triplet) loss so matching points lie close while non-matches are pushed apart. At inference, correspondences are extracted via cosine similarity with mutual nearest-neighbor matching and refined to sub-pixel precision with Fourier phase correlation."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/scale-em/fig1.webp",
+                "alt": "SCALE-EM, Figure 1",
+                "caption": "Fig. 1. Architecture: a frozen DINOv2 backbone Φ maps both frames into a semantic feature space; the trainable adapter Ψ projects them into a matching space where correspondences are recovered by cosine similarity and argmax.",
+                "width": 1452,
+                "height": 420
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/scale-em/fig2.webp",
+                "alt": "SCALE-EM, Figure 2",
+                "caption": "Fig. 2. Pseudo-ground-truth generation. A source frame is back-projected with a monocular depth estimate, moved by a random rigid transform and re-projected, yielding dense correspondences with no manual labels.",
+                "width": 1452,
+                "height": 453
               }
             ]
           },
@@ -297,6 +348,14 @@
               {
                 "type": "paragraph",
                 "text": "On the SCARED stereo endoscopy test split, SCALE-EM achieves the lowest mean epipolar error among all tested methods (8.63 px, ~17% better than the next-best classical descriptor) and the fewest spurious matches under a cross-sequence robustness test (160 inliers on non-corresponding images vs. thousands for LoFTR and SIFT variants). Ablation studies confirm gains from the adaptation layer Ψ and sub-pixel refinement. The method remains competitive in runtime with other learning-based matchers while prioritizing precision over match density through a conservative scoring mechanism."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/scale-em/fig4.webp",
+                "alt": "SCALE-EM, Figure 4",
+                "caption": "Fig. 4. Pixel correspondences on the SCARED test split: four representative pairs drawn from the two held-out sequences.",
+                "width": 1452,
+                "height": 744
               }
             ]
           },
@@ -430,6 +489,14 @@
               {
                 "type": "paragraph",
                 "text": "Adnexal masses are common in gynecological practice, where the central objective is to distinguish benign from malignant lesions. Diagnostic performance depends on acquisition quality and operator expertise, leading to substantial variability. Ultrasound images are further challenged by speckle noise, acoustic shadowing, and low contrast. Accurate segmentation is a prerequisite for quantitative assessment pipelines including the IOTA ADNEX model and O-RADS risk stratification. Foundation models pretrained on large-scale natural-image corpora offer semantic priors that may transfer to medical ultrasound with minimal task-specific pretraining."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/mesa/fig1.webp",
+                "alt": "MESA, Figure 1",
+                "caption": "Fig. 1. (a) Predicted masks against ground truth on adnexal ultrasound cine frames; (b, c) metric comparison across architectures and behaviour as the annotation budget shrinks.",
+                "width": 1398,
+                "height": 415
               }
             ]
           },
@@ -439,6 +506,14 @@
               {
                 "type": "paragraph",
                 "text": "Grayscale cine frames are mapped to pseudo-RGB via channel replication and passed through a frozen DINOv3 encoder; a DPT-style decoder hierarchically reassembles features from layers {F₃, F₆, F₉, F₁₂} into a binary segmentation mask. Only the decoder is trained under a combined BCE and Dice objective (λ_BCE = 0.3, λ_Dice = 0.7) with AdamW, cosine learning-rate schedule, and 224×224 inputs. Baselines include U-Net, U-Net++, DeepLabV3, and MAnet trained under identical protocols. Data-starvation experiments train on 25%, 50%, 75%, and 100% of the labeled set to assess annotation efficiency."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/mesa/fig2.webp",
+                "alt": "MESA, Figure 2",
+                "caption": "Fig. 2. Architecture: a frozen DINOv3 encoder extracts hierarchical features that a DPT-style decoder resamples and reassembles into the binary segmentation mask.",
+                "width": 1398,
+                "height": 747
               }
             ]
           },
@@ -448,6 +523,14 @@
               {
                 "type": "paragraph",
                 "text": "MESA reaches Dice 0.945 and the best boundary-sensitive metrics across resolutions 224×224 and 512×512, outperforming all convolutional baselines on IoU, sensitivity, and Hausdorff distance. Under data starvation, CNN architectures degrade sharply at 25% of labels while the DINOv3-based model retains substantially higher Dice and lower HD95. Ablations across DINOv3 scales (Small, Base, Large, Giant) reveal early performance saturation and overfitting at extreme scales, with moderately sized backbones offering the best accuracy–efficiency trade-off for boundary-sensitive ovarian ultrasound segmentation."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/mesa/fig4.webp",
+                "alt": "MESA, Figure 4",
+                "caption": "Fig. 4. Efficiency analysis: segmentation quality against model capacity (a), and against the fraction of labels withheld (b).",
+                "width": 1398,
+                "height": 659
               }
             ]
           },
@@ -568,6 +651,14 @@
               {
                 "type": "paragraph",
                 "text": "The pipeline inputs N RGB images and one top-down HSI cube acquired with four planar ArUco markers around the specimen. 3D geometry is recovered with a deep-learning Structure-from-Motion backbone (MASt3R-SfM) and stabilized in a metric frame via custom bundle adjustment enforcing consistency on 16 ArUco corners. HSI registration avoids recovering the HSI camera pose: shared markers define corner correspondences that drive a planar homography, and 3D coordinates are recovered by lookup on an orthographically rendered depth map. The output is a spectral point cloud C ∈ ℝ^(S×(B+3)) with metric coordinates and full spectral signatures per surface point."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/spectra-breast/fig1.webp",
+                "alt": "Spectra-BREAST, Figure 1",
+                "caption": "Fig. 1. The registration pipeline: N RGB images and one HSI cube, four planar ArUco markers, MASt3R-SfM geometry, ray-casting onto the mesh, and a 2D-2D registration with depth lookup.",
+                "width": 1277,
+                "height": 529
               }
             ]
           },
@@ -577,6 +668,14 @@
               {
                 "type": "paragraph",
                 "text": "On specimens SB019 and SB020, 2D reprojection error stays below 0.02 mm (mean ± std: 0.017 ± 0.009 and 0.013 ± 0.003 mm over 16 corners). Median 3D registration error is 0.945 mm [IQR 0.731–1.378] for SB019 and 0.974 mm [IQR 0.753–1.088] for SB020. End-to-end processing completes in under 4 minutes per specimen (3D reconstruction ~3 min; 2D–3D registration ~24 s on an NVIDIA A100), supporting intraoperative timing constraints."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/spectra-breast/fig2.webp",
+                "alt": "Spectra-BREAST, Figure 2",
+                "caption": "Fig. 2. Left: 3D registration median error and total compute time. Right: 2D median reprojection error, both as a function of the fraction of RGB images used.",
+                "width": 1277,
+                "height": 476
               }
             ]
           },
@@ -710,6 +809,14 @@
               {
                 "type": "paragraph",
                 "text": "μVES comprises eight steps: acquisition, preprocessing (cubic voxel interpolation, optional downsampling), segmentation (active contours or a deep-learning alternative), network alignment, skeletonization, branch splitting, per-branch morphometry, and Poiseuille-based flow solving over the vascular graph under an assumed pressure drop. Wall shear stress is derived from velocity and local radius. A 2D projection mode (μVES2D) enables validation against REAVER and manual tracing before full 3D analysis."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/muves/fig3.webp",
+                "alt": "muVES, Figure 3",
+                "caption": "Fig. 3. The μVES pipeline, from confocal acquisition to morphometry and flow: preprocessing, segmentation, alignment, skeletonization and branch processing.",
+                "width": 1027,
+                "height": 1256
               }
             ]
           },
@@ -718,7 +825,23 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "Validated against REAVER on 2D projections, μVES matches established length estimates before exploiting the full volume, where mean vessel eccentricity is 0.833 ± 0.125 — revealing markedly non-circular cross-sections invisible to 2D analysis (2D mean radius 41.3 μm vs. 3D 28.5 μm on a representative network). Across 30 microvascular networks, mean capillary diameter is 31.4 ± 16.2 μm and tortuosity 1.18, consistent with in vitro literature. Flow velocities under 100/200/400 Pa pressure gradients agree with bead-tracking measurements; wall shear stress remains lower than in vivo references but approaches physiological values at higher imposed gradients. Deep-learning segmentation cuts computation time substantially with comparable morphological output."
+                "text": "Validated against REAVER on 2D projections, μVES matches established length estimates before exploiting the full volume, where mean vessel eccentricity is 0.833 ± 0.125, revealing markedly non-circular cross-sections invisible to 2D analysis (2D mean radius 41.3 μm vs. 3D 28.5 μm on a representative network). Across 30 microvascular networks, mean capillary diameter is 31.4 ± 16.2 μm and tortuosity 1.18, consistent with in vitro literature. Flow velocities under 100/200/400 Pa pressure gradients agree with bead-tracking measurements; wall shear stress remains lower than in vivo references but approaches physiological values at higher imposed gradients. Deep-learning segmentation cuts computation time substantially with comparable morphological output."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/muves/fig2.webp",
+                "alt": "muVES, Figure 2",
+                "caption": "Fig. 2. Network reconstruction and the radius / length distributions under 2D, downsampled-3D and full-3D analysis: 2D markedly overestimates vessel radius.",
+                "width": 1185,
+                "height": 956
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/muves/fig5.webp",
+                "alt": "muVES, Figure 5",
+                "caption": "Fig. 5. Functional velocity evaluation on a perfused network: flowrate, fluid velocity and wall shear stresses solved over the vascular graph, against experimental measurements.",
+                "width": 1027,
+                "height": 1130
               }
             ]
           },
@@ -808,7 +931,23 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "STEVE implements four HA strategies — trajectory guidance, obstacle avoidance, surface guidance, and insertion guidance — as visco-elastic force/torque fields on the master manipulators. Eight Unity tasks span training (Path, Rings, Pillars, Exchange) and evaluation (Liver Resection, Thymectomy, Nephrectomy, Suturing) scenarios targeting wrist articulation, depth perception, hand-eye coordination, and bimanual exchange. Performance P is a task-weighted combination of distance error, angular error, force/torque magnitudes, instrument drops, and repositioning time, normalized to expert execution. Eight novice subjects were randomized to assisted or control groups: four days of thrice-daily assisted or unassisted training, two rest days, then unassisted evaluation on unseen tasks."
+                "text": "STEVE implements four HA strategies (trajectory guidance, obstacle avoidance, surface guidance, and insertion guidance) as visco-elastic force/torque fields on the master manipulators. Eight Unity tasks span training (Path, Rings, Pillars, Exchange) and evaluation (Liver Resection, Thymectomy, Nephrectomy, Suturing) scenarios targeting wrist articulation, depth perception, hand-eye coordination, and bimanual exchange. Performance P is a task-weighted combination of distance error, angular error, force/torque magnitudes, instrument drops, and repositioning time, normalized to expert execution. Eight novice subjects were randomized to assisted or control groups: four days of thrice-daily assisted or unassisted training, two rest days, then unassisted evaluation on unseen tasks."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/steve/fig1.webp",
+                "alt": "STEVE, Figure 1",
+                "caption": "Fig. 1. The four haptic assistance strategies as visco-elastic force/torque fields: (a) trajectory guidance, (b) obstacle avoidance, (c) surface guidance, (d) insertion guidance.",
+                "width": 1424,
+                "height": 811
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/steve/fig2.webp",
+                "alt": "STEVE, Figure 2",
+                "caption": "Fig. 2. The eight simulated tasks. Blue headers mark the training tasks; orange marks the realistic evaluation tasks, performed by both groups without assistance.",
+                "width": 1424,
+                "height": 414
               }
             ]
           },
@@ -817,7 +956,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "During training, the assisted group consistently outperformed controls across all four training tasks with improving trends over repetitions. On day-7 evaluation tasks — executed without assistance by both groups — assisted subjects achieved higher median performance on Thymectomy (+13.07%), Liver Resection (+21.54%), and Suturing (+8.44%), with only Nephrectomy showing a slight decrease (−2.71%). The results suggest HA during training improves unassisted performance on novel surgical-like tasks, supporting skill transfer through integrated visuo-haptic feedback during teleoperation."
+                "text": "During training, the assisted group consistently outperformed controls across all four training tasks with improving trends over repetitions. On day-7 evaluation tasks, executed without assistance by both groups, assisted subjects achieved higher median performance on Thymectomy (+13.07%), Liver Resection (+21.54%), and Suturing (+8.44%), with only Nephrectomy showing a slight decrease (−2.71%). The results suggest HA during training improves unassisted performance on novel surgical-like tasks, supporting skill transfer through integrated visuo-haptic feedback during teleoperation."
               }
             ]
           },
@@ -847,8 +986,8 @@
         "Medical Imaging"
       ],
       "meta": {
-        "venue": "Nature WH",
-        "year": "2024"
+        "venue": "Nature WH ⋅ Preprint",
+        "year": "2025"
       },
       "collaborators": [
         {
@@ -1001,7 +1140,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "Ovarian cancer is the deadliest gynecologic malignancy, with complete resection after primary debulking surgery associated with the most favorable prognosis — yet assessing resectability at diagnosis remains challenging. We propose OVIT, a fully automated decision support system predicting residual tumor after primary debulking from preoperative CT and clinical variables, without manual segmentation or expert radiological scoring. On an independent test cohort of 75 patients from a 465-patient retrospective HGSOC cohort, the best model achieves AUC 0.80 (95% CI: 0.68–0.89) and recall 0.86 (95% CI: 0.71–0.97), correctly identifying 24 of 28 non-resectable cases including 13 of 14 intraoperatively aborted surgeries."
+                "text": "Ovarian cancer is the deadliest gynecologic malignancy, with complete resection after primary debulking surgery associated with the most favorable prognosis, yet assessing resectability at diagnosis remains challenging. We propose OVIT, a fully automated decision support system predicting residual tumor after primary debulking from preoperative CT and clinical variables, without manual segmentation or expert radiological scoring. On an independent test cohort of 75 patients from a 465-patient retrospective HGSOC cohort, the best model achieves AUC 0.80 (95% CI: 0.68–0.89) and recall 0.86 (95% CI: 0.71–0.97), correctly identifying 24 of 28 non-resectable cases including 13 of 14 intraoperatively aborted surgeries."
               }
             ]
           },
@@ -1010,7 +1149,15 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "High-grade serous ovarian carcinoma is often diagnosed at advanced FIGO stage III–IV with widespread abdominal dissemination. The choice between primary debulking surgery (PDS) and neoadjuvant chemotherapy followed by interval debulking is made in multidisciplinary tumor boards using criteria on anatomical dissemination and surgical feasibility — yet unforeseen unresectability discovered intraoperatively remains a critical failure mode. Automated prediction from routinely available preoperative CT and biomarkers could flag patients unlikely to benefit from PDS before surgery."
+                "text": "High-grade serous ovarian carcinoma is often diagnosed at advanced FIGO stage III–IV with widespread abdominal dissemination. The choice between primary debulking surgery (PDS) and neoadjuvant chemotherapy followed by interval debulking is made in multidisciplinary tumor boards using criteria on anatomical dissemination and surgical feasibility, yet unforeseen unresectability discovered intraoperatively remains a critical failure mode. Automated prediction from routinely available preoperative CT and biomarkers could flag patients unlikely to benefit from PDS before surgery."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/underxai-ovit/fig1.webp",
+                "alt": "UnderXAI-OVIT, Figure 1",
+                "caption": "Fig. 1. Segmentation masks for two subjects in each resectability group: pelvic and ovarian lesions in yellow, omental disease in green, across the three anatomical planes.",
+                "width": 1053,
+                "height": 531
               }
             ]
           },
@@ -1020,6 +1167,14 @@
               {
                 "type": "paragraph",
                 "text": "Preoperative contrast-enhanced CT volumes are automatically segmented into pelvic/ovarian and omental lesion masks by an open-source model, converted to 2D slices, and encoded slice-by-slice with a frozen pretrained Vision Transformer. Per-slice classification tokens are aggregated with an attention module and fused with clinical variables (age, CA125, HE4) through a lightweight MLP classification head; only the fusion and classification layers are trained. Four ViT backbones (DINOv2-small/base, Google-16/32) are compared with and without clinical fusion on a 390/75 train/test split from the European Institute of Oncology cohort."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/underxai-ovit/fig4.webp",
+                "alt": "UnderXAI-OVIT, Figure 4",
+                "caption": "Fig. 4. OVIT architecture: CT volumes are cut into 2D slices, a frozen ViT encodes each slice, an attention module pools the slice tokens, and clinical variables are fused before the MLP classifier.",
+                "width": 1053,
+                "height": 737
               }
             ]
           },
@@ -1028,7 +1183,15 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "The Google-32 ViT encoder with clinical fusion achieves the best test performance: AUC 0.80, recall 0.86, correctly flagging 86% of non-resectable patients including 93% of surgeries aborted intraoperatively for unforeseen unresectable disease. Ablations show clinical-variable benefit is architecture-dependent — Google-32 gains most from multimodal fusion on recall-oriented metrics. Misclassifications link false negatives to older, lower-biomarker patients and false positives to elevated HE4 and higher surgical complexity scores."
+                "text": "The Google-32 ViT encoder with clinical fusion achieves the best test performance: AUC 0.80, recall 0.86, correctly flagging 86% of non-resectable patients including 93% of surgeries aborted intraoperatively for unforeseen unresectable disease. Ablations show clinical-variable benefit is architecture-dependent: Google-32 gains most from multimodal fusion on recall-oriented metrics. Misclassifications link false negatives to older, lower-biomarker patients and false positives to elevated HE4 and higher surgical complexity scores."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/underxai-ovit/fig2.webp",
+                "alt": "UnderXAI-OVIT, Figure 2",
+                "caption": "Fig. 2. Resectability classification against the previously proposed model: confusion counts on the left, AUC / accuracy / precision / recall / F1 on the right.",
+                "width": 1053,
+                "height": 458
               }
             ]
           },
@@ -1064,7 +1227,7 @@
       "actions": [
         {
           "label": "Abstract and Poster",
-          "href": "pdfs/Coverage-Optimal%20Robotic%20Colonoscopy%20via%20Patient-Specific%20Digital-Twin%20World%20Models.pdf",
+          "href": "/pdfs/Coverage-Optimal%20Robotic%20Colonoscopy%20via%20Patient-Specific%20Digital-Twin%20World%20Models.pdf",
           "icon": "FileText"
         }
       ],
@@ -1138,7 +1301,15 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "A patient's CT colonography scan is segmented into a patient-specific digital twin providing full surface geometry so mucosal coverage along any trajectory is exactly measurable. Inside the twin, a world model predicts the next state S(t) = [RGB, T, C%]ₜ — endoluminal view, camera pose, and cumulative coverage — from each candidate action A(t). A navigation policy is trained in a closed loop against reward R(θ) = ΔC% · q(d, α), crediting novel coverage gain ΔC% weighted by view quality q that penalizes large viewing distance d and oblique incidence angle α. The trained policy transfers to robotic shared-autonomy deployment on the live endoscopic feed with the clinician in the loop."
+                "text": "A patient's CT colonography scan is segmented into a patient-specific digital twin providing full surface geometry so mucosal coverage along any trajectory is exactly measurable. Inside the twin, a world model predicts the next state S(t) = [RGB, T, C%]ₜ (endoluminal view, camera pose, and cumulative coverage) from each candidate action A(t). A navigation policy is trained in a closed loop against reward R(θ) = ΔC% · q(d, α), crediting novel coverage gain ΔC% weighted by view quality q that penalizes large viewing distance d and oblique incidence angle α. The trained policy transfers to robotic shared-autonomy deployment on the live endoscopic feed with the clinician in the loop."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/hamlynworkshop/fig1.webp",
+                "alt": "Robotic Colonoscopy, Figure 1",
+                "caption": "Fig. 1. The pipeline: a CT colonography scan becomes a patient-specific digital twin; inside it a world model predicts the next endoluminal view, pose and cumulative coverage, and the policy is rewarded for novel coverage weighted by view quality.",
+                "width": 1393,
+                "height": 726
               }
             ]
           },
@@ -1147,7 +1318,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "The framework is evaluated by mucosal coverage percentage, ADR, and number of missed lesions — metrics aligned with the clinical failure mode of inadequate inspection. Beyond aggregate scores, the digital twin yields per-patient blind-spot maps localizing hard-to-visualize regions and coverage-optimal inspection plans tailored to each colon's anatomy, standardizing inspection quality and reducing operator dependence."
+                "text": "The framework is evaluated by mucosal coverage percentage, ADR, and number of missed lesions, metrics aligned with the clinical failure mode of inadequate inspection. Beyond aggregate scores, the digital twin yields per-patient blind-spot maps localizing hard-to-visualize regions and coverage-optimal inspection plans tailored to each colon's anatomy, standardizing inspection quality and reducing operator dependence."
               }
             ]
           },
@@ -1256,6 +1427,14 @@
               {
                 "type": "paragraph",
                 "text": "Robotic systems have become prevalent in medical and industrial applications, offering high positioning accuracy, improved dexterity, and reduced trauma in surgery, and productivity and consistency in manufacturing. AR can transcend physical interaction limits by integrating holographic information onto real scenarios, improving situational awareness before and during task execution. This review synthesizes how AR has been applied to medical and industrial robotic systems, organizing the literature by application theme and identifying cross-cutting challenges."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/surgical-ar-review/fig1.webp",
+                "alt": "Surgical AR Review, Figure 1",
+                "caption": "Fig. 1. AR in medical and industrial robotic applications: visualization and guidance for robot-assisted surgery (left), and for industrial manipulation tasks (right).",
+                "width": 1102,
+                "height": 372
               }
             ]
           },
@@ -1292,17 +1471,19 @@
     {
       "slug": "ground-control",
       "title": "GroundControl",
-      "subtitle": "Beautiful system monitoring in your terminal",
+      "subtitle": "Monitor your hardware from your terminal, all of it at the same time.",
       "description": "Rich visualization and monitoring of system metrics in the terminal.",
-      "tag": "open-source",
-      "thumbnail": "/images/groundcontrol.png",
+      "tag": "terminal-tools",
+      "thumbnail": "https://raw.githubusercontent.com/alberto-rota/ground-control/main/assets/hero.gif",
       "cardAspect": "16/9",
       "cardFit": "cover",
       "accent": "#ffd866",
       "tech": [
         "Python",
         "Textual",
-        "TUI"
+        "Plotext",
+        "nvitop",
+        "Slurm"
       ],
       "actions": [
         {
@@ -1314,16 +1495,610 @@
           "label": "pip install",
           "href": "https://pypi.org/project/ground-control-tui/",
           "icon": "Download"
+        },
+        {
+          "label": "install now",
+          "copy": "uv tool install ground-control-tui",
+          "icon": "Download",
+          "ariaLabel": "Copy install command to clipboard"
         }
       ],
       "details": {
-        "body": "GroundControl is a Textual-based TUI that turns any terminal into a live cockpit for your machine: CPU, GPU, memory, network and disk in one glance. Built for SSH sessions where a browser is not an option.",
+        "body": "Ground Control is a Textual TUI that turns any terminal into a live cockpit for the machine you are on: per-core CPU, RAM and swap, temperatures, per-mount disk I/O, network throughput and NVIDIA GPU telemetry, all redrawn together on one screen. It needs no display server and no browser, so a headless workstation or an HPC login node is watched over SSH exactly the way a laptop is.\n\nIt is not only a TUI. The same collectors back `gc --once`, which takes a single sample and exits as text, as JSON, or as a Nagios-style exit code, so cron, CI and monitoring agents can read the same numbers the dashboard draws.",
         "highlights": [
-          "Runs over SSH — no display server needed",
-          "Syncronized, real-time metrics display",
-          "Pluggable widgets and theme system. You choose what to see and how to see it!",
-          "uv ground-control-tui"
-        ]
+          "Runs over SSH: no display server, no browser, no agent to install",
+          "CPU, memory, temperature, per-mount disk I/O, network and NVIDIA GPU on one synchronized screen",
+          "Slurm-aware: focus a job and every panel reports from inside its allocation, tail its output, cancel it",
+          "Grid, horizontal and vertical layouts, one keystroke apart and sized for a tmux split",
+          "Twenty built-in themes plus a colour picker that previews on live data",
+          "Threshold alerts marked ▲ / ■, so they survive a monochrome terminal",
+          "`gc --once --json` and `--check` for cron, CI and Nagios-style monitoring"
+        ],
+        "sections": [
+          {
+            "title": "Layouts",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Every panel the machine has to offer is on screen at once in the grid layout. `h` and `v` re-flow the same widgets into a single row or a single column, which is what a horizontal or vertical tmux split actually wants. The switch is instant and the history in each plot is preserved."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/ground-control/main/assets/layouts.gif",
+                "alt": "Ground Control switching between grid and horizontal layouts",
+                "caption": "Grid → horizontal → grid with `g` and `h`, on live data.",
+                "width": 2250,
+                "height": 1350
+              }
+            ]
+          },
+          {
+            "title": "Widgets",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "CPU: per-core load as horizontal bars, with frequency and colour-coded intensity",
+                  "Memory: RAM on the positive axis, swap on the negative, with a used/free centre bar",
+                  "Temperature: up to four sensors over time, with warning bands at 60 °C and 80 °C",
+                  "Disk: read/write throughput and used/free space, one widget per mounted partition",
+                  "Network: upload and download rates plus cumulative transfer",
+                  "GPU: utilization and memory for NVIDIA cards, with power draw, clocks and throttle reasons",
+                  "Slurm: your running and pending jobs, shown wherever `squeue` is on PATH"
+                ]
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/ground-control/main/assets/gpu.gif",
+                "alt": "Ground Control GPU widget",
+                "caption": "The GPU widget: utilization against memory, with a telemetry line for power, clocks and throttling.",
+                "width": 2054,
+                "height": 910
+              }
+            ]
+          },
+          {
+            "title": "Alerts",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Any panel that crosses a threshold paints its border and prefixes its title with a marker: ▲ for a warning, ■ for critical. The marker matters as much as the colour: it survives a monochrome terminal. Thresholds are written as plain numbers, because direction is a property of the metric, and a breach stays visible for a few seconds after recovery so a spike is not missed while you are on another tab."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/ground-control/main/assets/alerts.gif",
+                "alt": "Ground Control threshold alerts",
+                "caption": "A breach marks the panel and holds the marker briefly after recovery.",
+                "width": 2250,
+                "height": 1350
+              }
+            ]
+          },
+          {
+            "title": "Scripting and health checks",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "`gc --once` takes one sample, prints it and exits: no alternate screen, no event loop. `--json` makes it machine-readable with a `schema_version`, and `--check` returns the Nagios convention (0 ok, 1 warn, 2 crit, 3 collector failed) so it drops into an existing monitoring setup unchanged. `gc --stream` emits one compact JSON object per line for continuous collection."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/ground-control/main/assets/snapshot.gif",
+                "alt": "gc --once printing a single sample",
+                "caption": "`gc --once`: the same collectors, without the dashboard.",
+                "width": 1860,
+                "height": 1110
+              }
+            ]
+          }
+        ],
+        "terminal": {
+          "title": "zsh: ground-control",
+          "lines": [
+            {
+              "prompt": "$",
+              "text": "uv tool install ground-control-tui",
+              "tone": "cmd"
+            },
+            {
+              "prompt": ">",
+              "text": "Installed 1 executable: groundcontrol",
+              "tone": "out"
+            },
+            {
+              "prompt": "$",
+              "text": "gc",
+              "tone": "cmd"
+            },
+            {
+              "prompt": "",
+              "text": "# one-shot, for cron / CI / monitoring",
+              "tone": "note"
+            },
+            {
+              "prompt": "$",
+              "text": "gc --once --json",
+              "tone": "cmd"
+            }
+          ]
+        }
+      },
+      "detailComponent": "ground-control-terminal"
+    },
+    {
+      "slug": "sekrt",
+      "title": "sekrt",
+      "subtitle": "Your secrets: synced, retrievable and safely stored. Plus a painless way to keep .env files out of your repos.",
+      "description": "An AES-256 secret manager with a Textual TUI, first-class .env and SSH-key workflows, and sync through any private git remote.",
+      "tag": "terminal-tools",
+      "thumbnail": "https://raw.githubusercontent.com/alberto-rota/sekrt/main/docs/hero.gif",
+      "cardAspect": "16/9",
+      "cardFit": "cover",
+      "accent": "#ff0000",
+      "tech": [
+        "Python",
+        "Textual",
+        "Click",
+        "AES-256-GCM",
+        "git"
+      ],
+      "actions": [
+        {
+          "label": "GitHub",
+          "href": "https://github.com/alberto-rota/sekrt",
+          "icon": "Github"
+        },
+        {
+          "label": "pip install",
+          "href": "https://pypi.org/project/sekrt/",
+          "icon": "Download"
+        },
+        {
+          "label": "install now",
+          "copy": "uv tool install sekrt",
+          "icon": "Download",
+          "ariaLabel": "Copy install command to clipboard"
+        }
+      ],
+      "details": {
+        "body": "sekrt is a secret manager for developers and DevOps engineers: `pass`, but with a modern Textual interface, first-class support for API keys, SSH keypairs and `.env` files, and sync through any private git remote you already have. Every entry is an independent file encrypted with AES-256-GCM under a key derived from your passphrase with scrypt.\n\nThree dependencies, no daemon, no sudo and no GPG keyring to set up. The vault is a plain git repository, so `sekrt sync` is a pull and a push, and a second machine gets everything by cloning it.",
+        "highlights": [
+          "Passwords and API keys in folders, generated on demand, copied to a clipboard that clears after 45 s",
+          "`.env` files encrypted per repository, and restored into any fresh clone with one command",
+          "`sekrt run` hands a command its secrets in that process's environment only, for as long as it runs",
+          "SSH keypairs imported, generated (ed25519) and restored with the right permissions",
+          "Git sync: every change is a commit, and the remote only ever sees ciphertext",
+          "TUI and CLI, with inline pickers and forms when you leave an argument out",
+          "Three dependencies, no daemon, no sudo, no GPG setup"
+        ],
+        "sections": [
+          {
+            "title": "The vault",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "`sekrt init` creates a vault at `~/.local/share/sekrt` and asks for the passphrase that will encrypt it. Commands that touch a secret ask for that passphrase; `ls`, `find`, `rm` and `status` never do, because they decrypt nothing. `sekrt unlock` caches the derived key (never the passphrase) in a RAM-backed, user-private location with a TTL: gpg-agent, without the agent."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/sekrt/main/docs/quickstart.gif",
+                "alt": "sekrt CLI walkthrough",
+                "caption": "Init, add, get: a working vault in four commands.",
+                "width": 1200,
+                "height": 680
+              }
+            ]
+          },
+          {
+            "title": "The .env workflow",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "`sekrt env push` encrypts the `.env` of the repository you are standing in and files it under that repo; `sekrt env pull` restores it in any fresh clone, on any machine. Monorepos with one env file per service are handled, and an edited local file is never overwritten without `--force`."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/sekrt/main/docs/env.gif",
+                "alt": "sekrt env push and pull",
+                "caption": "A repo's .env, encrypted into the vault and restored in a fresh clone.",
+                "width": 1200,
+                "height": 480
+              }
+            ]
+          },
+          {
+            "title": "Running a command with your secrets",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "`sekrt expose` cannot work, because a child process cannot set variables in the shell that started it. So sekrt wraps the command instead, and the values live in *its* environment for exactly as long as it runs. Never written to disk, never left in your shell, and never placed in a command line, because `ps` is world-readable. `sekrt shell` opens a subshell that tags its own prompt, so a shell holding secrets never looks like an ordinary one."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/sekrt/main/docs/run.gif",
+                "alt": "sekrt run wrapping a command",
+                "caption": "`sekrt run` and `sekrt shell`: secrets scoped to one process.",
+                "width": 1200,
+                "height": 560
+              }
+            ]
+          },
+          {
+            "title": "The TUI",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "`sekrt` with no arguments opens the interface: a folder tree of the vault, fuzzy filtering, a masked detail view, add and edit forms with a built-in generator, and one-key sync. Eleven colour presets, one per hue, editable live with `t`."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/sekrt/main/docs/tui.gif",
+                "alt": "The sekrt TUI",
+                "caption": "Browsing, filtering, revealing and syncing, without leaving the keyboard.",
+                "width": 1200,
+                "height": 720
+              }
+            ]
+          },
+          {
+            "title": "Security model",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "AES-256-GCM per entry; key derived with scrypt (N=2¹⁵, r=8, p=1) and a random per-vault salt",
+                  "The entry's logical name is the GCM associated data, so a renamed or moved ciphertext fails to decrypt",
+                  "The remote sees names, folder structure and timestamps; contents are always ciphertext",
+                  "`unlock` caches the derived key in tmpfs (0600, wiped on logout), never the passphrase",
+                  "Clipboard clears after 45 s, and only if it still holds the copied value",
+                  "$SEKRT_PASSPHRASE is stripped from wrapped children, so they cannot decrypt anything they were not handed"
+                ]
+              }
+            ]
+          }
+        ],
+        "terminal": {
+          "title": "zsh: sekrt",
+          "lines": [
+            {
+              "prompt": "$",
+              "text": "uv tool install sekrt",
+              "tone": "cmd"
+            },
+            {
+              "prompt": "$",
+              "text": "sekrt init",
+              "tone": "cmd"
+            },
+            {
+              "prompt": ">",
+              "text": "✔ vault created at ~/.local/share/sekrt",
+              "tone": "out"
+            },
+            {
+              "prompt": "$",
+              "text": "sekrt add work/github -u alberto -g",
+              "tone": "cmd"
+            },
+            {
+              "prompt": "$",
+              "text": "sekrt run 'uv publish'",
+              "tone": "cmd"
+            }
+          ]
+        }
+      },
+      "detailComponent": "ground-control-terminal"
+    },
+    {
+      "slug": "dasshboard-tui",
+      "title": "dasshboard-tui",
+      "subtitle": "Moving between SSH hosts just got a whole lot easier.",
+      "description": "A home screen for your terminal: every host in your SSH config becomes a tile you can open with one key.",
+      "tag": "terminal-tools",
+      "thumbnail": "https://raw.githubusercontent.com/alberto-rota/dasshboard-tui/main/docs/board.gif",
+      "cardAspect": "16/9",
+      "cardFit": "cover",
+      "accent": "#ffd866",
+      "tech": [
+        "Rust",
+        "ratatui",
+        "SSH",
+        "TOML"
+      ],
+      "actions": [
+        {
+          "label": "GitHub",
+          "href": "https://github.com/alberto-rota/dasshboard-tui",
+          "icon": "Github"
+        },
+        {
+          "label": "pip install",
+          "href": "https://pypi.org/project/dasshboard/",
+          "icon": "Download"
+        },
+        {
+          "label": "install now",
+          "copy": "uv tool install dasshboard",
+          "icon": "Download",
+          "ariaLabel": "Copy install command to clipboard"
+        }
+      ],
+      "details": {
+        "body": "dasshboard is a home screen for your terminal. Every host in `~/.ssh/config`, plus anything you add yourself, including plain local commands, becomes a tile. Pick one and it connects, in this terminal, a new tab or a new window.\n\nEverything is editable from inside the TUI; there is no `$EDITOR` handoff. `~/.ssh/config` is never written to: editing one of its hosts writes an override block into dasshboard's own `config.toml` that merges on top of it.",
+        "highlights": [
+          "Reads `~/.ssh/config` and turns every host into a tile: nothing to declare twice",
+          "`1`–`9` opens a numbered tile; `⏎` opens the selected one",
+          "Add, edit, duplicate, hide, recolour and reorder tiles without leaving the TUI",
+          "`/` finds a host by name, target or jump host",
+          "Jump hosts, per-tile working directory and per-tile command (`tmux attach`, a login shell, anything)",
+          "Groups and section headings, drawn in the order you set",
+          "Written in Rust with ratatui; runs on macOS, Linux, BSD and Windows Terminal"
+        ],
+        "sections": [
+          {
+            "title": "The board",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Arrows or `hjkl` move, `g` and `G` jump to the first and last tile, `⏎` opens. `t`, `w` and `c` override where a session lands (a new tab, a new window, or this terminal) for one launch, without changing the default."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/dasshboard-tui/main/docs/board.gif",
+                "alt": "The dasshboard board",
+                "caption": "Moving between tiles, then opening one in this terminal.",
+                "width": 1390,
+                "height": 770
+              }
+            ]
+          },
+          {
+            "title": "Finding and editing hosts",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "`/` filters by name, target or jump host. `a`, `e` and `d` add, edit and duplicate a tile; `D` deletes one after asking; `x` hides it and `X` brings every hidden tile back. Edits rewrite whole blocks as text, so the comments and formatting in your config survive, and a TOML error is reported in the status line rather than taking the board down."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/dasshboard-tui/main/docs/find.gif",
+                "alt": "Finding a host in dasshboard",
+                "caption": "`/` matches against name, target and jump host.",
+                "width": 1200,
+                "height": 620
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/dasshboard-tui/main/docs/add.gif",
+                "alt": "Adding a tile in dasshboard",
+                "caption": "Adding a host from inside the TUI: `~/.ssh/config` is never written to.",
+                "width": 1200,
+                "height": 620
+              }
+            ]
+          },
+          {
+            "title": "Groups and colour",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "`S` manages groups: a section heading with an ordered list of tiles under it. `s` opens settings: whether to include `~/.ssh/config`, whether hidden tiles show at startup, where sessions open, and the two theme colours. Every host gets a colour, auto-assigned unless you pick one."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/dasshboard-tui/main/docs/groups.gif",
+                "alt": "Grouping tiles in dasshboard",
+                "caption": "Sections group the board and are drawn in the order you set.",
+                "width": 1200,
+                "height": 620
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/dasshboard-tui/main/docs/theme.gif",
+                "alt": "Theming dasshboard",
+                "caption": "Primary and accent colours, applied live.",
+                "width": 1200,
+                "height": 620
+              }
+            ]
+          },
+          {
+            "title": "Compatibility",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "The TUI runs anywhere, and opening a session in the current terminal works everywhere. Opening a new tab or window needs a terminal with an automation interface, which today means Ghostty ≥ 1.2 on macOS, where the new surface also picks up the host's colour as a tint. Everywhere else `tab` and `window` resolve to `current`, so a shared config still parses and still works."
+              }
+            ]
+          }
+        ],
+        "terminal": {
+          "title": "zsh: dasshboard",
+          "lines": [
+            {
+              "prompt": "$",
+              "text": "uv tool install dasshboard",
+              "tone": "cmd"
+            },
+            {
+              "prompt": "$",
+              "text": "dasshboard",
+              "tone": "cmd"
+            },
+            {
+              "prompt": "",
+              "text": "# ...then, if you want it with every terminal",
+              "tone": "note"
+            },
+            {
+              "prompt": "$",
+              "text": "dasshboard --startup on",
+              "tone": "cmd"
+            }
+          ]
+        }
+      },
+      "detailComponent": "ground-control-terminal"
+    },
+    {
+      "slug": "dotfiles",
+      "title": "dotfiles",
+      "subtitle": "This is what you install if you want your terminal to look like mine.",
+      "description": "One line to set up a new machine: tmux, oh-my-posh, Claude Code, Neovim and a pile of portable shell additions.",
+      "tag": "terminal-tools",
+      "thumbnail": "https://raw.githubusercontent.com/alberto-rota/dotfiles/main/demo/setup.gif",
+      "cardAspect": "16/9",
+      "cardFit": "cover",
+      "accent": "#ffd866",
+      "tech": [
+        "Bash",
+        "uv",
+        "tmux",
+        "oh-my-posh",
+        "Neovim"
+      ],
+      "actions": [
+        {
+          "label": "GitHub",
+          "href": "https://github.com/alberto-rota/dotfiles",
+          "icon": "Github"
+        },
+        {
+          "label": "install now",
+          "copy": "curl -LsSf albertorota.dev/setmeup.sh | bash",
+          "icon": "Download",
+          "ariaLabel": "Copy install command to clipboard"
+        }
+      ],
+      "details": {
+        "body": "tmux, Claude Code, oh-my-posh, herdr and a pile of portable shell additions, kept in step across a laptop, a workstation and a couple of HPC login nodes. On a machine with nothing on it, one line is the whole thing. The script clones the repo, hands over to the copy inside it, and falls back to a release tarball where git is not installed yet.\n\nSudo is detected, not assumed. The installer works out whether you are root, have passwordless sudo, are a sudoer who has to type a password, or have no sudo at all, and picks its install routes accordingly: system package manager where there is privilege, rustup, `uv tool install`, release tarballs or conda-forge where there is not.",
+        "highlights": [
+          "`curl -fsSL albertorota.dev/setmeup.sh | bash` on a machine with nothing on it",
+          "A setup UI whose preview panes are the real thing: the actual prompt, status bar and install plan, not a drawing",
+          "Colour and machine name land in templates, rendered into `.generated/` and symlinked, so tracked files stay machine-agnostic",
+          "Every path it touches is recorded in a manifest, and any file already there is moved aside to `.bak`",
+          "`reset.sh` reads the manifest back and undoes exactly what was done",
+          "No-sudo machines get the full catalogue through userland routes",
+          "bash and zsh from one file, on both Linux and macOS, down to bash 3.2"
+        ],
+        "sections": [
+          {
+            "title": "Setting a machine up",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "`install.sh` installs uv first, because the setup UI is itself a uv script, then opens it: two accent colours, the machine name, which pills belong in the status bars, and which tools to put on the machine. The panes on the right are real: the prompt is `oh-my-posh print` on a rendered copy of the actual template, the status bar is the string the installer assembles with its `#(...)` segments really executed, and the install plan is the same route resolution the run performs. A machine without uv, or without the network to fetch it, falls back to a plain text wizard."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/dotfiles/main/demo/setup.gif",
+                "alt": "The dotfiles setup UI",
+                "caption": "The setup UI: colours, machine name, status-bar pills and the tool catalogue.",
+                "width": 1210,
+                "height": 730
+              }
+            ]
+          },
+          {
+            "title": "What it does to the machine",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Anything carrying a colour or the machine name is a `*.in` template with `@PRIMARY@`-style placeholders, because tmux.conf, JSON and TOML cannot indirect through a variable. Each one is rendered into `.generated/` and the real config path is pointed at the rendered copy, so `~` still shows what is managed and re-running the installer updates live config. A real file already sitting at a path is moved to `<file>.bak`, once, and a backup is never written over."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/dotfiles/main/demo/install.gif",
+                "alt": "install.sh rendering templates and linking them",
+                "caption": "Templates rendered into `.generated/`, then symlinked into place.",
+                "width": 1300,
+                "height": 820
+              }
+            ]
+          },
+          {
+            "title": "The dotfiles command",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Installing puts a `dotfiles` CLI on PATH, so none of this needs the checkout to be your working directory again. It is a wrapper rather than a second implementation: every subcommand runs `install.sh`, `reset.sh` or `lib/tools.sh` out of the checkout, and options pass straight through."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/dotfiles/main/demo/cli.gif",
+                "alt": "The dotfiles CLI help",
+                "caption": "`dotfiles` wraps the scripts in the checkout; it does not reimplement them.",
+                "width": 1000,
+                "height": 580
+              }
+            ]
+          },
+          {
+            "title": "Taking it back off",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "`reset.sh` reads the manifest back, removes everything on it, restores each path's `.bak` and strips the block it added to `~/.bashrc` and `~/.zshrc`. Numbered backups it reports and leaves alone, since choosing between several saved files is a human's job. It undoes config, not software: the tools stay installed."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/dotfiles/main/demo/undo.gif",
+                "alt": "dotfiles uninstall restoring the machine",
+                "caption": "Uninstall walks the manifest backwards and puts the `.bak` files back.",
+                "width": 1060,
+                "height": 640
+              }
+            ]
+          },
+          {
+            "title": "The catalogue",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "shell: tmux, oh-my-posh, jq, zoxide, eza, fzf, fd, bat, delta, glow, dua-cli",
+                  "network: Tailscale (installed, not connected: `tailscale up` is left to you)",
+                  "gpu: nvitop",
+                  "editor: Neovim with LazyVim, Claude Code",
+                  "python: gdown, ground-control-tui",
+                  "herdr: herdr, herdr-statusline, herdr-file-viewer",
+                  "toolchains: git, Rust, a C toolchain, Homebrew, conda-forge, each only if something needs it"
+                ]
+              }
+            ]
+          }
+        ],
+        "terminal": {
+          "title": "bash: a machine with nothing on it",
+          "lines": [
+            {
+              "prompt": "$",
+              "text": "curl -fsSL albertorota.dev/setmeup.sh | bash",
+              "tone": "cmd"
+            },
+            {
+              "prompt": ">",
+              "text": "cloning into ~/dotfiles ...",
+              "tone": "out"
+            },
+            {
+              "prompt": "",
+              "text": "# already have the checkout? it pulls instead",
+              "tone": "note"
+            },
+            {
+              "prompt": "$",
+              "text": "dotfiles install",
+              "tone": "cmd"
+            },
+            {
+              "prompt": "$",
+              "text": "dotfiles uninstall",
+              "tone": "cmd"
+            }
+          ]
+        }
       },
       "detailComponent": "ground-control-terminal"
     },
@@ -1331,8 +2106,8 @@
       "slug": "dasshboard",
       "title": "DaSSHboard",
       "subtitle": "A stylish SSH dashboard for VS Code",
-      "description": "A stylish dashboard for quickly connecting to SSH hosts with customizable settings.",
-      "tag": "open-source",
+      "description": "One-click access to your SSH hosts, WSL distros and running Docker containers, from a customizable VS Code panel.",
+      "tag": "vsc-extensions",
       "thumbnail": "https://raw.githubusercontent.com/alberto-rota/DaSSHboard/master/overview.png",
       "cardAspect": "16/9",
       "cardFit": "cover",
@@ -1340,7 +2115,10 @@
       "accent": "#fc9867",
       "tech": [
         "TypeScript",
-        "VS Code API"
+        "VS Code API",
+        "SSH",
+        "WSL",
+        "Docker"
       ],
       "actions": [
         {
@@ -1352,18 +2130,115 @@
           "label": "VS Marketplace",
           "href": "https://marketplace.visualstudio.com/items?itemName=AlbertoRota.dasshboard",
           "icon": "Download"
+        },
+        {
+          "label": "Open VSX",
+          "href": "https://open-vsx.org/extension/AlbertoRota/dasshboard",
+          "icon": "Download"
         }
       ],
       "details": {
-        "body": "DaSSHboard turns the cluttered list of SSH hosts in VS Code into a fast, visual launcher. Pin hosts, group them, and connect with a single click."
+        "body": "DaSSHboard turns the cluttered remote menu in VS Code into a visual launcher. It reads `~/.ssh/config` for your SSH hosts, detects WSL distros, and parses `docker ps` for running containers, then puts every one of them a single click away, along with each of the folders you actually work in on them.\n\nWorks in VS Code, Cursor and Windsurf, and is published on both the VS Marketplace and Open VSX.",
+        "highlights": [
+          "SSH hosts, WSL distros and Docker containers in one panel",
+          "Several entrypoint folders per host, each one click from either window",
+          "Grid or list layout, toggled from the panel, the context menu or settings",
+          "A colour and a Lucide icon per host, and a colour per section",
+          "Right-click anything (path, host card, section, background) for a menu that fits it",
+          "Labels for long paths, with the full path one hover away",
+          "Discovery is resilient: a slow DNS lookup or an unresponsive `wsl.exe` times out instead of blocking"
+        ],
+        "sections": [
+          {
+            "title": "The dashboard",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Hit the DaSSHboard button in the status bar, use the Remote menu, or run \"Show DaSSHboard\" from the Command Palette. Each host card lists the entrypoint paths on that host, with buttons to open one in the current window or a new one. Opened from inside a remote session, it also offers a Close connection button, coloured for the kind of remote you are in."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/DaSSHboard/master/overview.png",
+                "alt": "The DaSSHboard panel in VS Code",
+                "caption": "Every remote environment, one click away.",
+                "width": 2136,
+                "height": 1459
+              }
+            ]
+          },
+          {
+            "title": "Layouts",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Grid or list, switched with the toggle at the bottom of the view, from the right-click menu, or with the `daSSHboard.layout` setting."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/DaSSHboard/master/media/readme/gridview.png",
+                "alt": "DaSSHboard grid layout",
+                "caption": "Grid layout.",
+                "width": 2115,
+                "height": 1387
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/DaSSHboard/master/media/readme/listview.png",
+                "alt": "DaSSHboard list layout",
+                "caption": "List layout.",
+                "width": 2112,
+                "height": 1372
+              }
+            ]
+          },
+          {
+            "title": "Customization",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Click the icon on a host card to give it its own colour and one of the Lucide icons, so a host is recognizable before you read its name. Sections get a colour of their own from the square next to the title, or from `settings.json`. Not happy with a look? Reset icon & color puts it back to the theme default."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/DaSSHboard/master/media/readme/icon_customization.png",
+                "alt": "Choosing a host icon in DaSSHboard",
+                "caption": "A colour and an icon per host.",
+                "width": 644,
+                "height": 378
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/alberto-rota/DaSSHboard/master/media/readme/section_customization.png",
+                "alt": "Choosing a section colour in DaSSHboard",
+                "caption": "A colour per section: SSH, WSL and Docker.",
+                "width": 647,
+                "height": 211
+              }
+            ]
+          },
+          {
+            "title": "How hosts are discovered",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "SSH host: the home directory of the `User` in `~/.ssh/config` (`/root` for root, `/home` if unset)",
+                  "WSL distro: the default user's home directory of that installation",
+                  "Docker container: the container root, fixed",
+                  "A host with no usable default shows an Add entrypoint row rather than a phantom path"
+                ]
+              }
+            ]
+          }
+        ]
       }
     },
     {
       "slug": "medview",
       "title": "MedView",
       "subtitle": "NIfTI / DICOM viewer for VS Code",
-      "description": "A medical image viewer for NIfTI and DICOM formats.",
-      "tag": "open-source",
+      "description": "A NIfTI and DICOM viewer that runs inside VS Code, with multi-planar reconstruction and segmentation overlays.",
+      "tag": "vsc-extensions",
       "thumbnail": "/images/medview.png",
       "cardAspect": "16/10",
       "cardFit": "cover",
@@ -1371,7 +2246,9 @@
       "accent": "#ff6188",
       "tech": [
         "TypeScript",
-        "VS Code API"
+        "VS Code API",
+        "NIfTI",
+        "DICOM"
       ],
       "actions": [
         {
@@ -1386,7 +2263,60 @@
         }
       ],
       "details": {
-        "body": "MedView lets clinicians and engineers inspect NIfTI and DICOM volumes inside VS Code — no separate viewer, no context switching. Useful when annotating or debugging medical-imaging pipelines."
+        "body": "MedView lets clinicians and engineers inspect NIfTI (`.nii`, `.nii.gz`) and DICOM (`.dcm`) volumes inside VS Code: no separate viewer, no context switch out of the pipeline you are debugging. It registers as the default editor for those extensions, so opening the file is all it takes.\n\nVolumes are streamed to the viewer as binary and decoded in a background worker using native gzip, so a 330 MB compressed CT (a 760 MB volume) opens in seconds and the interface stays responsive.",
+        "highlights": [
+          "Axial, sagittal and coronal views of the same volume",
+          "Segmentation overlays, discovered automatically next to the image and in its subfolders",
+          "Per-label colours with voxel counts; click a label to hide or show it",
+          "Fill or outline rendering with an opacity slider, and a refusal to overlay a mismatched grid",
+          "Brightness and contrast, rotation and flips, all applied live",
+          "Native resolution with no interpolation, and physical aspect ratio from the voxel spacing",
+          "Arrow keys, Page Up/Down, Home/End and the mouse wheel to move through slices"
+        ],
+        "sections": [
+          {
+            "title": "Multi-planar reconstruction",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "The same volume in all three anatomical planes, with global intensity normalization so brightness is consistent across slices and voxel spacing respected so proportions are anatomically right."
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/FrancescaFati/MedView/main/assets/axial.png",
+                "alt": "MedView axial view",
+                "caption": "Axial.",
+                "width": 2113,
+                "height": 1578
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/FrancescaFati/MedView/main/assets/sagittal.png",
+                "alt": "MedView sagittal view",
+                "caption": "Sagittal.",
+                "width": 2109,
+                "height": 1564
+              },
+              {
+                "type": "image",
+                "src": "https://raw.githubusercontent.com/FrancescaFati/MedView/main/assets/fronta.png",
+                "alt": "MedView coronal view",
+                "caption": "Coronal.",
+                "width": 2113,
+                "height": 1566
+              }
+            ]
+          },
+          {
+            "title": "Segmentation overlays",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "MedView looks for label volumes next to the image and in its subfolders, so a layout like `case/CT.nii.gz` plus `case/ovseg_predictions/CT.nii.gz` is picked up with no configuration; Browse… covers anything it misses. Labels are listed with their voxel counts and their own colours, rendered filled or as outlines, and a label volume whose grid does not match the image is refused rather than silently misaligned."
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -1455,12 +2385,12 @@
         }
       ],
       "details": {
-        "body": "Identity work for the NEARLab medical-robotics group at Politecnico di Milano — a system of marks rooted in the group's surgical and imaging research."
+        "body": "Identity work for the NEARLab medical-robotics group at Politecnico di Milano, a system of marks rooted in the group's surgical and imaging research."
       }
     },
     {
       "slug": "icra29-logo",
-      "title": "ICRA 2029 — Milan",
+      "title": "ICRA 2029, Milan",
       "subtitle": "Identity for IEEE ICRA in Milan",
       "description": "Logo design for ICRA 2029, to be hosted in Milan.",
       "tag": "designs",
@@ -1493,25 +2423,26 @@
         }
       ],
       "details": {
-        "body": "Mark for the UNDERXAI project — explainable AI for medical decision support."
+        "body": "Mark for the UNDERXAI project: explainable AI for medical decision support."
       }
     },
     {
       "slug": "predict-logo",
       "title": "PREDICT Project Identity",
       "subtitle": "Logo design for the PREDICT project",
-      "description": "Logo design for the UNDERXAI project.",
+      "description": "Logo design for the PREDICT project.",
       "tag": "designs",
       "thumbnail": "/images/predict.png",
       "accent": "#4595a9",
       "actions": [
         {
           "label": "Project",
+          "href": "https://nearlab.polimi.it/neuroengineering-and-medical-robotics/medical/predict/",
           "icon": "Globe"
         }
       ],
       "details": {
-        "body": "Mark for the PREDICT project — Predictive Response and Disease Evaluation in Ovarian Cancer with Generative AI"
+        "body": "Mark for PREDICT: Predictive Response and Disease Evaluation in Ovarian Cancer with Generative AI, a NEARLab project funded by Fondazione Regionale per la Ricerca Biomedica."
       }
     }
   ]

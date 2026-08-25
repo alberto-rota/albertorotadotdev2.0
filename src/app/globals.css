@@ -3,6 +3,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Cascadia Code NF (a.k.a. CaskaydiaCove Nerd Font), subset to the glyphs this
+   site renders — Latin-1, box drawing, blocks, braille and a few Nerd Font
+   icons. Drives both the mono type and the hero's glyph field.
+   See `public/fonts/NOTICE.md`. */
+@font-face {
+  font-family: "Cascadia Code NF";
+  src: url("/fonts/CascadiaCodeNF-subset.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -23,7 +35,8 @@
   /* Font families (loaded via Google Fonts <link> in `app/layout.tsx`). */
   --font-display: "Bebas Neue", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: "Cascadia Code NF", "JetBrains Mono", ui-monospace, SFMono-Regular,
+    Menlo, monospace;
 
   --radius: 0.875rem;
 
@@ -215,16 +228,46 @@ html {
   mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
 }
 
-/* Smooth-snap horizontal lists. */
+/* Horizontal product rows. The snap targets are the cards themselves — see the
+   `snap-start` in `ProductCard`.
+
+   Snapping is touch-only, and `proximity` rather than `mandatory`. A flick maps
+   naturally onto "next card", but a trackpad or a tilt wheel produces long,
+   low-momentum gestures that mandatory snapping fights the whole way: the row
+   keeps getting pulled back to a card boundary, which feels like it is sticking
+   to the pointer. On a precise pointer the arrow buttons do that job instead. */
 .snap-row {
-  scroll-snap-type: x mandatory;
   scroll-padding-left: 1rem;
   scroll-padding-right: 1rem;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
 }
-.snap-row > * {
-  scroll-snap-align: start;
+
+@media (hover: none) and (pointer: coarse) {
+  .snap-row {
+    scroll-snap-type: x proximity;
+  }
+}
+
+/* Full-slide pager (announcements).
+
+   Touch gets CSS snapping, because that is what makes a swipe land cleanly on a
+   slide. Precise pointers get none of it: for discrete wheel input Chrome pulls
+   back to the nearest snap point after *every* tick, and since a slide is a
+   whole viewport wide, that nearest point is always the slide you are already
+   on. The pager creeps a couple of hundred pixels, stalls against the pull and
+   springs back — paging by wheel is impossible, which is what "the horizontal
+   scroll is stuck" looks like. Without snapping the scroll runs free and the
+   debounced centring in `Announcement.tsx` lands the slide once it goes quiet. */
+.snap-pager {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .snap-pager {
+    scroll-snap-type: x mandatory;
+  }
 }
 
 /* Animated marquee for the hero subtitle. */
@@ -243,25 +286,6 @@ html {
 }
 .animate-soft-pulse {
   animation: soft-pulse 3.6s ease-in-out infinite;
-}
-
-/* Diagonal shimmer sweeping across hero title. */
-@keyframes shimmer-sweep {
-  0%   { background-position: -120% 0; }
-  100% { background-position: 220% 0; }
-}
-.shimmer-sweep {
-  background-image: linear-gradient(
-    100deg,
-    rgba(255, 255, 255, 0) 30%,
-    rgba(255, 255, 255, 0.95) 50%,
-    rgba(255, 255, 255, 0) 70%
-  );
-  background-size: 200% 100%;
-  background-repeat: no-repeat;
-  animation: shimmer-sweep 6s ease-in-out infinite;
-  -webkit-background-clip: text;
-  background-clip: text;
 }
 
 /* Tilt-on-hover helper. */
@@ -298,8 +322,8 @@ button, a {
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,
   .animate-soft-pulse,
-  .shimmer-sweep,
   .cite-button--flash {
     animation: none !important;
+    transition: none !important;
   }
 }

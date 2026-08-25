@@ -3,6 +3,7 @@
 import * as React from "react";
 import NextImage from "next/image";
 import { motion } from "motion/react";
+import { shouldBypassImageOptimization } from "@/lib/utils";
 import {
   ArrowUpRight,
   Check,
@@ -253,7 +254,7 @@ function ProfileChip({ product, index }: { product: Product; index: number }) {
             width={20}
             height={20}
             className="object-contain"
-            unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
+                        unoptimized={shouldBypassImageOptimization(product.thumbnail)}
           />
         </span>
         <span
@@ -284,7 +285,7 @@ function Footer() {
           className="text-[10px] uppercase tracking-[0.24em] text-white/35"
           style={{ fontFamily: "var(--font-mono)" }}
         >
-          $ curl https://albertorota.dev
+          $ curl -L albertorota.dev
         </div>
       </div>
     </footer>

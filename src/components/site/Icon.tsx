@@ -2,6 +2,7 @@
 import * as React from "react";
 import NextImage from "next/image";
 import * as LucideIcons from "lucide-react";
+import { shouldBypassImageOptimization } from "@/lib/utils";
 
 const IMAGE_EXT_RE = /\.(png|jpe?g|webp|gif|svg)$/i;
 
@@ -33,7 +34,7 @@ export function Icon({
         width={size}
         height={size}
         className={className}
-        unoptimized={name.toLowerCase().endsWith(".svg")}
+        unoptimized={shouldBypassImageOptimization(name)}
       />
     );
   }

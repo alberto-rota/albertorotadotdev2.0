@@ -43,6 +43,8 @@ export function SitePage() {
                 layout={cfg.layout}
                 cardAspect={cfg.cardAspect}
                 cardFit={cfg.cardFit}
+                cardInset={cfg.cardInset}
+                maxWidth={cfg.maxWidth}
                 onOpenDetail={setActive}
               />
             );

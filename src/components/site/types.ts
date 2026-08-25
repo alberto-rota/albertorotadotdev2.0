@@ -1,8 +1,15 @@
-export type SectionId = "research" | "open-source" | "resources" | "designs";
+export type SectionId =
+  | "research"
+  | "terminal-tools"
+  | "vsc-extensions"
+  | "resources"
+  | "designs";
 
 export type ProductAction = {
   label?: string;
   href?: string;
+  /** Text copied to the clipboard when clicked (e.g. an install command). */
+  copy?: string;
   /** DOI landing page — used by the Paper morph button. */
   doi?: string;
   /** Direct PDF URL — used by the Paper morph button. */
@@ -26,6 +33,7 @@ export type ContactLink = {
 
 export type ProductMedia = {
   type: "image" | "video" | "embed";
+  /** Local path or full remote image URL. */
   src: string;
   caption?: string;
   alt?: string;
@@ -36,12 +44,30 @@ export type ProductMedia = {
 export type DetailBlock =
   | { type: "paragraph"; text: string }
   | { type: "list"; items: string[] }
-  | { type: "image"; src: string; alt?: string; caption?: string };
+  | {
+      type: "image";
+      src: string;
+      alt?: string;
+      caption?: string;
+      /** Intrinsic pixel size. When both are set the figure hugs the image
+       *  instead of being letterboxed into a fixed aspect box. */
+      width?: number;
+      height?: number;
+    };
 
 /** Named section on a research detail page (Abstract, Overview, …). */
 export type DetailSection = {
   title: string;
   blocks: DetailBlock[];
+};
+
+/** One line of the faux-terminal block shown on tool detail pages. */
+export type TerminalLine = {
+  /** Prompt glyph, e.g. "$" or ">". Omit for a bare comment line. */
+  prompt?: string;
+  text: string;
+  /** "cmd" (default) = typed command, "out" = program output, "note" = comment. */
+  tone?: "cmd" | "out" | "note";
 };
 
 export type ProductDetails = {
@@ -56,6 +82,8 @@ export type ProductDetails = {
   citation?: string;
   /** Structured sections with inline images. When set, overrides body/highlights layout. */
   sections?: DetailSection[];
+  /** Lines rendered by the faux-terminal detail component. */
+  terminal?: { title?: string; lines: TerminalLine[] };
 };
 
 export type Collaborator = {
@@ -85,6 +113,7 @@ export type Product = {
   subtitle?: string;
   description?: string;
   link?: string;
+  /** Local path (e.g. "/images/x.png") or full remote image URL (e.g. "https://…/x.png"). */
   thumbnail: string;
   /** Optional small icon shown next to the title. */
   icon?: string;
@@ -134,12 +163,20 @@ export type SectionConfig = {
   title?: string;
   subtitle?: string;
   order?: number;
-  /** "default" = image cards, "compact" = small square logos. */
-  layout?: "default" | "compact";
+  /** "default" = image cards in a single scrollable row, "compact" = small square
+   *  logos, "grid" = two-line grid that scrolls horizontally (columns extend right). */
+  layout?: "default" | "compact" | "grid";
   /** Default card aspect for products in this section (e.g. "2/3"). */
   cardAspect?: string;
   /** Default thumbnail fit for products in this section. */
   cardFit?: "cover" | "contain";
+  /** When true, card thumbnails get a hairline inner margin filled by a blurred
+   *  copy of the image (seamless color). Defaults to edge-to-edge. */
+  cardInset?: boolean;
+  /** Tailwind max-width class bounding the section's product row only
+   *  (e.g. "max-w-7xl"). The title/header always stays at max-w-6xl.
+   *  Defaults to "max-w-6xl". */
+  maxWidth?: string;
 };
 
 export type Announcement = {

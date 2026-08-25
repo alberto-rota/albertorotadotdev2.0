@@ -9,13 +9,21 @@ import type {
   Institution,
   Product,
   ProductAction,
+  ProductDetails,
   ProductMedia,
   SectionConfig,
   SectionId,
   SiteData,
+  TerminalLine,
 } from "./types";
 
-const VALID: SectionId[] = ["research", "open-source", "resources", "designs"];
+const VALID: SectionId[] = [
+  "research",
+  "terminal-tools",
+  "vsc-extensions",
+  "resources",
+  "designs",
+];
 
 function isSectionId(value: unknown): value is SectionId {
   return typeof value === "string" && (VALID as string[]).includes(value);
@@ -27,12 +35,13 @@ function parseActions(raw: unknown): ProductAction[] | undefined {
     .map((a) => ({
       label: typeof a.label === "string" ? a.label : undefined,
       href: typeof a.href === "string" ? a.href : undefined,
+      copy: typeof a.copy === "string" ? a.copy : undefined,
       doi: typeof a.doi === "string" ? a.doi : undefined,
       pdf: typeof a.pdf === "string" ? a.pdf : undefined,
       icon: typeof a.icon === "string" ? a.icon : undefined,
       ariaLabel: typeof a.ariaLabel === "string" ? a.ariaLabel : undefined,
     }))
-    .filter((a) => a.label || a.href || a.icon);
+    .filter((a) => a.label || a.href || a.copy || a.icon);
 }
 
 function parseCollaborators(raw: unknown): Collaborator[] | undefined {
@@ -120,11 +129,15 @@ function parseDetailBlocks(raw: unknown): DetailBlock[] | undefined {
         return { type: "list", items };
       }
       if (type === "image" && typeof b.src === "string" && b.src) {
+        const width = typeof b.width === "number" && b.width > 0 ? b.width : undefined;
+        const height = typeof b.height === "number" && b.height > 0 ? b.height : undefined;
         return {
           type: "image",
           src: b.src,
           alt: typeof b.alt === "string" ? b.alt : undefined,
           caption: typeof b.caption === "string" ? b.caption : undefined,
+          width,
+          height,
         };
       }
       return null;
@@ -144,6 +157,26 @@ function parseDetailSections(raw: unknown): DetailSection[] | undefined {
     })
     .filter((s): s is DetailSection => s !== null);
   return sections.length ? sections : undefined;
+}
+
+function parseTerminal(raw: unknown): ProductDetails["terminal"] {
+  if (!raw || typeof raw !== "object") return undefined;
+  const r = raw as Record<string, unknown>;
+  if (!Array.isArray(r.lines)) return undefined;
+  const lines = (r.lines as Array<Record<string, unknown>>)
+    .map((l): TerminalLine | null => {
+      const text = typeof l.text === "string" ? l.text : "";
+      if (!text) return null;
+      const tone = l.tone;
+      return {
+        text,
+        prompt: typeof l.prompt === "string" ? l.prompt : undefined,
+        tone: tone === "cmd" || tone === "out" || tone === "note" ? tone : undefined,
+      };
+    })
+    .filter((l): l is TerminalLine => l !== null);
+  if (!lines.length) return undefined;
+  return { title: typeof r.title === "string" ? r.title : undefined, lines };
 }
 
 function parseHero(raw: unknown): HeroConfig | undefined {
@@ -226,6 +259,7 @@ export function loadSiteData(): SiteData {
                     ) as string[])
                   : undefined,
                 sections: parseDetailSections((p.details as Record<string, unknown>).sections),
+                terminal: parseTerminal((p.details as Record<string, unknown>).terminal),
                 doi:
                   typeof (p.details as Record<string, unknown>).doi === "string"
                     ? ((p.details as Record<string, unknown>).doi as string)
@@ -269,7 +303,8 @@ export function loadSiteData(): SiteData {
 export function bySection(products: Product[]): Record<SectionId, Product[]> {
   const grouped: Record<SectionId, Product[]> = {
     research: [],
-    "open-source": [],
+    "terminal-tools": [],
+    "vsc-extensions": [],
     resources: [],
     designs: [],
   };
@@ -291,7 +326,8 @@ export function orderedSections(
 
 export const SECTION_FALLBACK_TITLES: Record<SectionId, string> = {
   research: "Research",
-  "open-source": "Open Source",
+  "terminal-tools": "Terminal Tools",
+  "vsc-extensions": "VS Code Extensions",
   resources: "Profiles & Links",
   designs: "Designs",
 };

@@ -3,22 +3,24 @@
 import * as React from "react";
 import NextImage from "next/image";
 import { motion } from "motion/react";
+import { shouldBypassImageOptimization } from "@/lib/utils";
 import {
   ArrowDown,
-  ArrowRight,
   Check,
   Copy,
   FileDown,
-  Gamepad2,
   Github,
   Mail,
   MapPin,
 } from "lucide-react";
-import { RepelGrid } from "./particles/RepelGrid";
+import { GlyphField } from "./GlyphField";
 import { Icon } from "./Icon";
 import type { ContactLink, Product } from "./types";
 
-const CURL_TARGET = "https://albertorota.dev";
+// `-L` matters: the apex domain 308s to `www`, and without it curl just prints
+// "Redirecting..." instead of the page (see `src/app/api/cli/route.ts`).
+const CURL_FLAGS = "-L";
+const CURL_TARGET = "albertorota.dev";
 const DEFAULT_TAGLINE =
   "PhD candidate in Bioengineering at Politecnico di Milano. I build research, open-source tools, and visual systems for surgical robotics and medical AI.";
 
@@ -68,47 +70,8 @@ export function Hero({
   contacts?: ContactLink[];
 }) {
   const [copied, setCopied] = React.useState(false);
-  const sectionRef = React.useRef<HTMLElement | null>(null);
-  const [showGameCta, setShowGameCta] = React.useState(false);
-  const curlCommand = `curl ${CURL_TARGET}`;
-
-  // Desktop easter-egg: once the visitor has actively played with the cursor
-  // particle field for a few seconds, reveal a clickable nudge to the game.
-  // (The particle field is desktop-only — see RepelGrid `hidden md:block`.)
-  React.useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    const desktop = window.matchMedia("(min-width: 768px) and (pointer: fine)");
-    if (!desktop.matches) return;
-
-    const THRESHOLD_MS = 5000; // active interaction time before the nudge shows
-    const MOVE_WINDOW_MS = 300; // counts as "interacting" if moved this recently
-    let engaged = 0;
-    let lastMove = 0;
-    let lastTick = 0;
-    let raf = 0;
-
-    const onMove = () => {
-      lastMove = performance.now();
-    };
-    section.addEventListener("pointermove", onMove, { passive: true });
-
-    const tick = (now: number) => {
-      if (lastTick && now - lastMove < MOVE_WINDOW_MS) engaged += now - lastTick;
-      lastTick = now;
-      if (engaged >= THRESHOLD_MS) {
-        setShowGameCta(true);
-        return; // stop the loop; the nudge stays put
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-
-    return () => {
-      section.removeEventListener("pointermove", onMove);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
+  const curlCommand = `curl ${CURL_FLAGS} ${CURL_TARGET}`;
+  const nameRef = React.useRef<HTMLHeadingElement | null>(null);
 
   const copyCurl = React.useCallback(async () => {
     try {
@@ -122,14 +85,14 @@ export function Hero({
 
   return (
     <section
-      ref={sectionRef}
       id="top"
       className="relative isolate overflow-hidden min-h-[42vh] sm:min-h-[68vh]"
       aria-label="Introduction"
     >
-      {/* Cursor-interactive particle grid backdrop — desktop only. On mobile the
-          background animation lives behind the whole page (see ScrollField). */}
-      <RepelGrid className="pointer-events-none absolute inset-0 -z-10 hidden md:block" />
+      {/* Terminal glyph field: cascading Nerd Font output that decodes around
+          the pointer. It shapes its own edge fades and keeps a pocket clear
+          behind this copy — see `GlyphField.tsx`. */}
+      <GlyphField className="pointer-events-none absolute inset-0 -z-10" targetRef={nameRef} />
 
       {/* Subtle bottom fade so the field eases into the page below */}
       <div
@@ -151,43 +114,18 @@ export function Hero({
       />
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 min-h-[42vh] sm:min-h-[64vh] flex flex-col items-center justify-center text-center pt-20 pb-8">
-        {/* Radial falloff so particles sit behind the copy */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/2 -z-[1] h-[min(520px,85%)] w-[min(920px,120%)] -translate-x-1/2 -translate-y-[48%]"
-          style={{
-            background:
-              "radial-gradient(ellipse 72% 68% at 50% 50%, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.72) 42%, rgba(0,0,0,0.28) 68%, transparent 82%)",
-          }}
-        />
-
         <div className="relative w-full flex flex-col items-center text-center">
-          {/* Name with shimmer sweep */}
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="relative font-display tracking-[0.04em] leading-[0.92] text-[15vw] sm:text-[9vw] md:text-[7rem] lg:text-[8.5rem]"
+          {/* The visible name is the character field behind this box: the
+              glyphs that fall inside the letterforms are painted white, the
+              rest grey. This heading reserves the space and carries the name
+              for screen readers and search engines; `GlyphField` fits the mask
+              to its measured box, so art and layout can never drift apart. */}
+          <h1
+            ref={nameRef}
+            className="w-full h-[clamp(75px,7.5vw,100px)]"
           >
-            {/* base text */}
-            <span className="bg-clip-text text-transparent bg-[linear-gradient(180deg,#ffffff_0%,#cfcfcf_70%,#9a9a9a_100%)]">
-              ALBERTO ROTA
-            </span>
-            {/* moving shimmer */}
-            <span
-              aria-hidden
-              className="absolute inset-0 bg-clip-text text-transparent shimmer-sweep"
-            >
-              ALBERTO ROTA
-            </span>
-            {/* soft glow */}
-            <span
-              aria-hidden
-              className="pointer-events-none absolute inset-0 blur-[18px] opacity-40 text-white"
-            >
-              ALBERTO ROTA
-            </span>
-          </motion.h1>
+            <span className="sr-only">Alberto Rota</span>
+          </h1>
 
           {/* Tagline */}
           <motion.p
@@ -278,7 +216,7 @@ export function Hero({
                         width={20}
                         height={20}
                         className="object-contain"
-                        unoptimized={p.thumbnail.toLowerCase().endsWith(".svg")}
+                        unoptimized={shouldBypassImageOptimization(p.thumbnail)}
                       />
                     </span>
                   </CircleLink>
@@ -300,6 +238,7 @@ export function Hero({
           >
             <span className="text-emerald-400/90 select-none">$</span>
             <span className="text-amber-300/90">curl</span>
+            <span className="text-sky-300/80">{CURL_FLAGS}</span>
             <span className="text-white/85 truncate">{CURL_TARGET}</span>
             <span className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10 group-hover:bg-white/20 transition-colors">
               {copied ? (
@@ -311,25 +250,6 @@ export function Hero({
           </motion.button>
         </div>
       </div>
-
-      {/* Desktop nudge: appears after the visitor has played with the particle
-          field for a while. Clickable — takes them to the game. */}
-      {showGameCta ? (
-        <motion.a
-          href="/game"
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className={`group absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 md:inline-flex items-center gap-2.5 px-4 py-2.5 text-xs sm:text-sm text-white/85 hover:text-white hover:border-white/25 ${glassBtn}`}
-          aria-label="Play the gravity game"
-        >
-          <Gamepad2 className="h-4 w-4" />
-          <span className="uppercase tracking-[0.14em]">
-            Like the particles? Come play with gravity
-          </span>
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-        </motion.a>
-      ) : null}
 
       {/* divider */}
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />

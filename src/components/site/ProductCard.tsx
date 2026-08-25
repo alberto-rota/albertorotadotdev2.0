@@ -3,16 +3,16 @@
 import * as React from "react";
 import NextImage from "next/image";
 import { motion } from "motion/react";
-import { ArrowUpRight, Plus } from "lucide-react";
+import { ArrowUpRight, Check, Copy, Plus } from "lucide-react";
 import { Icon } from "./Icon";
-import type { Product, SectionId } from "./types";
-import { cn } from "@/lib/utils";
+import type { Product, ProductAction, SectionId } from "./types";
+import { cn, shouldBypassImageOptimization } from "@/lib/utils";
 
 type CardSize = "default" | "compact";
 type ActionVariant = "research" | "default";
 
 const actionBtnBase =
-  "inline-flex h-9 min-w-9 items-center rounded-full border overflow-hidden transition-all duration-500 ease-out";
+  "inline-flex h-9 min-w-9 shrink-0 items-center rounded-full border overflow-hidden transition-all duration-500 ease-out";
 const actionBtnResearch =
   "bg-black/80 border-white/25 text-white hover:bg-white hover:border-white hover:text-black";
 const actionBtnDefault =
@@ -21,27 +21,21 @@ const actionBtnDefault =
 const actionLabelBase =
   "overflow-hidden whitespace-nowrap font-display text-sm uppercase tracking-[0.12em] leading-none transition-all duration-500 ease-out";
 
-function actionLabelClasses(expandOn: "self" | "card") {
-  return cn(
-    actionLabelBase,
-    "max-w-0 opacity-0",
-    expandOn === "card"
-      ? "group-hover:max-w-[9rem] group-hover:opacity-100 group-hover:pr-3.5"
-      : "group-hover/btn:max-w-[9rem] group-hover/btn:opacity-100 group-hover/btn:pr-3.5"
-  );
-}
+const actionLabelClasses = cn(
+  actionLabelBase,
+  "max-w-0 opacity-0",
+  "group-hover/btn:max-w-[13rem] group-hover/btn:opacity-100 group-hover/btn:pr-3.5"
+);
 
 function CardActionButton({
   label,
   variant,
-  expandOn = "self",
   icon,
   className,
   ...props
 }: {
   label: string;
   variant: ActionVariant;
-  expandOn?: "self" | "card";
   icon: React.ReactNode;
 } & React.ComponentPropsWithoutRef<"button">) {
   return (
@@ -50,13 +44,13 @@ function CardActionButton({
       {...props}
       className={cn(
         actionBtnBase,
-        expandOn === "self" && "group/btn",
+        "group/btn",
         variant === "research" ? actionBtnResearch : actionBtnDefault,
         className
       )}
     >
       <span className="flex h-9 w-9 shrink-0 items-center justify-center">{icon}</span>
-      <span className={actionLabelClasses(expandOn)}>{label}</span>
+      <span className={actionLabelClasses}>{label}</span>
     </button>
   );
 }
@@ -64,14 +58,12 @@ function CardActionButton({
 function CardActionLink({
   label,
   variant,
-  expandOn = "self",
   icon,
   className,
   ...props
 }: {
   label: string;
   variant: ActionVariant;
-  expandOn?: "self" | "card";
   icon: React.ReactNode;
 } & React.ComponentPropsWithoutRef<"a">) {
   return (
@@ -79,14 +71,56 @@ function CardActionLink({
       {...props}
       className={cn(
         actionBtnBase,
-        expandOn === "self" && "group/btn",
+        "group/btn",
         variant === "research" ? actionBtnResearch : actionBtnDefault,
         className
       )}
     >
       <span className="flex h-9 w-9 shrink-0 items-center justify-center">{icon}</span>
-      <span className={actionLabelClasses(expandOn)}>{label}</span>
+      <span className={actionLabelClasses}>{label}</span>
     </a>
+  );
+}
+
+/** Action pill that copies `action.copy` to the clipboard, with feedback. */
+function CardCopyButton({
+  action,
+  variant,
+}: {
+  action: ProductAction;
+  variant: ActionVariant;
+}) {
+  const [copied, setCopied] = React.useState(false);
+  const handleCopy = () => {
+    const text = action.copy ?? "";
+    if (!text) return;
+    navigator.clipboard
+      ?.writeText(text)
+      .then(() => {
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 1600);
+      })
+      .catch(() => {});
+  };
+  return (
+    <CardActionButton
+      aria-label={action.ariaLabel ?? `Copy ${action.label ?? "command"} to clipboard`}
+      label={copied ? "Copied!" : action.label ?? "Copy"}
+      variant={variant}
+      icon={
+        copied ? (
+          <Check className="h-4 w-4" />
+        ) : action.icon ? (
+          <Icon name={action.icon} size={16} />
+        ) : (
+          <Copy className="h-4 w-4" />
+        )
+      }
+      onClick={(e) => {
+        e.stopPropagation();
+        handleCopy();
+      }}
+    />
   );
 }
 
@@ -95,6 +129,8 @@ export function ProductCard({
   sectionId,
   defaultCardAspect,
   defaultCardFit,
+  inGrid = false,
+  inset = false,
   size = "default",
   index,
   onOpenDetail,
@@ -103,12 +139,17 @@ export function ProductCard({
   sectionId?: SectionId;
   defaultCardAspect?: string;
   defaultCardFit?: "cover" | "contain";
+  /** Grid-cell mode: fill the parent cell; height follows the aspect ratio. */
+  inGrid?: boolean;
+  /** Hairline inner margin around the thumbnail with a seamless blurred fill. */
+  inset?: boolean;
   size?: CardSize;
   index: number;
   onOpenDetail: (p: Product) => void;
 }) {
   const accent = product.accent || "#ffffff";
   const primaryAction = product.actions?.find((a) => a.href) ?? null;
+  const copyAction = product.actions?.find((a) => a.copy && !a.href) ?? null;
   const externalHref = product.link && product.link !== "#" ? product.link : primaryAction?.href ?? null;
 
   if (size === "compact") {
@@ -117,7 +158,8 @@ export function ProductCard({
     );
   }
 
-  // Card sizing: fixed height per breakpoint, width derived from `cardAspect`.
+  // Card sizing. Carousel mode: fixed height per breakpoint, width derived from
+  // `cardAspect`. Grid mode: width fills the cell, height follows the aspect ratio.
   // Default ratio is portrait 5/6 so existing portrait thumbnails stay edge-to-edge.
   const aspect = (product.cardAspect ?? defaultCardAspect ?? "5/6").trim();
   const isResearch = sectionId === "research";
@@ -131,19 +173,20 @@ export function ProductCard({
 
   const venueChip = product.meta?.venue ? (
     <div
-      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs sm:text-sm uppercase tracking-[0.16em] text-white"
+      className="inline-flex max-w-full items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs sm:text-sm uppercase tracking-[0.16em] text-white whitespace-nowrap"
       style={{ borderColor: `${accent}66` }}
     >
       <span
-        className="h-2 w-2 rounded-full"
+        className="h-2 w-2 shrink-0 rounded-full"
         style={{ background: accent, boxShadow: `0 0 12px ${accent}` }}
       />
-      {product.meta.venue}
+      <span className="truncate">{product.meta.venue}</span>
     </div>
   ) : null;
 
   const actionButtons = (
-    <div className="flex items-center gap-1.5">
+    <div className="flex h-9 shrink-0 flex-nowrap items-center gap-1.5">
+      {copyAction ? <CardCopyButton action={copyAction} variant={actionVariant} /> : null}
       {externalHref ? (
         <CardActionLink
           href={externalHref}
@@ -156,29 +199,13 @@ export function ProductCard({
           onClick={(e) => e.stopPropagation()}
         />
       ) : null}
-      {isResearch ? (
-        <CardActionButton
-          aria-label={`Open details for ${product.title}`}
-          label="Details"
-          variant={actionVariant}
-          icon={<Plus className="h-4 w-4" />}
-          onClick={() => onOpenDetail(product)}
-        />
-      ) : (
-        <span
-          aria-hidden
-          className={cn(
-            actionBtnBase,
-            actionVariant === "research" ? actionBtnResearch : actionBtnDefault,
-            "group-hover:bg-white group-hover:border-white group-hover:text-black"
-          )}
-        >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center">
-            <Plus className="h-4 w-4" />
-          </span>
-          <span className={actionLabelClasses("card")}>Details</span>
-        </span>
-      )}
+      <CardActionButton
+        aria-label={`Open details for ${product.title}`}
+        label="Details"
+        variant={actionVariant}
+        icon={<Plus className="h-4 w-4" />}
+        onClick={() => onOpenDetail(product)}
+      />
     </div>
   );
 
@@ -188,12 +215,19 @@ export function ProductCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-10%" }}
       transition={{ duration: 0.5, delay: Math.min(index * 0.04, 0.3) }}
-      className={cn("group relative flex shrink-0 snap-start max-w-[88vw] flex-col", cardHeight)}
+      className={cn(
+        "group relative flex flex-col",
+        inGrid
+          ? "w-full snap-start"
+          : cn("shrink-0 snap-start max-w-[88vw]", cardHeight)
+      )}
       style={{ aspectRatio: aspect }}
     >
       {isResearch ? (
-        <div className="mb-2 flex shrink-0 items-center justify-between gap-2">
-          {venueChip ?? <span aria-hidden />}
+        <div className="mb-2 flex h-9 shrink-0 items-center justify-between gap-2">
+          <div className="flex min-w-0 flex-1 items-center overflow-hidden">
+            {venueChip ?? <span aria-hidden />}
+          </div>
           {actionButtons}
         </div>
       ) : null}
@@ -212,36 +246,63 @@ export function ProductCard({
             } as React.CSSProperties
           }
         >
-          {/* Backdrop image (blurred fill behind contained thumbnails) */}
-          {isContain ? (
+          {/* Blurred fill behind the thumbnail — bleeds the image's own edge
+              colors into the hairline margin so the gap is invisible */}
+          {isContain || inset ? (
             <NextImage
               src={product.thumbnail}
               alt=""
               fill
               sizes="(min-width: 768px) 700px, 90vw"
-              className="absolute inset-0 h-full w-full object-cover scale-110 blur-2xl opacity-40"
-              unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
+              className={cn(
+                "absolute inset-0 h-full w-full object-cover scale-110 blur-2xl",
+                inset && !isContain ? "opacity-70" : "opacity-40"
+              )}
+              unoptimized={shouldBypassImageOptimization(product.thumbnail)}
               loading="lazy"
               aria-hidden
             />
           ) : null}
 
-          <NextImage
-            src={product.thumbnail}
-            alt={product.title}
-            fill
-            sizes="(min-width: 768px) 700px, 90vw"
-            className={cn(
-              "absolute inset-0 h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.04]",
-              isContain
-                ? cn("object-contain p-4 sm:p-6", isResearch && "object-top")
-                : isResearch
-                  ? "object-cover object-top"
-                  : "object-cover"
-            )}
-            unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
-            loading="lazy"
-          />
+          {inset ? (
+            /* Hairline margin around the preview; wrapper clips the zoom so the
+                image never bleeds back over the margin */
+            <div className="absolute inset-2 overflow-hidden rounded-[20px]">
+              <NextImage
+                src={product.thumbnail}
+                alt={product.title}
+                fill
+                sizes="(min-width: 768px) 700px, 90vw"
+                className={cn(
+                  "transition-transform duration-700 ease-out group-hover:scale-[1.04]",
+                  isContain
+                    ? cn("object-contain p-4 sm:p-6", isResearch && "object-top")
+                    : isResearch
+                      ? "object-cover object-top"
+                      : "object-cover"
+                )}
+                unoptimized={shouldBypassImageOptimization(product.thumbnail)}
+                loading="lazy"
+              />
+            </div>
+          ) : (
+            <NextImage
+              src={product.thumbnail}
+              alt={product.title}
+              fill
+              sizes="(min-width: 768px) 700px, 90vw"
+              className={cn(
+                "absolute inset-0 h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.04]",
+                isContain
+                  ? cn("object-contain p-4 sm:p-6", isResearch && "object-top")
+                  : isResearch
+                    ? "object-cover object-top"
+                    : "object-cover"
+              )}
+              unoptimized={shouldBypassImageOptimization(product.thumbnail)}
+              loading="lazy"
+            />
+          )}
 
           {/* Gradient — softer when image is contained so it isn't darkened */}
           <div
@@ -262,11 +323,6 @@ export function ProductCard({
           {/* Meta chip — venue / journal / conference tag (non-research only) */}
           {!isResearch && venueChip ? (
             <div className="absolute top-3 left-3">{venueChip}</div>
-          ) : null}
-
-          {/* Hover/Tap actions row (non-research only; research actions sit above the card) */}
-          {!isResearch ? (
-            <div className="absolute top-3 right-3 z-10">{actionButtons}</div>
           ) : null}
 
           {/* Title block */}
@@ -320,6 +376,18 @@ export function ProductCard({
           />
         </div>
       </button>
+
+      {/* Hover/Tap actions row (non-research only; research actions sit above
+          the card). Sits outside the card button — a button can't nest inside
+          a button — and overlays it at the same spot. */}
+      {!isResearch ? (
+        <div
+          className="absolute top-3 right-3 z-10"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {actionButtons}
+        </div>
+      ) : null}
     </motion.article>
   );
 }
@@ -358,7 +426,7 @@ function CompactCard({
             fill
             sizes="64px"
             className="object-contain"
-            unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
+            unoptimized={shouldBypassImageOptimization(product.thumbnail)}
           />
         </div>
         <div

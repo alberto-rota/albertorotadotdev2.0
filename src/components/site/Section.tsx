@@ -4,7 +4,9 @@ import * as React from "react";
 import { motion } from "motion/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductCard } from "./ProductCard";
+import { bindRowWheel } from "./scroll-utils";
 import type { Product, SectionConfig, SectionId } from "./types";
+import { cn } from "@/lib/utils";
 
 export function Section({
   id,
@@ -14,6 +16,8 @@ export function Section({
   layout,
   cardAspect,
   cardFit,
+  cardInset,
+  maxWidth,
   onOpenDetail,
 }: {
   id: SectionId;
@@ -23,8 +27,11 @@ export function Section({
   layout?: SectionConfig["layout"];
   cardAspect?: string;
   cardFit?: SectionConfig["cardFit"];
+  cardInset?: boolean;
+  maxWidth?: string;
   onOpenDetail: (p: Product) => void;
 }) {
+  const bound = maxWidth ?? "max-w-6xl";
   const scrollerRef = React.useRef<HTMLDivElement | null>(null);
   const [canLeft, setCanLeft] = React.useState(false);
   const [canRight, setCanRight] = React.useState(false);
@@ -45,19 +52,11 @@ export function Section({
     const ro = new ResizeObserver(update);
     ro.observe(el);
 
-    // Vertical wheel over overflow-x rows is captured by the browser for
-    // horizontal scroll — forward it to the page instead.
-    const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      if (e.deltaY === 0) return;
-      e.preventDefault();
-      window.scrollBy({ top: e.deltaY });
-    };
-    el.addEventListener("wheel", onWheel, { passive: false });
+    const unbindWheel = bindRowWheel(el);
 
     return () => {
       el.removeEventListener("scroll", update);
-      el.removeEventListener("wheel", onWheel);
+      unbindWheel();
       ro.disconnect();
     };
   }, [products.length]);
@@ -72,6 +71,7 @@ export function Section({
   if (!products.length) return null;
 
   const isCompact = layout === "compact";
+  const isGrid = layout === "grid";
 
   return (
     <section
@@ -79,6 +79,7 @@ export function Section({
       aria-label={title}
       className="relative py-12 sm:py-16 md:py-20 scroll-mt-24"
     >
+      {/* Header always aligns with the page grid; `maxWidth` only widens the products row */}
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <header className="flex items-end justify-between gap-4 mb-6 sm:mb-8">
           <div>
@@ -134,26 +135,47 @@ export function Section({
           ref={scrollerRef}
           className="snap-row no-scrollbar fade-x overflow-x-auto overflow-y-hidden"
         >
-          <div
-            className={
-              isCompact
-                ? "flex gap-3 sm:gap-4 px-4 sm:px-6 py-2 max-w-6xl mx-auto"
-                : "flex gap-4 sm:gap-5 px-4 sm:px-6 py-2 max-w-6xl mx-auto"
-            }
-          >
-            {products.map((p, i) => (
-              <ProductCard
-                key={p.slug || `${p.title}-${i}`}
-                product={p}
-                sectionId={id}
-                defaultCardAspect={cardAspect}
-                defaultCardFit={cardFit}
-                size={isCompact ? "compact" : "default"}
-                index={i}
-                onOpenDetail={onOpenDetail}
-              />
-            ))}
-          </div>
+          {isGrid ? (
+            /* Horizontally scrolling two-line grid: items fill columns
+               left-to-right, new products extend the row to the right */
+            <div className="mx-auto grid w-max grid-flow-col grid-rows-2 auto-cols-[100vw] md:auto-cols-[40rem] gap-4 sm:gap-5 px-4 sm:px-6 py-2">
+              {products.map((p, i) => (
+                <ProductCard
+                  key={p.slug || `${p.title}-${i}`}
+                  product={p}
+                  sectionId={id}
+                  defaultCardAspect={cardAspect}
+                  defaultCardFit={cardFit}
+                  inGrid
+                  inset={cardInset}
+                  index={i}
+                  onOpenDetail={onOpenDetail}
+                />
+              ))}
+            </div>
+          ) : (
+            <div
+              className={
+                isCompact
+                  ? cn("flex gap-3 sm:gap-4 px-4 sm:px-6 py-2 mx-auto", bound)
+                  : cn("flex gap-4 sm:gap-5 px-4 sm:px-6 py-2 mx-auto", bound)
+              }
+            >
+              {products.map((p, i) => (
+                <ProductCard
+                  key={p.slug || `${p.title}-${i}`}
+                  product={p}
+                  sectionId={id}
+                  defaultCardAspect={cardAspect}
+                  defaultCardFit={cardFit}
+                  size={isCompact ? "compact" : "default"}
+                  inset={cardInset}
+                  index={i}
+                  onOpenDetail={onOpenDetail}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Mobile swipe hint shown only when there are >1 items */}

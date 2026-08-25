@@ -10,18 +10,43 @@ import {
   useTransform,
   type PanInfo,
 } from "motion/react";
-import { ArrowUpRight, User, X } from "lucide-react";
+import { ArrowUpRight, Check, User, X } from "lucide-react";
 import { Icon } from "./Icon";
 import { CustomScrollbar } from "./CustomScrollbar";
 import { CiteButton } from "./CiteButton";
 import { getCitationPath } from "./citation-utils";
 import { PaperMorphButton } from "./PaperMorphButton";
-import type { Collaborator, DetailBlock, DetailSection, Institution, Product, ProductMedia } from "./types";
+import type { Collaborator, DetailBlock, DetailSection, Institution, Product, ProductAction, ProductMedia } from "./types";
 import { getDetailComponent } from "./detail-components/registry";
 import { getPaperLinks, getResearchSections, hasPaperMorph } from "./paper-utils";
+import { shouldBypassImageOptimization } from "@/lib/utils";
 
 const bodyTextClass =
   "text-white/80 text-[15px] sm:text-base leading-relaxed [font-family:var(--font-body)]";
+
+/**
+ * Renders a string with `backtick` spans as inline code. Content in
+ * `products.json` is written in plain text, so this is the only markup it gets.
+ */
+function InlineText({ text }: { text: string }) {
+  const parts = text.split(/`([^`]+)`/g);
+  return (
+    <>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? (
+          <code
+            key={i}
+            className="rounded-[5px] bg-white/[0.08] px-1.5 py-0.5 text-[0.875em] text-white/90 [font-family:var(--font-mono)]"
+          >
+            {part}
+          </code>
+        ) : (
+          <React.Fragment key={i}>{part}</React.Fragment>
+        )
+      )}
+    </>
+  );
+}
 
 function useMediaQuery(query: string) {
   const get = React.useCallback(() => {
@@ -268,13 +293,43 @@ function TitleBlock({ product, accent }: { product: Product; accent: string }) {
 const actionPillClass =
   "inline-flex h-9 items-center gap-2 rounded-full bg-white px-4 text-sm font-display tracking-[0.12em] uppercase leading-none text-black hover:bg-white/90 transition-colors";
 
+/** Pill that copies `action.copy` to the clipboard, with feedback. */
+function CopyActionPill({ action }: { action: ProductAction }) {
+  const [copied, setCopied] = React.useState(false);
+  const handleCopy = () => {
+    const text = action.copy ?? "";
+    if (!text) return;
+    navigator.clipboard
+      ?.writeText(text)
+      .then(() => {
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 1600);
+      })
+      .catch(() => {});
+  };
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      aria-label={action.ariaLabel ?? `Copy ${action.label ?? "command"} to clipboard`}
+      className={actionPillClass}
+    >
+      {copied ? <Check className="h-4 w-4" /> : <Icon name={action.icon} size={16} className="h-4 w-4 object-contain" />}
+      {copied ? "Copied!" : action.label ?? "Copy"}
+    </button>
+  );
+}
+
 function ActionsRow({ product }: { product: Product }) {
   if (!product.actions || product.actions.length === 0) return null;
-  const actions = product.actions.filter((a) => a.href);
+  const actions = product.actions.filter((a) => a.href || a.copy);
   if (actions.length === 0) return null;
   return (
     <div className="flex flex-wrap gap-2">
-      {actions.map((a, i) => (
+      {actions.map((a, i) =>
+        a.copy && !a.href ? (
+          <CopyActionPill key={`${a.label}-${i}`} action={a} />
+        ) : (
           <a
             key={`${a.href}-${i}`}
             href={a.href}
@@ -287,7 +342,8 @@ function ActionsRow({ product }: { product: Product }) {
             {a.label ?? "Open"}
             <ArrowUpRight className="h-4 w-4 opacity-70" />
           </a>
-        ))}
+        )
+      )}
     </div>
   );
 }
@@ -345,7 +401,9 @@ function BodyText({ product, details }: { product: Product; details: Product["de
     return (
       <div className="text-white/80 text-[15px] sm:text-base leading-relaxed space-y-4" style={{ fontFamily: "var(--font-body)" }}>
         {details.body.split(/\n\s*\n/).map((para, i) => (
-          <p key={i}>{para}</p>
+          <p key={i}>
+            <InlineText text={para} />
+          </p>
         ))}
       </div>
     );
@@ -367,7 +425,9 @@ function Highlights({ details, accent }: { details: Product["details"]; accent: 
       {details.highlights.map((h, i) => (
         <li key={i} className="flex items-start gap-3">
           <span aria-hidden className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: accent }} />
-          <span className="text-white/80 leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>{h}</span>
+          <span className="text-white/80 leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
+            <InlineText text={h} />
+          </span>
         </li>
       ))}
     </ul>
@@ -467,7 +527,7 @@ function PaperCover({ product }: { product: Product }) {
           fill
           sizes="(min-width: 768px) 224px, 100vw"
           className="object-contain object-top"
-          unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
+          unoptimized={shouldBypassImageOptimization(product.thumbnail)}
           priority
         />
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
@@ -477,6 +537,9 @@ function PaperCover({ product }: { product: Product }) {
   );
 }
 
+/** Ceiling on how tall a section figure may render inside the detail panel. */
+const FIGURE_MAX_H = "38vh";
+
 function SectionImageBlock({
   block,
   accent,
@@ -484,19 +547,44 @@ function SectionImageBlock({
   block: Extract<DetailBlock, { type: "image" }>;
   accent: string;
 }) {
-  const isSvg = block.src.toLowerCase().endsWith(".svg");
+  const bypass = shouldBypassImageOptimization(block.src);
+  // With intrinsic dimensions the figure takes the image's own aspect ratio, so
+  // wide diagrams do not sit inside letterbox bands. Without them, fall back to
+  // a fixed box and fit the image into it.
+  const intrinsic = block.width && block.height ? { w: block.width, h: block.height } : null;
+  // Cap the rendered height so a figure never fills the panel. Bounding the
+  // *figure* by `ratio * FIGURE_MAX_H` rather than the image keeps it snug on
+  // both axes: the box shrinks with the image instead of letterboxing it.
+  const maxWidth = intrinsic
+    ? `calc(${(intrinsic.w / intrinsic.h).toFixed(4)} * ${FIGURE_MAX_H})`
+    : undefined;
   return (
-    <figure className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
-      <div className="relative aspect-[16/10] w-full">
+    <figure
+      className="mx-auto overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
+      style={{ maxWidth }}
+    >
+      {intrinsic ? (
         <NextImage
           src={block.src}
           alt={block.alt ?? block.caption ?? ""}
-          fill
+          width={intrinsic.w}
+          height={intrinsic.h}
           sizes="(min-width: 768px) 640px, 90vw"
-          className="object-contain p-2 sm:p-3"
-          unoptimized={isSvg}
+          className="block h-auto w-full"
+          unoptimized={bypass}
         />
-      </div>
+      ) : (
+        <div className="relative aspect-[16/10] w-full">
+          <NextImage
+            src={block.src}
+            alt={block.alt ?? block.caption ?? ""}
+            fill
+            sizes="(min-width: 768px) 640px, 90vw"
+            className="object-contain"
+            unoptimized={bypass}
+          />
+        </div>
+      )}
       {block.caption ? (
         <figcaption
           className="px-4 py-3 text-xs text-white/55 border-t border-white/8 leading-relaxed [font-family:var(--font-body)]"
@@ -506,7 +594,7 @@ function SectionImageBlock({
             style={{ background: accent }}
             aria-hidden
           />
-          {block.caption}
+          <InlineText text={block.caption} />
         </figcaption>
       ) : null}
     </figure>
@@ -533,7 +621,9 @@ function SectionListBlock({
               className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0"
               style={{ background: accent }}
             />
-            <span className={bodyTextClass}>{item}</span>
+            <span className={bodyTextClass}>
+              <InlineText text={item} />
+            </span>
           </div>
         </li>
       ))}
@@ -549,7 +639,11 @@ function DetailBlockView({
   accent: string;
 }) {
   if (block.type === "paragraph") {
-    return <p className={bodyTextClass}>{block.text}</p>;
+    return (
+      <p className={bodyTextClass}>
+        <InlineText text={block.text} />
+      </p>
+    );
   }
   if (block.type === "list") {
     return <SectionListBlock items={block.items} accent={accent} />;
@@ -635,7 +729,7 @@ function DesignLayout({ product, accent, details, Custom }: LayoutProps) {
           fill
           sizes="(min-width: 768px) 640px, 100vw"
           className="object-contain p-8 sm:p-12"
-          unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
+          unoptimized={shouldBypassImageOptimization(product.thumbnail)}
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -665,7 +759,7 @@ function DesignLayout({ product, accent, details, Custom }: LayoutProps) {
                     fill
                     sizes="(min-width: 768px) 280px, 45vw"
                     className="object-cover"
-                    unoptimized={m.src.toLowerCase().endsWith(".svg")}
+                    unoptimized={shouldBypassImageOptimization(m.src)}
                   />
                 </div>
                 {m.caption ? (
@@ -700,7 +794,7 @@ function DefaultLayout({ product, accent, details, Custom, compact }: LayoutProp
           fill
           sizes="(min-width: 768px) 640px, 100vw"
           className="object-cover"
-          unoptimized={product.thumbnail.toLowerCase().endsWith(".svg")}
+          unoptimized={shouldBypassImageOptimization(product.thumbnail)}
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
@@ -716,6 +810,9 @@ function DefaultLayout({ product, accent, details, Custom, compact }: LayoutProp
         <InstitutionsBlock product={product} />
         <BodyText product={product} details={details} />
         <Highlights details={details} accent={accent} />
+        {details?.sections?.length ? (
+          <ResearchSections sections={details.sections} accent={accent} />
+        ) : null}
         <MediaGallery details={details} accent={accent} />
         <CustomSlot Custom={Custom} product={product} />
         <FooterAccent accent={accent} />
@@ -794,7 +891,7 @@ function InstitutionBadge({ institution }: { institution: Institution }) {
             width={20}
             height={20}
             className="object-contain"
-            unoptimized={institution.logo.toLowerCase().endsWith(".svg")}
+            unoptimized={institution.logo ? shouldBypassImageOptimization(institution.logo) : false}
           />
         </span>
       ) : null}
@@ -809,7 +906,7 @@ function InstitutionBadge({ institution }: { institution: Institution }) {
 }
 
 function MediaTile({ item, accent }: { item: ProductMedia; accent: string }) {
-  const isSvg = item.src.toLowerCase().endsWith(".svg");
+  const isSvg = shouldBypassImageOptimization(item.src);
 
   if (item.type === "image") {
     return (

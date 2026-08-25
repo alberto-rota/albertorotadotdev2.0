@@ -231,14 +231,6 @@ function center(s: string, width = W): string {
   return PAD + " ".repeat(left) + s;
 }
 
-/** Center a multi-line block as a rigid unit (shared left offset). */
-function centerBlock(rows: string[], width = W): string[] {
-  const blockW = Math.max(...rows.map(displayWidth));
-  const left = Math.max(0, Math.floor((width - blockW) / 2));
-  const lead = " ".repeat(left);
-  return rows.map((r) => PAD + lead + r);
-}
-
 function lerp(a: number, b: number, t: number): number {
   return Math.round(a + (b - a) * t);
 }
@@ -265,22 +257,6 @@ function gradientSpan(stops: string[], width: number, char = "─"): string {
 /** Full-width horizontal rule (PAD-prefixed). */
 function gradientRule(stops: string[], width = W, char = "─"): string {
   return PAD + gradientSpan(stops, width, char);
-}
-
-/** Color each glyph of `text` along a gradient (spaces left untouched). */
-function gradientText(text: string, stops: string[]): string {
-  const rgb = stops.map(hexToRgb);
-  const chars = [...text];
-  const n = chars.length;
-  let out = "";
-  chars.forEach((ch, i) => {
-    if (ch === " ") {
-      out += " ";
-      return;
-    }
-    out += gradientAt(rgb, n <= 1 ? 0 : i / (n - 1)) + ch;
-  });
-  return out + RESET;
 }
 
 /* ----------------------------- wrapping --------------------------- */
@@ -379,10 +355,11 @@ function linkChip(a: Action, accent: string): string {
 
 /* --------------------------- data access -------------------------- */
 
-const SECTION_ORDER = ["research", "open-source"];
+const SECTION_ORDER = ["research", "terminal-tools", "vsc-extensions"];
 const SECTION_ACCENT: Record<string, string> = {
   research: PALETTE.teal,
-  "open-source": PALETTE.orange,
+  "terminal-tools": PALETTE.orange,
+  "vsc-extensions": PALETTE.sky,
 };
 
 function getData(): SiteData {
@@ -393,31 +370,17 @@ function bySection(products: Product[], tag: string): Product[] {
   return products.filter((p) => p.tag === tag);
 }
 
-/* ----------------------------- banner ----------------------------- */
-
-const BANNER = [
-  " █████╗ ██╗     ██████╗ ███████╗",
-  "██╔══██╗██║     ██╔══██╗██╔════╝",
-  "███████║██║     ██████╔╝█████╗  ",
-  "██╔══██║██║     ██╔══██╗██╔══╝  ",
-  "██║  ██║███████╗██████╔╝███████╗",
-  "╚═╝  ╚═╝╚══════╝╚═════╝ ╚══════╝",
-];
-
 /* --------------------------- block builders ----------------------- */
 
 function buildHero(data: SiteData): string[] {
   const out: string[] = [];
   out.push("");
 
-  // Logo wordmark with an on-brand horizontal gradient + a single thin underline.
-  const brand = [PALETTE.teal, PALETTE.orange, PALETTE.red];
-  const barW = Math.max(...BANNER.map(displayWidth));
-  out.push(...centerBlock(BANNER.map((ln) => gradientText(ln, brand))));
-  out.push(...centerBlock([gradientSpan(brand, barW, "━")]));
-
-  out.push("");
-  out.push(center(`${BOLD}${fg(PALETTE.white)}ALBERTO ROTA${RESET}`));
+  // A prompt instead of a wordmark — same shape as the `$ curl` line below.
+  out.push(
+    center(`${fg(PALETTE.green)}${BOLD}$${RESET} ${fg(PALETTE.amber)}whoami${RESET}`)
+  );
+  out.push(center(`${BOLD}${fg(PALETTE.white)}alberto${RESET}`));
 
   const tagline =
     data.hero?.tagline ??
@@ -453,8 +416,8 @@ function buildHero(data: SiteData): string[] {
   out.push(
     center(
       `${fg(PALETTE.green)}${BOLD}${"$"}${RESET} ${fg(PALETTE.amber)}curl${RESET} ${fg(
-        PALETTE.white
-      )}https://albertorota.dev${RESET}`
+        PALETTE.sky
+      )}-L${RESET} ${fg(PALETTE.white)}albertorota.dev${RESET}`
     )
   );
 
@@ -651,7 +614,7 @@ function buildFooter(): string[] {
     padLine(
       `${fg(PALETTE.green)}${BOLD}${"$"}${RESET} ${fg(PALETTE.amber)}curl${RESET} ${fg(
         PALETTE.grey
-      )}https://albertorota.dev${RESET}`
+      )}-L albertorota.dev${RESET}`
     )
   );
   out.push("");
@@ -662,7 +625,7 @@ function buildFooter(): string[] {
 
 export async function GET(request: Request) {
   // Terminal width can only be known if the caller passes it, e.g.
-  //   curl "albertorota.dev?cols=$(tput cols)"
+  //   curl -L "albertorota.dev?cols=$(tput cols)"
   const params = new URL(request.url).searchParams;
   const requested = Number.parseInt(params.get("w") ?? params.get("cols") ?? "", 10);
   W = Number.isFinite(requested)

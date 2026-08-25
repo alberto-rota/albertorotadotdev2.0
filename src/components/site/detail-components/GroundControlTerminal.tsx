@@ -3,27 +3,32 @@
 import * as React from "react";
 import { motion } from "motion/react";
 import type { DetailComponentProps } from "./registry";
+import type { TerminalLine } from "../types";
 
 /**
- * Example custom detail component: a faux terminal "install" trace for GroundControl.
- * Replace with your real demo (e.g. an animated screenshot or video).
+ * A faux terminal trace for the tool detail pages.
+ *
+ * Lines come from the product's own `details.terminal` in `products.json`, so
+ * every tool shows its real install / usage commands. The fallback below is
+ * only used when a product declares the component without any lines.
  */
-const STEPS = [
-  { prompt: "$", text: "pip install ground-control-tui", color: "amber" as const },
-  { prompt: ">", text: "Successfully installed ground-control-tui 0.6.2", color: "green" as const },
-  { prompt: "$", text: "gc", color: "amber" as const },
-  { prompt: "", text: "// Or if you have 'uv' installed", color: "muted" as const },
-  { prompt: "$", text: "uvx --from ground-control-tui ground-control", color: "amber" as const },
+const FALLBACK: TerminalLine[] = [
+  { prompt: "$", text: "uv tool install ground-control-tui", tone: "cmd" },
+  { prompt: ">", text: "Installed 1 executable: groundcontrol", tone: "out" },
+  { prompt: "$", text: "gc", tone: "cmd" },
 ];
 
-const colorMap = {
-  amber: "text-amber-300",
-  muted: "text-white/55",
-  green: "text-emerald-300",
-  white: "text-white/85",
+const toneClass: Record<NonNullable<TerminalLine["tone"]>, string> = {
+  cmd: "text-amber-300",
+  out: "text-emerald-300",
+  note: "text-white/55",
 };
 
-export function GroundControlTerminal(_props: DetailComponentProps) {
+export function GroundControlTerminal({ product }: DetailComponentProps) {
+  const terminal = product.details?.terminal;
+  const lines = terminal?.lines?.length ? terminal.lines : FALLBACK;
+  const title = terminal?.title ?? `zsh: ${product.title}`;
+
   return (
     <div className="p-4 sm:p-5">
       <div
@@ -38,14 +43,14 @@ export function GroundControlTerminal(_props: DetailComponentProps) {
           <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f]" />
           <span className="ml-2 text-xs text-white/45" style={{ fontFamily: "var(--font-mono)" }}>
-            zsh — ground-control
+            {title}
           </span>
         </div>
         <div
-          className="px-4 py-4 space-y-1 text-sm"
+          className="px-4 py-4 space-y-1 text-sm overflow-x-auto"
           style={{ fontFamily: "var(--font-mono)" }}
         >
-          {STEPS.map((s, i) => (
+          {lines.map((line, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, x: -6 }}
@@ -53,14 +58,14 @@ export function GroundControlTerminal(_props: DetailComponentProps) {
               transition={{ delay: i * 0.18, duration: 0.3 }}
               className="flex items-start gap-2"
             >
-              <span className="text-emerald-400/90 select-none">{s.prompt}</span>
-              <span className={colorMap[s.color]}>{s.text}</span>
+              <span className="text-emerald-400/90 select-none">{line.prompt ?? ""}</span>
+              <span className={toneClass[line.tone ?? "cmd"] + " whitespace-pre"}>{line.text}</span>
             </motion.div>
           ))}
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 0] }}
-            transition={{ delay: STEPS.length * 0.18, duration: 1.2, repeat: Infinity }}
+            transition={{ delay: lines.length * 0.18, duration: 1.2, repeat: Infinity }}
             className="inline-block h-4 w-2 bg-white/80 align-middle"
           />
         </div>
