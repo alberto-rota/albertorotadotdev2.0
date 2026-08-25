@@ -14,8 +14,10 @@ import * as React from "react";
  *
  * Three details do the heavy lifting:
  *
- *   - only pointer *motion* paints. A still mouse adds nothing, and there is no
- *     idle animation revealing the name on the visitor's behalf;
+ *   - only pointer *motion* paints. A still mouse adds nothing but the ambient
+ *     flicker, which is weighted heavily towards the name's own cells: enough
+ *     of them are alight at any moment to keep the word half-legible, never
+ *     enough to spell it out without a sweep;
  *   - the name's cells fade far slower than the grey ones, so a sweep leaves the
  *     word standing while its halo of noise drains away;
  *   - grey and white are the same white at different alphas, so the field
@@ -136,6 +138,14 @@ const FADE_NAME = 0.06;
 
 const TORCH_RADIUS = 150; // px
 /**
+ * Glyphs are re-rolled over a far wider disc than the torch lights. The two
+ * were the same radius and the churn read as a hard edge on the brush; pulling
+ * them apart lets the name's own characters keep scrambling while the pointer
+ * is somewhere else on the band, which is what makes the field feel like a
+ * terminal rather than a spotlight.
+ */
+const CHURN_RADIUS = TORCH_RADIUS * 3;
+/**
  * Fraction of the brush that is soft edge; the rest paints at full strength.
  * A plain radial falloff looks right but only ever lights the cells the brush
  * passes dead-centre over, so the top and bottom of the letterforms come out at
@@ -159,16 +169,27 @@ const CHURN_SPEED_REF = 900;
 const SPEED_DECAY = 6;
 
 /**
- * Ambient flicker: single cells that blink in and fade out again, anywhere on
- * the field, with no pointer involved. Rare on purpose — this is a sign of life
- * in the terminal, not a second way of revealing anything.
+ * Ambient flicker: single cells that blink in and fade out again with no
+ * pointer involved. They keep their own clock, separate from the torch, so the
+ * field is never entirely dead.
  *
- * They keep their own clock and always draw grey, so a flicker landing inside
- * the letterforms can't slowly assemble the name on the visitor's behalf.
+ * Two populations draw from it. The scattered one lands anywhere and stays dim,
+ * a sign of life in the terminal. The second is aimed: it only ever picks cells
+ * inside the letterforms, and burns near-white. Never enough of them alight at
+ * once to fill the name in, but enough that the shape of it is always half
+ * there — the visitor should catch their own name being spelled before they
+ * think to move the mouse, and sweeping the torch over it is still what makes
+ * it solid.
  */
 const SPARK_RATE = 26; // new flickers per second across the whole field
 const SPARK_LIFE = 1.7; // seconds from appearing to gone
 const SPARK_PEAK = 0.34; // brightest they get
+
+const NAME_SPARK_RATE = 50; // …and per second inside the name
+const NAME_SPARK_LIFE = 2.4; // longer, so more of them overlap
+const NAME_SPARK_PEAK = 0.9; // scaled by coverage, so rim cells stay softer
+/** Coverage a cell needs before it counts as part of a letterform. */
+const NAME_CELL_MIN = 0.5;
 
 /** Share of background cells shown in the still frame (touch, reduced motion). */
 const STILL_SCATTER = 0.14;
@@ -203,6 +224,8 @@ type Grid = {
   lit: Float32Array;
   /** How much of each cell the name covers, 0..1 (anti-aliased). */
   mask: Float32Array;
+  /** Indices of the cells solidly inside the letterforms, to spark from. */
+  nameCells: number[];
 };
 
 /**
@@ -345,6 +368,14 @@ export function GlyphField({
       const rows = Math.max(1, Math.ceil(height / cellH) + 1);
       const chars = new Array<string>(cols * rows);
       for (let i = 0; i < chars.length; i++) chars[i] = pickGlyph();
+      const mask = renderMask(cols, rows, cellW, cellH, nameBox());
+      // Drawn from directly rather than rejection-sampled: the name is a small
+      // fraction of the field, so rolling until a roll lands on it would spend
+      // most of its rolls missing.
+      const nameCells: number[] = [];
+      for (let i = 0; i < mask.length; i++) {
+        if (mask[i] > NAME_CELL_MIN) nameCells.push(i);
+      }
       grid = {
         cols,
         rows,
@@ -352,7 +383,8 @@ export function GlyphField({
         cellH,
         chars,
         lit: new Float32Array(cols * rows),
-        mask: renderMask(cols, rows, cellW, cellH, nameBox()),
+        mask,
+        nameCells,
       };
     };
 
@@ -367,9 +399,10 @@ export function GlyphField({
     /** Remembered pointer speed in px/s, driving how hard the glyphs churn. */
     let speed = 0;
 
-    /** Cells currently flickering, and the fractional debt owed to the spawner. */
-    const sparks: { i: number; life: number }[] = [];
+    /** Cells currently flickering, and the fractional debt owed to each spawner. */
+    const sparks: { i: number; life: number; peak: number; span: number }[] = [];
     let sparkDebt = 0;
+    let nameSparkDebt = 0;
 
     const onPointerMove = (e: PointerEvent) => {
       const r = host.getBoundingClientRect();
@@ -463,7 +496,7 @@ export function GlyphField({
         strokeX = x;
         strokeY = y;
         strokeAt = t;
-        churn(g, x, y, TORCH_RADIUS, CHURN_MOVING * Math.min(1, speed / CHURN_SPEED_REF));
+        churn(g, x, y, CHURN_RADIUS, CHURN_MOVING * Math.min(1, speed / CHURN_SPEED_REF));
       } else {
         speed *= Math.exp(-SPEED_DECAY * dt);
       }
@@ -473,10 +506,30 @@ export function GlyphField({
         sparkDebt -= 1;
         const i = (Math.random() * chars.length) | 0;
         chars[i] = pickGlyph();
-        sparks.push({ i, life: 1 });
+        sparks.push({ i, life: 1, peak: SPARK_PEAK, span: SPARK_LIFE });
       }
+
+      nameSparkDebt += NAME_SPARK_RATE * dt;
+      while (nameSparkDebt >= 1) {
+        // Before the fonts land the mask is empty; drop the debt rather than
+        // banking it, or the name detonates in one frame once it is cut.
+        if (!g.nameCells.length) {
+          nameSparkDebt = 0;
+          break;
+        }
+        nameSparkDebt -= 1;
+        const i = g.nameCells[(Math.random() * g.nameCells.length) | 0];
+        chars[i] = pickGlyph();
+        sparks.push({
+          i,
+          life: 1,
+          peak: NAME_SPARK_PEAK * mask[i],
+          span: NAME_SPARK_LIFE,
+        });
+      }
+
       for (let k = sparks.length - 1; k >= 0; k--) {
-        sparks[k].life -= dt / SPARK_LIFE;
+        sparks[k].life -= dt / sparks[k].span;
         if (sparks[k].life <= 0) sparks.splice(k, 1);
       }
 
@@ -504,7 +557,7 @@ export function GlyphField({
       // brighter, which at a handful of cells out of tens of thousands is not
       // worth a lookup to avoid.
       for (const spark of sparks) {
-        const v = SPARK_PEAK * Math.sin((1 - spark.life) * Math.PI);
+        const v = spark.peak * Math.sin((1 - spark.life) * Math.PI);
         if (v < MIN_ALPHA) continue;
         ctx.fillStyle = LEVEL_COLORS[Math.min(LEVELS - 1, (v * LEVELS) | 0)];
         const c = spark.i % cols;
