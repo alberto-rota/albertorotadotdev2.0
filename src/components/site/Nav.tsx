@@ -84,10 +84,7 @@ export function Nav() {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => {
-                      if (item.id === "contact") setContactOpen(true);
-                      else scrollToId(item.id);
-                    }}
+                    onClick={() => scrollToId(item.id)}
                     className={cn(
                       "relative font-display tracking-[0.12em] text-sm px-3 py-2 rounded-full transition-colors",
                       active ? "text-black" : "text-white/70 hover:text-white"
@@ -162,7 +159,7 @@ export function Nav() {
           </div>
 
           <ul className="flex flex-col gap-1.5">
-            {ITEMS.filter((item) => item.id !== "contact").map((item) => (
+            {ITEMS.map((item) => (
               <li key={item.id}>
                 <button
                   onClick={() => {

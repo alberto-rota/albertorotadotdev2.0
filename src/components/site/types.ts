@@ -194,7 +194,7 @@ export type Announcement = {
   location?: string;
   /** CTA buttons. */
   actions?: ProductAction[];
-  /** Optional image path (e.g. `/images/unreflect.png`). */
+  /** Optional image shown to the left of the text (e.g. `/images/figures/announcement/cvpr.png`). */
   image?: string;
   imageAlt?: string;
 };

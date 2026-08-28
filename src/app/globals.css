@@ -294,6 +294,146 @@ html {
   transition: transform 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
+/* Contact section — pointer-tracked glow, card tilt, terminal accents. */
+.contact-stage {
+  --mx: 50%;
+  --my: 18%;
+}
+
+.contact-glow {
+  background: radial-gradient(
+    720px 480px at var(--mx) var(--my),
+    rgba(255, 255, 255, 0.09),
+    transparent 58%
+  );
+}
+
+.contact-card {
+  --mx: 50%;
+  --my: 50%;
+  --rx: 0deg;
+  --ry: 0deg;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateZ(0);
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition:
+    transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 200ms ease,
+    background-color 200ms ease;
+}
+
+.contact-card[data-hot="true"] {
+  transition:
+    transform 60ms linear,
+    border-color 200ms ease,
+    background-color 200ms ease;
+}
+
+.contact-card-spot {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(
+    240px circle at var(--mx) var(--my),
+    rgba(255, 255, 255, 0.18),
+    transparent 58%
+  );
+  transition: opacity 280ms ease;
+}
+
+.contact-card[data-hot="true"] .contact-card-spot {
+  opacity: 1;
+}
+
+@keyframes contact-cursor {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+.contact-cursor {
+  animation: contact-cursor 1.15s steps(1) infinite;
+}
+
+@keyframes contact-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.72);
+  }
+}
+.contact-dot {
+  animation: contact-dot 2.2s ease-in-out infinite;
+}
+
+@keyframes contact-sheen {
+  0% {
+    transform: translateX(-140%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(240%) skewX(-18deg);
+  }
+}
+.contact-sheen {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.contact-sheen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 42%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.14),
+    transparent
+  );
+  transform: translateX(-140%) skewX(-18deg);
+}
+.contact-card[data-hot="true"] .contact-sheen::after {
+  animation: contact-sheen 0.85s ease-out;
+}
+
+.contact-mag {
+  transition: transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+
+@keyframes contact-scan {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 8px;
+  }
+}
+.contact-scan {
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(255, 255, 255, 0.035) 3px,
+    rgba(255, 255, 255, 0.035) 4px
+  );
+  background-size: 100% 8px;
+  animation: contact-scan 0.7s linear infinite;
+}
+
 /* Tap highlight removal (mobile). */
 button, a {
   -webkit-tap-highlight-color: transparent;
@@ -322,8 +462,18 @@ button, a {
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,
   .animate-soft-pulse,
-  .cite-button--flash {
+  .cite-button--flash,
+  .contact-cursor,
+  .contact-dot,
+  .contact-scan,
+  .contact-sheen::after {
     animation: none !important;
     transition: none !important;
+  }
+  .contact-card {
+    transform: none !important;
+  }
+  .contact-mag {
+    transform: none !important;
   }
 }

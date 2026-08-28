@@ -89,13 +89,13 @@ function renderRichText(input: string): React.ReactNode {
 
 function AnnouncementImage({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-white/10">
+    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-white/10 md:aspect-auto md:h-full md:min-h-[12rem]">
       <NextImage
         src={src}
         alt={alt}
         fill
         className="object-cover"
-        sizes="(max-width: 768px) 100vw, 36rem"
+        sizes="(max-width: 768px) 100vw, 22rem"
         unoptimized={shouldBypassImageOptimization(src)}
       />
     </div>
@@ -115,9 +115,31 @@ function AnnouncementCard({
 }) {
   const actions = data.actions?.filter((a) => a.href) ?? [];
   const accent = data.accent || "#34d399";
+  const imageSrc = data.image?.trim();
   const imageAlt = data.imageAlt?.trim() || data.title || data.label || "Announcement";
+  const hasImage = Boolean(imageSrc);
+  const hasActions = actions.length > 0;
 
-  const rightColumn = data.image || actions.length > 0;
+  const actionButtons = hasActions ? (
+    <div className={cn("flex flex-wrap gap-2", !hasImage && "md:justify-end")}>
+      {actions.map((a, i) => (
+        <a
+          key={`${a.href}-${i}`}
+          href={a.href}
+          target={a.href?.startsWith("http") ? "_blank" : undefined}
+          rel={a.href?.startsWith("http") ? "noreferrer" : undefined}
+          className={
+            i === 0
+              ? "inline-flex items-center gap-2 rounded-full bg-white text-black px-4 py-2 text-[12px] font-medium uppercase tracking-[0.14em] hover:bg-white/90 transition-colors"
+              : "inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.14em] text-white hover:bg-white/10 transition-colors"
+          }
+        >
+          <Icon name={a.icon} size={16} className="h-4 w-4" />
+          {a.label}
+        </a>
+      ))}
+    </div>
+  ) : null;
 
   return (
     <motion.article
@@ -140,9 +162,12 @@ function AnnouncementCard({
       <div
         className={cn(
           "relative grid gap-5 p-5 sm:p-6",
-          rightColumn && "md:grid-cols-[1.5fr_1fr] md:items-center"
+          hasImage && "md:grid-cols-[minmax(10rem,1fr)_minmax(0,1.6fr)] md:items-stretch",
+          !hasImage && hasActions && "md:grid-cols-[1.5fr_1fr] md:items-center"
         )}
       >
+        {imageSrc ? <AnnouncementImage src={imageSrc} alt={imageAlt} /> : null}
+
         <div>
           {data.label ? (
             <div
@@ -195,34 +220,12 @@ function AnnouncementCard({
               ) : null}
             </div>
           )}
+
+          {hasImage && actionButtons ? <div className="mt-4">{actionButtons}</div> : null}
         </div>
 
-        {rightColumn ? (
-          <div className="flex flex-col gap-4 md:items-stretch">
-            {data.image ? (
-              <AnnouncementImage src={data.image} alt={imageAlt} />
-            ) : null}
-            {actions.length > 0 ? (
-              <div className="flex flex-wrap gap-2 md:justify-end">
-                {actions.map((a, i) => (
-                  <a
-                    key={`${a.href}-${i}`}
-                    href={a.href}
-                    target={a.href?.startsWith("http") ? "_blank" : undefined}
-                    rel={a.href?.startsWith("http") ? "noreferrer" : undefined}
-                    className={
-                      i === 0
-                        ? "inline-flex items-center gap-2 rounded-full bg-white text-black px-4 py-2 text-[12px] font-medium uppercase tracking-[0.14em] hover:bg-white/90 transition-colors"
-                        : "inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.14em] text-white hover:bg-white/10 transition-colors"
-                    }
-                  >
-                    <Icon name={a.icon} size={16} className="h-4 w-4" />
-                    {a.label}
-                  </a>
-                ))}
-              </div>
-            ) : null}
-          </div>
+        {!hasImage && actionButtons ? (
+          <div className="flex flex-col gap-4 md:items-stretch">{actionButtons}</div>
         ) : null}
       </div>
     </motion.article>
