@@ -16,7 +16,7 @@
       "enabled": true,
       "accent": "#d08656",
       "label": "CVPR 2026 · Denver",
-      "image": "/images/announcements/cvpr.png",
+      "image": "/images/announcements/cvpr.webp",
       "imageAlt": "CVPR 2026",
       "title": "Attended cvpr 2026? ",
       "body": "I've presented <b>UnReflectAnything</b>, a method for removing specular highlights trained on synthetic specular supervision. <b>Oral Session 1D - Computational Imaging</b> for the oral presentation and <b>Poster Session 1</b> for the poster!",
@@ -47,7 +47,7 @@
       "actions": [
         {
           "label": "View in Research",
-          "href": "#research",
+          "href": "/research/robotic-colonoscopy",
           "icon": "FileText"
         }
       ]
@@ -93,7 +93,7 @@
       "subtitle": "RGB-only highlight removal by rendering synthetic specular supervision",
       "description": "RGB-only highlight removal by rendering synthetic specular supervision.",
       "tag": "research",
-      "thumbnail": "/images/thumbnails/unreflect-anything.png",
+      "thumbnail": "/images/thumbnails/unreflect-anything.webp",
       "accent": "#d08656",
       "tech": [
         "image-to-image",
@@ -266,7 +266,7 @@
       "subtitle": "Self-supervised embeddings for endoscopic matching",
       "description": "Self-Supervised Contrastive Embedding Adaptation for Endoscopic Image Matching.",
       "tag": "research",
-      "thumbnail": "/images/thumbnails/scale-em.png",
+      "thumbnail": "/images/thumbnails/scale-em.webp",
       "accent": "#a9dc76",
       "tech": [
         "PyTorch",
@@ -379,7 +379,7 @@
       "subtitle": "Adnexal Mass Segmentation in US images",
       "description": "Adapting Foundation Models for Annotation-Efficient Adnexal Mass Segmentation in Cine Images",
       "tag": "research",
-      "thumbnail": "/images/thumbnails/mesa.png",
+      "thumbnail": "/images/thumbnails/mesa.webp",
       "accent": "#4595a9",
       "tech": [
         "DINOv3",
@@ -555,7 +555,7 @@
       "subtitle": "3D Hyperspectral Mapping of Lumpectomy Specimens",
       "description": "A Lightweight Fiducial-Based Pipeline for 3D Hyperspectral Mapping of ex-vivo Lumpectomy Specimens",
       "tag": "research",
-      "thumbnail": "/images/thumbnails/spectra-breast.png",
+      "thumbnail": "/images/thumbnails/spectra-breast.webp",
       "accent": "#6b4ea8",
       "tech": [
         "MASt3R-SfM",
@@ -611,7 +611,7 @@
       "actions": [
         {
           "label": "Paper",
-          "href": "http://arxiv.org/abs/2606.14534",
+          "href": "https://arxiv.org/abs/2606.14534",
           "icon": "FileText"
         },
         {
@@ -699,7 +699,7 @@
       "subtitle": "3D analysis of microvasculature on-chip",
       "description": "A three-dimensional method for morphological analysis and flow velocity estimation in microvasculature on-a-chip.",
       "tag": "research",
-      "thumbnail": "/images/thumbnails/muves.png",
+      "thumbnail": "/images/thumbnails/muves.webp",
       "accent": "#78dce8",
       "tech": [
         "MATLAB",
@@ -865,7 +865,7 @@
       "subtitle": "Augmented training curriculum for surgical robotics",
       "description": "Implementation and assessment of an augmented training curriculum for surgical robotics.",
       "tag": "research",
-      "thumbnail": "/images/thumbnails/steve.png",
+      "thumbnail": "/images/thumbnails/steve.webp",
       "accent": "#78dce8",
       "tech": [
         "Unity",
@@ -980,7 +980,7 @@
       "subtitle": "Decision support in ovarian cancer treatment",
       "description": "Deep Learning for decision support in ovarian cancer treatment planning.",
       "tag": "research",
-      "thumbnail": "/images/thumbnails/underxai-ovit.png",
+      "thumbnail": "/images/thumbnails/underxai-ovit.webp",
       "accent": "#78dce8",
       "tech": [
         "PyTorch",
@@ -1210,12 +1210,12 @@
       }
     },
     {
-      "slug": "hamlynworkshop",
+      "slug": "robotic-colonoscopy",
       "title": "Robotic Colonoscopy",
       "subtitle": "Patient-specific digital-twin world models",
       "description": "Coverage-Optimal Robotic Colonoscopy via Patient-Specific Digital-Twin World Models",
       "tag": "research",
-      "thumbnail": "/images/thumbnails/hamlynworkshop.png",
+      "thumbnail": "/images/thumbnails/hamlynworkshop.webp",
       "tech": [
         "World Models",
         "Digital Twin",
@@ -1342,7 +1342,7 @@
       "subtitle": "Recent advancements in AR for robotic surgery",
       "description": "Recent advancements in augmented reality for robotic applications: a survey.",
       "tag": "research",
-      "thumbnail": "/images/thumbnails/surgical-ar-review.png",
+      "thumbnail": "/images/thumbnails/surgical-ar-review.webp",
       "accent": "#fc9867",
       "meta": {
         "venue": "MDPI Actuators",
@@ -2241,10 +2241,10 @@
       "subtitle": "NIfTI / DICOM viewer for VS Code",
       "description": "A NIfTI and DICOM viewer that runs inside VS Code, with multi-planar reconstruction and segmentation overlays.",
       "tag": "vsc-extensions",
-      "thumbnail": "/images/medview.png",
+      "thumbnail": "/images/medview.webp",
       "cardAspect": "16/10",
       "cardFit": "cover",
-      "icon": "/icons/medview_icon.png",
+      "icon": "/icons/medview_icon.webp",
       "accent": "#ff6188",
       "tech": [
         "TypeScript",
@@ -2434,7 +2434,7 @@
       "subtitle": "Logo design for the PREDICT project",
       "description": "Logo design for the PREDICT project.",
       "tag": "designs",
-      "thumbnail": "/images/predict.png",
+      "thumbnail": "/images/predict.webp",
       "accent": "#4595a9",
       "actions": [
         {

@@ -2,11 +2,13 @@
 
 import * as React from "react";
 import NextImage from "next/image";
+import Link from "next/link";
 import { motion } from "motion/react";
 import { ArrowUpRight, Check, Copy, Plus } from "lucide-react";
 import { Icon } from "./Icon";
 import type { Product, ProductAction, SectionId } from "./types";
 import { cn, shouldBypassImageOptimization } from "@/lib/utils";
+import { productPath } from "@/lib/site";
 
 type CardSize = "default" | "compact";
 type ActionVariant = "research" | "default";
@@ -151,6 +153,7 @@ export function ProductCard({
   const primaryAction = product.actions?.find((a) => a.href) ?? null;
   const copyAction = product.actions?.find((a) => a.copy && !a.href) ?? null;
   const externalHref = product.link && product.link !== "#" ? product.link : primaryAction?.href ?? null;
+  const internalHref = productPath(product);
 
   if (size === "compact") {
     return (
@@ -191,7 +194,7 @@ export function ProductCard({
         <CardActionLink
           href={externalHref}
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
           aria-label={`Open ${primaryAction?.label ?? product.title} link`}
           label={primaryAction?.label ?? "Open"}
           variant={actionVariant}
@@ -199,13 +202,24 @@ export function ProductCard({
           onClick={(e) => e.stopPropagation()}
         />
       ) : null}
-      <CardActionButton
-        aria-label={`Open details for ${product.title}`}
-        label="Details"
-        variant={actionVariant}
-        icon={<Plus className="h-4 w-4" />}
-        onClick={() => onOpenDetail(product)}
-      />
+      {internalHref ? (
+        <CardActionLink
+          href={internalHref}
+          aria-label={`Open details for ${product.title}`}
+          label="Details"
+          variant={actionVariant}
+          icon={<Plus className="h-4 w-4" />}
+          onClick={(e) => e.stopPropagation()}
+        />
+      ) : (
+        <CardActionButton
+          aria-label={`Open details for ${product.title}`}
+          label="Details"
+          variant={actionVariant}
+          icon={<Plus className="h-4 w-4" />}
+          onClick={() => onOpenDetail(product)}
+        />
+      )}
     </div>
   );
 
@@ -221,8 +235,14 @@ export function ProductCard({
           ? "w-full snap-start"
           : cn("shrink-0 snap-start max-w-[88vw]", cardHeight)
       )}
+      id={product.slug || undefined}
       style={{ aspectRatio: aspect }}
     >
+      {internalHref ? (
+        <Link href={internalHref} className="sr-only">
+          {product.title}
+        </Link>
+      ) : null}
       {isResearch ? (
         <div className="mb-2 flex h-9 shrink-0 items-center justify-between gap-2">
           <div className="flex min-w-0 flex-1 items-center overflow-hidden">

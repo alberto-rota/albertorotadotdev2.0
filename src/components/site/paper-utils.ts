@@ -13,7 +13,8 @@ export function getPaperAction(product: Product): ProductAction | undefined {
 
 /** Normalize a PDF path from JSON (local or absolute URL). */
 export function normalizePdfUrl(url: string): string {
-  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")) {
+  if (url.startsWith("http://")) url = `https://${url.slice("http://".length)}`;
+  if (url.startsWith("https://") || url.startsWith("/")) {
     return url;
   }
   return `/${url}`;

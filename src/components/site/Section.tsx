@@ -138,7 +138,7 @@ export function Section({
           {isGrid ? (
             /* Horizontally scrolling two-line grid: items fill columns
                left-to-right, new products extend the row to the right */
-            <div className="mx-auto grid w-max grid-flow-col grid-rows-2 auto-cols-[100vw] md:auto-cols-[40rem] gap-4 sm:gap-5 px-4 sm:px-6 py-2">
+            <div className="mx-auto grid w-max grid-flow-col grid-rows-2 auto-cols-[min(22rem,calc(100vw-2rem))] md:auto-cols-[40rem] gap-4 sm:gap-5 px-4 sm:px-6 py-2">
               {products.map((p, i) => (
                 <ProductCard
                   key={p.slug || `${p.title}-${i}`}

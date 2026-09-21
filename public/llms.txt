@@ -1,0 +1,36 @@
+# Alberto Rota
+
+> PhD candidate in Bioengineering at Politecnico di Milano. Research, open-source tools, and visual systems for surgical robotics and medical AI.
+
+Site: https://www.albertorota.dev
+Email: alberto1.rota@polimi.it
+GitHub: https://github.com/alberto-rota
+Scholar: https://scholar.google.com/citations?user=VyC48nkAAAAJ
+
+## Pages
+
+- [Home](https://www.albertorota.dev): research, terminal tools, VS Code extensions, and design work.
+- [Sitemap](https://www.albertorota.dev/sitemap.xml)
+
+## Research
+
+- [UnReflectAnything](https://www.albertorota.dev/research/unreflect-anything): RGB-only specular highlight removal (CVPR 2026 oral).
+- [SCALE-EM](https://www.albertorota.dev/research/scale-em): self-supervised contrastive embedding adaptation for endoscopic image matching.
+- [MESA](https://www.albertorota.dev/research/mesa): annotation-efficient adnexal mass segmentation in cine ultrasound.
+- [Spectra-BREAST](https://www.albertorota.dev/research/spectra-breast): fiducial-based 3D hyperspectral mapping of lumpectomy specimens.
+- [muVES](https://www.albertorota.dev/research/muves): 3D morphological analysis and flow estimation in microvasculature-on-a-chip.
+- [STEVE](https://www.albertorota.dev/research/steve): augmented training curriculum for surgical robotics.
+- [UnderXAI-OVIT](https://www.albertorota.dev/research/underxai-ovit): explainable AI for ovarian cancer treatment planning.
+- [Robotic Colonoscopy](https://www.albertorota.dev/research/robotic-colonoscopy): coverage-optimal robotic colonoscopy via patient-specific digital twins.
+- [Surgical AR Review](https://www.albertorota.dev/research/surgical-ar-review): survey of augmented reality for robotic applications.
+
+## Open source
+
+- [GroundControl](https://www.albertorota.dev/terminal-tools/ground-control)
+- [sekrt](https://www.albertorota.dev/terminal-tools/sekrt)
+- [dasshboard-tui](https://www.albertorota.dev/terminal-tools/dasshboard-tui)
+- [dotfiles](https://www.albertorota.dev/terminal-tools/dotfiles)
+- [DaSSHboard](https://www.albertorota.dev/vsc-extensions/dasshboard)
+- [MedView](https://www.albertorota.dev/vsc-extensions/medview)
+
+Prefer canonical HTTPS URLs on www.albertorota.dev. Cite papers from each research page.

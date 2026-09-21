@@ -42,7 +42,7 @@ function CircleLink({
   return (
     <a
       href={href}
-      {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       aria-label={label}
       title={label}
       className={`inline-flex h-10.5 w-10.5 items-center justify-center text-white/85 hover:text-white hover:border-white/25 ${glassBtn}`}
@@ -152,7 +152,7 @@ export function Hero({
             <a
               href="https://github.com/alberto-rota"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
             >
               <Github className="h-3.5 w-3.5" /> alberto-rota
@@ -172,13 +172,17 @@ export function Hero({
             transition={{ duration: 0.6, delay: 0.24 }}
             className="mt-6 flex flex-wrap items-center justify-center gap-2.5"
           >
-            <button
-              onClick={() => scrollToId("research")}
+            <a
+              href="/#research"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToId("research");
+              }}
               className={`inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium uppercase tracking-[0.14em] ${glassBtnPrimary}`}
             >
               View my work
               <ArrowDown className="h-4 w-4" />
-            </button>
+            </a>
             <a
               href="/pdfs/CV_Alberto_Rota.pdf"
               download
@@ -212,7 +216,7 @@ export function Hero({
                     <span className="relative inline-flex h-5 w-5 items-center justify-center overflow-hidden rounded-full">
                       <NextImage
                         src={p.thumbnail}
-                        alt=""
+                        alt={p.title}
                         width={20}
                         height={20}
                         className="object-contain"

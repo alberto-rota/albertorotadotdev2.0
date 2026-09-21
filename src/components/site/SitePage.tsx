@@ -20,6 +20,26 @@ const pinnedContacts = data.contacts.filter((c) => c.pinned && c.href);
 export function SitePage() {
   const [active, setActive] = React.useState<Product | null>(null);
 
+  React.useEffect(() => {
+    const applyHash = () => {
+      const hash = window.location.hash.replace(/^#/, "");
+      if (!hash) return;
+      const product = data.products.find((p) => p.slug === hash);
+      if (product) {
+        setActive(product);
+        return;
+      }
+      const el = document.getElementById(hash);
+      if (!el) return;
+      const offset = 96;
+      const top = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    };
+    applyHash();
+    window.addEventListener("hashchange", applyHash);
+    return () => window.removeEventListener("hashchange", applyHash);
+  }, []);
+
   return (
     <>
       <CustomScrollbar />

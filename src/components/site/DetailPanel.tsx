@@ -823,12 +823,9 @@ function DefaultLayout({ product, accent, details, Custom, compact }: LayoutProp
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className="text-[11px] uppercase tracking-[0.2em] text-white/45"
-      style={{ fontFamily: "var(--font-body)" }}
-    >
+    <h3 className="text-[11px] uppercase tracking-[0.2em] text-white/45 [font-family:var(--font-body)]">
       {children}
-    </div>
+    </h3>
   );
 }
 
@@ -839,15 +836,16 @@ function CollaboratorChip({
   person: Collaborator;
   accent: string;
 }) {
-  const Container: React.ElementType = person.href ? "a" : "div";
-  const external = person.href?.startsWith("http");
+  const href = person.href?.trim() || undefined;
+  const Container: React.ElementType = href ? "a" : "div";
+  const external = href?.startsWith("http");
   return (
     <Container
-      {...(person.href
+      {...(href
         ? {
-            href: person.href,
+            href,
             target: external ? "_blank" : undefined,
-            rel: external ? "noreferrer" : undefined,
+            rel: external ? "noopener noreferrer" : undefined,
           }
         : {})}
       className="group inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-3 py-1.5 transition-colors hover:border-white/30 hover:bg-white/[0.07]"
@@ -861,7 +859,7 @@ function CollaboratorChip({
           <span className="text-white/45"> · {person.affiliation}</span>
         ) : null}
       </span>
-      {person.href ? (
+      {href ? (
         <ArrowUpRight className="h-3.5 w-3.5 text-white/40 group-hover:text-white transition-colors" />
       ) : null}
     </Container>
@@ -869,15 +867,16 @@ function CollaboratorChip({
 }
 
 function InstitutionBadge({ institution }: { institution: Institution }) {
-  const Container: React.ElementType = institution.href ? "a" : "div";
-  const external = institution.href?.startsWith("http");
+  const href = institution.href?.trim() || undefined;
+  const Container: React.ElementType = href ? "a" : "div";
+  const external = href?.startsWith("http");
   return (
     <Container
-      {...(institution.href
+      {...(href
         ? {
-            href: institution.href,
+            href,
             target: external ? "_blank" : undefined,
-            rel: external ? "noreferrer" : undefined,
+            rel: external ? "noopener noreferrer" : undefined,
           }
         : {})}
       className="group inline-flex items-center gap-2.5 rounded-2xl border border-white/12 bg-white/[0.04] px-3.5 py-2 transition-colors hover:border-white/30 hover:bg-white/[0.07]"
@@ -887,7 +886,7 @@ function InstitutionBadge({ institution }: { institution: Institution }) {
         <span className="relative inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-md bg-white/10">
           <NextImage
             src={institution.logo}
-            alt=""
+            alt={institution.name}
             width={20}
             height={20}
             className="object-contain"
@@ -898,7 +897,7 @@ function InstitutionBadge({ institution }: { institution: Institution }) {
       <span className="text-sm text-white/85 group-hover:text-white">
         {institution.name}
       </span>
-      {institution.href ? (
+      {href ? (
         <ArrowUpRight className="h-3.5 w-3.5 text-white/40 group-hover:text-white transition-colors" />
       ) : null}
     </Container>

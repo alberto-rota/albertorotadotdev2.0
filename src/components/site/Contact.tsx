@@ -575,7 +575,7 @@ function ProfileChip({ product, index }: { product: Product; index: number }) {
           ? {
               href,
               target: href.startsWith("http") ? "_blank" : undefined,
-              rel: href.startsWith("http") ? "noreferrer" : undefined,
+              rel: href.startsWith("http") ? "me noopener noreferrer" : undefined,
             }
           : {})}
         data-cursor="hover"
@@ -585,7 +585,7 @@ function ProfileChip({ product, index }: { product: Product; index: number }) {
         <span className="relative inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/10 overflow-hidden">
           <NextImage
             src={product.thumbnail}
-            alt=""
+            alt={product.title}
             width={20}
             height={20}
             className="object-contain"
@@ -611,10 +611,16 @@ function Footer() {
     <footer className="mt-20 border-t border-white/8 pt-6 pb-6">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div
-          className="text-xs text-white/40"
+          className="text-xs text-white/40 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4"
           style={{ fontFamily: "var(--font-body)" }}
         >
-          © {new Date().getFullYear()} Alberto Rota. Built with Claude Code because I'm definitely not a web dev
+          <span>© {new Date().getFullYear()} Alberto Rota</span>
+          <nav aria-label="Footer" className="flex flex-wrap gap-3 text-white/55">
+            <a href="/#research" className="hover:text-white">Research</a>
+            <a href="/#terminal-tools" className="hover:text-white">Tools</a>
+            <a href="/#contact" className="hover:text-white">Contact</a>
+            <a href="/sitemap.xml" className="hover:text-white">Sitemap</a>
+          </nav>
         </div>
         <div
           className="text-[10px] uppercase tracking-[0.24em] text-white/35"

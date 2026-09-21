@@ -1,11 +1,72 @@
 /* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata } from "next";
+import { Bebas_Neue, Inter } from "next/font/google";
 import "./globals.css";
 import { CustomCursor } from "@/components/site/CustomCursor";
+import {
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_URL,
+} from "@/lib/site";
+
+const bebas = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-bebas",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "Alberto Rota",
-  description: "Research, open-source, and selected projects by Alberto Rota.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_TITLE,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  keywords: [
+    "Alberto Rota",
+    "surgical robotics",
+    "medical AI",
+    "computer vision",
+    "Politecnico di Milano",
+    "open source",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    locale: "en_US",
+    images: [{ url: "/icons/AR.png", alt: "Alberto Rota" }],
+  },
+  twitter: {
+    card: "summary",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: ["/icons/AR.png"],
+  },
   icons: {
     icon: [{ url: "/icons/AR.png", type: "image/png" }],
     shortcut: [{ url: "/icons/AR.png", type: "image/png" }],
@@ -26,9 +87,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`dark ${bebas.variable} ${inter.variable}`}
+      suppressHydrationWarning
+    >
       <head>
-        {/* The hero's glyph field can't measure its grid until this lands. */}
         <link
           rel="preload"
           href="/fonts/CascadiaCodeNF-subset.woff2"
@@ -36,14 +100,8 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
       </head>
-      <body className="antialiased bg-black text-white font-sans">
+      <body className="antialiased bg-black text-white font-sans overflow-x-hidden">
         <CustomCursor />
         {children}
       </body>

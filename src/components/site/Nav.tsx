@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { motion } from "motion/react";
 import { FileDown, Menu as MenuIcon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -70,21 +71,33 @@ export function Nav() {
       >
         <div className="mx-auto max-w-6xl px-3 sm:px-4 pt-3 sm:pt-5">
           <div className="pointer-events-auto flex items-center justify-between gap-3 rounded-full border border-white/12 bg-black/60 backdrop-blur-xl px-2 py-2 shadow-[0_8px_30px_rgb(0,0,0,0.4)] md:grid md:grid-cols-[1fr_auto_1fr]">
-            <button
-              onClick={() => scrollToId("top")}
+            <Link
+              href="/#top"
+              onClick={(e) => {
+                if (window.location.pathname === "/") {
+                  e.preventDefault();
+                  scrollToId("top");
+                }
+              }}
               className="shrink-0 font-display text-lg sm:text-xl tracking-[0.18em] pl-3 pr-2 py-1 text-white/90 md:hover:text-white transition-colors md:justify-self-start"
-              aria-label="Back to top"
+              aria-label="Alberto Rota home"
             >
               AR
-            </button>
+            </Link>
 
             <nav className="hidden md:flex items-center justify-center gap-1 justify-self-center">
               {ITEMS.map((item) => {
                 const active = activeId === item.id;
                 return (
-                  <button
+                  <a
                     key={item.id}
-                    onClick={() => scrollToId(item.id)}
+                    href={`/#${item.id}`}
+                    onClick={(e) => {
+                      if (window.location.pathname === "/") {
+                        e.preventDefault();
+                        scrollToId(item.id);
+                      }
+                    }}
                     className={cn(
                       "relative font-display tracking-[0.12em] text-sm px-3 py-2 rounded-full transition-colors",
                       active ? "text-black" : "text-white/70 hover:text-white"
@@ -98,7 +111,7 @@ export function Nav() {
                       />
                     ) : null}
                     <span className="relative z-10 uppercase">{item.label}</span>
-                  </button>
+                  </a>
                 );
               })}
             </nav>
@@ -138,7 +151,7 @@ export function Nav() {
       />
       <motion.aside
         initial={false}
-        animate={{ y: open ? 0 : "100%" }}
+        animate={{ y: open ? 0 : "100%", pointerEvents: open ? "auto" : "none" }}
         transition={{ type: "spring", stiffness: 280, damping: 32 }}
         className="fixed inset-x-0 bottom-0 z-[61] rounded-t-3xl border-t border-white/10 bg-black md:hidden"
         role="dialog"
@@ -161,16 +174,20 @@ export function Nav() {
           <ul className="flex flex-col gap-1.5">
             {ITEMS.map((item) => (
               <li key={item.id}>
-                <button
-                  onClick={() => {
+                <a
+                  href={`/#${item.id}`}
+                  onClick={(e) => {
                     setOpen(false);
-                    setTimeout(() => scrollToId(item.id), 120);
+                    if (window.location.pathname === "/") {
+                      e.preventDefault();
+                      setTimeout(() => scrollToId(item.id), 120);
+                    }
                   }}
                   className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 font-display tracking-[0.14em] text-base uppercase text-white"
                 >
                   <span>{item.label}</span>
                   <span aria-hidden className="text-white/40 text-xl">→</span>
-                </button>
+                </a>
               </li>
             ))}
           </ul>

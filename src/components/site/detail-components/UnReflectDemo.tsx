@@ -11,8 +11,8 @@ import type { DetailComponentProps } from "./registry";
  *
  * If the images don't exist yet, the slider still demonstrates the interaction.
  */
-const BEFORE_SRC = "/images/unreflect.png";
-const AFTER_SRC = "/images/unreflect.png";
+const BEFORE_SRC = "/images/unreflect.webp";
+const AFTER_SRC = "/images/unreflect.webp";
 
 export function UnReflectDemo(_props: DetailComponentProps) {
   const x = useMotionValue(0.5);
@@ -47,7 +47,7 @@ export function UnReflectDemo(_props: DetailComponentProps) {
       >
         <NextImage
           src={AFTER_SRC}
-          alt="After"
+          alt="UnReflectAnything reconstruction without specular highlights"
           fill
           className="object-cover"
           sizes="(min-width: 768px) 540px, 90vw"
@@ -59,7 +59,7 @@ export function UnReflectDemo(_props: DetailComponentProps) {
         >
           <NextImage
             src={BEFORE_SRC}
-            alt="Before"
+            alt="Input image with specular highlights"
             fill
             className="object-cover"
             sizes="(min-width: 768px) 540px, 90vw"

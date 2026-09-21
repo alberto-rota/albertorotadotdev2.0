@@ -32,11 +32,10 @@
 }
 
 :root {
-  /* Font families (loaded via Google Fonts <link> in `app/layout.tsx`). */
-  --font-display: "Bebas Neue", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Cascadia Code NF", "JetBrains Mono", ui-monospace, SFMono-Regular,
-    Menlo, monospace;
+  /* Font families (self-hosted via next/font + local Cascadia subset). */
+  --font-display: var(--font-bebas), "Bebas Neue", ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Cascadia Code NF", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --radius: 0.875rem;
 
@@ -105,6 +104,16 @@ html {
   -webkit-text-size-adjust: 100%;
   background: #000;
   color-scheme: dark;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+main > section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
 }
 
 /* On precise pointers (desktop) the page scrollbar is replaced by the custom
