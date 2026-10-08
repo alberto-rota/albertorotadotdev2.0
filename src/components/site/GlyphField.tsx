@@ -33,6 +33,14 @@ import * as React from "react";
  *
  * Touch and reduced-motion have no mouse to move, so rather than an empty black
  * band they get one composed still frame with the name already legible.
+ *
+ * Every few seconds the name *decodes* into something else and back — the
+ * surname, then what the name is attached to (robotics, vision, the PhD). A
+ * front sweeps left to right across every cell the two words touch; each one
+ * scrambles through dense "computing" characters in red for a moment before it
+ * settles into the new letterform or drops out to noise, with a spray of
+ * flicker thrown off around the edit. The new word lands fully lit and then
+ * drains at the name's slow rate, so the torch is still what makes it solid.
  */
 
 /**
@@ -90,13 +98,32 @@ const NERD_CHANCE = 0.05;
 const MONO_FAMILY = '"Cascadia Code NF", "JetBrains Mono", ui-monospace, monospace';
 /** The name is cut from the site's display face: uppercase, condensed, solid. */
 const NAME_FAMILY = '"Bebas Neue", ui-sans-serif, system-ui, sans-serif';
-const NAME_TEXT = "ALBERTO";
 /**
+ * What the band spells. It opens on a question and answers it once (`INTRO`,
+ * in order), then settles into a loop: the name, a topic picked at random from
+ * `TOPICS`, the name again, and so on. The name is home and holds longest, so
+ * a visitor who glances up at any moment is most likely to catch "ALBERTO".
+ *
+ * `hold` is seconds the word stays fully up, not counting the decode into it.
+ *
  * A letterform needs a certain number of columns before it reads as a letter
- * rather than as texture. Narrow viewports can't give seven of them that, so
- * they get the monogram the nav already uses instead of an illegible smear.
+ * rather than as texture. Words that don't get that on a narrow viewport fall
+ * back to `short` (the name becomes the monogram the nav already uses), or are
+ * skipped when they have none.
  */
-const NAME_SHORT = "AR";
+type Word = { text: string; short?: string; hold: number };
+const NAME: Word = { text: "ALBERTO", short: "AR", hold: 7 };
+const INTRO: Word[] = [
+  { text: "WHO AM I", short: "WHO?", hold: 2.5 },
+  { ...NAME, hold: 2 },
+  { text: "ROTA", hold: 1 },
+];
+const TOPICS: Word[] = [
+  { text: "SURGICAL AI", hold: 3.2 },
+  { text: "ROBOTICS", hold: 3.2 },
+  { text: "VISION", hold: 3.2 },
+  { text: "AWARENESS", hold: 3.2 },
+];
 const MIN_COLS_PER_LETTER = 14;
 /** A little tracking, matching the display type elsewhere on the site. */
 const NAME_TRACKING = 0.04;
@@ -191,6 +218,21 @@ const NAME_SPARK_PEAK = 0.9; // scaled by coverage, so rim cells stay softer
 /** Coverage a cell needs before it counts as part of a letterform. */
 const NAME_CELL_MIN = 0.5;
 
+/**
+ * The decode between words. Seconds throughout. The front takes `SWEEP` to
+ * cross the changed columns; each cell then scrambles for about `SCRAMBLE`.
+ */
+const SWEEP = 0.5;
+const JITTER = 0.16;
+const SCRAMBLE = 0.28;
+/** Coverage change that counts as a cell switching sides. */
+const DECODE_DELTA = 0.25;
+/** Chance a changed cell throws a flicker into a neighbouring noise cell. */
+const SPRAY = 0.35;
+/** Decoding cells cycle through denser, "computing" characters. */
+const DECODE = [..."01#%&@$*+=<>/\\|⣿⡿⣷⣯⣟⢿░▒╳╬"];
+const DECODE_COLOR = "255, 0, 0";
+
 /** Share of background cells shown in the still frame (touch, reduced motion). */
 const STILL_SCATTER = 0.14;
 
@@ -200,10 +242,19 @@ function pickGlyph(): string {
     : GLYPHS[(Math.random() * GLYPHS.length) | 0];
 }
 
+function pickDecode(): string {
+  return DECODE[(Math.random() * DECODE.length) | 0];
+}
+
 /** One white ramp: grey cells land low on it, name cells high. */
 const LEVEL_COLORS = Array.from({ length: LEVELS }, (_, i) => {
   const a = ((i + 1) / LEVELS) * 0.98;
   return `rgba(255, 255, 255, ${a.toFixed(3)})`;
+});
+/** …and a red one for cells mid-decode. */
+const DECODE_COLORS = Array.from({ length: LEVELS }, (_, i) => {
+  const a = ((i + 1) / LEVELS) * 0.95;
+  return `rgba(${DECODE_COLOR}, ${a.toFixed(3)})`;
 });
 
 /** Smoothstep, clamped to 0..1. */
@@ -226,7 +277,21 @@ type Grid = {
   mask: Float32Array;
   /** Indices of the cells solidly inside the letterforms, to spark from. */
   nameCells: number[];
+  /** The mask being decoded away from; cells the front hasn't reached show it. */
+  prevMask: Float32Array;
+  /**
+   * When each cell starts and stops scrambling, on the render clock. A zero
+   * `decodeEnd` means the cell isn't decoding.
+   */
+  decodeStart: Float64Array;
+  decodeEnd: Float64Array;
 };
+
+/** `word` if it gets enough columns per letter in a box this wide, else its short form. */
+function fitWord(word: Word, boxW: number, cellW: number): string | null {
+  if (boxW / cellW / word.text.length >= MIN_COLS_PER_LETTER) return word.text;
+  return word.short ?? null;
+}
 
 /**
  * Rasterise the name into one alpha value per cell.
@@ -241,7 +306,8 @@ function renderMask(
   rows: number,
   cellW: number,
   cellH: number,
-  box: Box
+  box: Box,
+  text: string
 ): Float32Array {
   const out = new Float32Array(cols * rows);
   if (box.w <= 0 || box.h <= 0) return out;
@@ -254,9 +320,6 @@ function renderMask(
   octx.setTransform(1 / cellW, 0, 0, 1 / cellH, 0, 0);
   octx.textAlign = "center";
   octx.fillStyle = "#fff";
-
-  const text =
-    box.w / cellW / NAME_TEXT.length >= MIN_COLS_PER_LETTER ? NAME_TEXT : NAME_SHORT;
 
   // Fit to the reserved box on whichever axis binds first.
   let size = box.h / CAP_RATIO;
@@ -333,6 +396,18 @@ export function GlyphField({
     let grid: Grid | null = null;
     let width = 0;
     let height = 0;
+    /**
+     * The word currently spelled. Reduced motion never decodes, so it would be
+     * stuck on the opening question: it starts on the answer instead.
+     */
+    let word: Word = reduced ? NAME : INTRO[0];
+    /** How far into `INTRO` we are; past its end, the loop has taken over. */
+    let introAt = reduced ? INTRO.length : 0;
+    /** The last topic shown, so the random pick never repeats it back to back. */
+    let lastTopic: Word | null = null;
+    /** The one render clock, in seconds; decodes are scheduled on it. */
+    const t0 = performance.now();
+    const clock = () => (performance.now() - t0) / 1000;
 
     /** The name's box in field-local px, taken from the `<h1>` when there is one. */
     const nameBox = (): Box => {
@@ -368,24 +443,79 @@ export function GlyphField({
       const rows = Math.max(1, Math.ceil(height / cellH) + 1);
       const chars = new Array<string>(cols * rows);
       for (let i = 0; i < chars.length; i++) chars[i] = pickGlyph();
-      const mask = renderMask(cols, rows, cellW, cellH, nameBox());
-      // Drawn from directly rather than rejection-sampled: the name is a small
-      // fraction of the field, so rolling until a roll lands on it would spend
-      // most of its rolls missing.
-      const nameCells: number[] = [];
-      for (let i = 0; i < mask.length; i++) {
-        if (mask[i] > NAME_CELL_MIN) nameCells.push(i);
-      }
+      const box = nameBox();
+      // A resize lands mid-word: cut whatever is up now, or the name if the
+      // current word doesn't fit any more. Any decode in flight is dropped.
+      const text = fitWord(word, box.w, cellW) ?? fitWord(NAME, box.w, cellW)!;
+      const mask = renderMask(cols, rows, cellW, cellH, box, text);
+      // The word starts fully lit, the way a decode lands one, so the opening
+      // question reads before anyone moves the mouse. It then drains at the
+      // name's slow rate like any other.
+      const lit = new Float32Array(cols * rows);
+      for (let i = 0; i < lit.length; i++) if (mask[i] > 0.02) lit[i] = 1;
       grid = {
         cols,
         rows,
         cellW,
         cellH,
         chars,
-        lit: new Float32Array(cols * rows),
+        lit,
         mask,
-        nameCells,
+        nameCells: nameCellsOf(mask),
+        prevMask: mask,
+        decodeStart: new Float64Array(cols * rows),
+        decodeEnd: new Float64Array(cols * rows),
       };
+    };
+
+    // Drawn from directly rather than rejection-sampled: the name is a small
+    // fraction of the field, so rolling until a roll lands on it would spend
+    // most of its rolls missing.
+    function nameCellsOf(mask: Float32Array): number[] {
+      const out: number[] = [];
+      for (let i = 0; i < mask.length; i++) {
+        if (mask[i] > NAME_CELL_MIN) out.push(i);
+      }
+      return out;
+    }
+
+    /**
+     * Queue the decode into `text`: every cell either word covers takes part,
+     * not just the ones that change sides. The name is only ever half lit, so
+     * leaving shared cells alone would land the new word patchy.
+     */
+    const decodeTo = (text: string, now: number) => {
+      const g = grid;
+      if (!g) return;
+      const next = renderMask(g.cols, g.rows, g.cellW, g.cellH, nameBox(), text);
+      const { cols, mask, lit, chars, decodeStart, decodeEnd } = g;
+      const touched: number[] = [];
+      let c0 = Infinity;
+      let c1 = -Infinity;
+      for (let i = 0; i < next.length; i++) {
+        if (next[i] <= 0.02 && Math.abs(next[i] - mask[i]) < DECODE_DELTA) continue;
+        touched.push(i);
+        const c = i % cols;
+        if (c < c0) c0 = c;
+        if (c > c1) c1 = c;
+      }
+      g.prevMask = mask;
+      g.mask = next;
+      g.nameCells = nameCellsOf(next);
+      const span = Math.max(1, c1 - c0);
+      for (const i of touched) {
+        const start = now + (((i % cols) - c0) / span) * SWEEP + Math.random() * JITTER;
+        decodeStart[i] = start;
+        decodeEnd[i] = start + SCRAMBLE * (0.6 + Math.random() * 0.8);
+        // Spray: wake a few noise cells around the edit so it reads as a burst.
+        if (!staticOnly && Math.random() < SPRAY) {
+          const j = i + ((Math.random() * 7) | 0) - 3 + (((Math.random() * 5) | 0) - 2) * cols;
+          if (j >= 0 && j < lit.length && next[j] <= 0.02 && !decodeEnd[j]) {
+            lit[j] = Math.max(lit[j], 0.5 + Math.random() * 0.5);
+            chars[j] = pickDecode();
+          }
+        }
+      }
     };
 
     resize();
@@ -419,6 +549,7 @@ export function GlyphField({
     }
 
     const buckets: number[][] = Array.from({ length: LEVELS }, () => []);
+    const redBuckets: number[][] = Array.from({ length: LEVELS }, () => []);
 
     /** Wipe a soft circle of light into the grid. */
     const torch = (g: Grid, cx: number, cy: number, radius: number) => {
@@ -459,7 +590,26 @@ export function GlyphField({
     const render = (dt: number, t: number) => {
       const g = grid;
       if (!g) return;
-      const { cols, cellW, cellH, lit, mask, chars } = g;
+      const { cols, cellW, cellH, lit, mask, prevMask, chars, decodeStart, decodeEnd } = g;
+      /** Coverage a cell shows right now: the old word until the front reaches it. */
+      const shown = (i: number) => (decodeEnd[i] && t < decodeStart[i] ? prevMask[i] : mask[i]);
+
+      // Decodes: scramble while in flight, then settle. Arrivals flash fully lit
+      // (or straight to coverage in the still frame, which has no fade to draw it
+      // down); departures drop to noise that drains at the grey rate.
+      let decoding = false;
+      for (let i = 0; i < decodeEnd.length; i++) {
+        if (!decodeEnd[i]) continue;
+        if (t >= decodeEnd[i]) {
+          decodeStart[i] = decodeEnd[i] = 0;
+          chars[i] = pickGlyph();
+          const m = mask[i];
+          lit[i] = m > 0.02 ? (staticOnly ? m : 1) : staticOnly ? 0 : 0.6;
+          continue;
+        }
+        decoding = true;
+        if (t >= decodeStart[i] && Math.random() < 0.6) chars[i] = pickDecode();
+      }
 
       // Fade, and the slow background churn. The two fade rates are blended per
       // cell by mask coverage, so the name drains slowly while everything around
@@ -468,8 +618,8 @@ export function GlyphField({
       const keepName = Math.exp(-FADE_NAME * dt);
       for (let i = 0; i < lit.length; i++) {
         const v = lit[i];
-        if (v === 0) continue;
-        const next = v * (keepGrey + (keepName - keepGrey) * mask[i]);
+        if (v === 0 || (decodeEnd[i] && t >= decodeStart[i])) continue;
+        const next = v * (keepGrey + (keepName - keepGrey) * shown(i));
         lit[i] = next < 0.002 ? 0 : next;
         if (next > 0.05 && Math.random() < CHURN_IDLE) chars[i] = pickGlyph();
       }
@@ -505,6 +655,7 @@ export function GlyphField({
       while (sparkDebt >= 1) {
         sparkDebt -= 1;
         const i = (Math.random() * chars.length) | 0;
+        if (decodeEnd[i]) continue;
         chars[i] = pickGlyph();
         sparks.push({ i, life: 1, peak: SPARK_PEAK, span: SPARK_LIFE });
       }
@@ -519,6 +670,7 @@ export function GlyphField({
         }
         nameSparkDebt -= 1;
         const i = g.nameCells[(Math.random() * g.nameCells.length) | 0];
+        if (decodeEnd[i]) continue;
         chars[i] = pickGlyph();
         sparks.push({
           i,
@@ -535,28 +687,38 @@ export function GlyphField({
 
       ctx.clearRect(0, 0, width, height);
       for (const b of buckets) b.length = 0;
+      for (const b of redBuckets) b.length = 0;
       for (let i = 0; i < lit.length; i++) {
-        const v = lit[i] * (GREY + (WHITE - GREY) * mask[i]);
+        if (decoding && decodeEnd[i] && t >= decodeStart[i]) {
+          redBuckets[(LEVELS * (0.55 + Math.random() * 0.45) - 1e-6) | 0].push(i);
+          continue;
+        }
+        const v = lit[i] * (GREY + (WHITE - GREY) * (decoding ? shown(i) : mask[i]));
         if (v < MIN_ALPHA) continue;
         buckets[Math.min(LEVELS - 1, (v * LEVELS) | 0)].push(i);
       }
       const half = cellH / 2;
-      for (let lv = 0; lv < LEVELS; lv++) {
-        const bucket = buckets[lv];
-        if (!bucket.length) continue;
-        ctx.fillStyle = LEVEL_COLORS[lv];
-        for (const i of bucket) {
-          const c = i % cols;
-          const r = (i - c) / cols;
-          ctx.fillText(chars[i], c * cellW, r * cellH + half);
+      const paint = (b: number[][], colors: string[]) => {
+        for (let lv = 0; lv < LEVELS; lv++) {
+          const bucket = b[lv];
+          if (!bucket.length) continue;
+          ctx.fillStyle = colors[lv];
+          for (const i of bucket) {
+            const c = i % cols;
+            const r = (i - c) / cols;
+            ctx.fillText(chars[i], c * cellW, r * cellH + half);
+          }
         }
-      }
+      };
+      paint(buckets, LEVEL_COLORS);
+      paint(redBuckets, DECODE_COLORS);
 
       // Flickers draw last, in their own pass, rising and falling over their
       // life. One landing on an already-drawn cell just composites a shade
       // brighter, which at a handful of cells out of tens of thousands is not
       // worth a lookup to avoid.
       for (const spark of sparks) {
+        if (decodeEnd[spark.i] && t >= decodeStart[spark.i]) continue;
         const v = spark.peak * Math.sin((1 - spark.life) * Math.PI);
         if (v < MIN_ALPHA) continue;
         ctx.fillStyle = LEVEL_COLORS[Math.min(LEVELS - 1, (v * LEVELS) | 0)];
@@ -591,19 +753,18 @@ export function GlyphField({
           else g.lit[i] = near && Math.random() < STILL_SCATTER ? 0.55 : 0;
         }
       }
-      render(0, 0);
+      render(0, clock());
     };
 
     let raf = 0;
     let last = performance.now();
-    const start = last;
     let onScreen = true;
 
     const frame = (now: number) => {
       raf = 0;
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      render(dt, (now - start) / 1000);
+      render(dt, (now - t0) / 1000);
       if (onScreen && !document.hidden) raf = requestAnimationFrame(frame);
     };
     const play = () => {
@@ -626,6 +787,62 @@ export function GlyphField({
     );
     io.observe(host);
 
+    /**
+     * The still frame has no loop of its own, so a decode there runs one at
+     * zero `dt`: nothing fades, only the cells being rewritten change.
+     */
+    let stillRaf = 0;
+    const stillFrame = () => {
+      stillRaf = 0;
+      render(0, clock());
+      if (grid?.decodeEnd.some(Boolean)) stillRaf = requestAnimationFrame(stillFrame);
+    };
+
+    /** The word after `word`, among those that fit a box `boxW` wide. */
+    const pickNext = (boxW: number, cellW: number): Word => {
+      while (introAt < INTRO.length - 1) {
+        const w = INTRO[++introAt];
+        if (fitWord(w, boxW, cellW)) return w;
+      }
+      introAt = INTRO.length;
+      // After the intro or a topic, back to the name; after the name, a topic.
+      if (word !== NAME) return NAME;
+      let pool = TOPICS.filter((w) => fitWord(w, boxW, cellW));
+      if (pool.length > 1) pool = pool.filter((w) => w !== lastTopic);
+      if (!pool.length) return NAME;
+      return (lastTopic = pool[(Math.random() * pool.length) | 0]);
+    };
+
+    // Step through the words on a timer rather than the render clock, so the
+    // still frame morphs too. Off screen or in a background tab the word just
+    // waits: there is no point decoding into a page nobody is looking at.
+    /** Worst case for a decode to finish, so `hold` counts from a settled word. */
+    const DECODE_TIME = SWEEP + JITTER + SCRAMBLE * 1.4;
+    let wordTimer = 0;
+    const scheduleWord = (decoding: boolean) => {
+      const wait = word.hold + (decoding ? DECODE_TIME : 0);
+      wordTimer = window.setTimeout(nextWord, wait * 1000);
+    };
+    const nextWord = () => {
+      const g = grid;
+      if (!g || !onScreen || document.hidden || reduced) {
+        scheduleWord(false);
+        return;
+      }
+      const box = nameBox();
+      const from = fitWord(word, box.w, g.cellW);
+      word = pickNext(box.w, g.cellW);
+      const text = fitWord(word, box.w, g.cellW) ?? fitWord(NAME, box.w, g.cellW)!;
+      // Same text as what is already up (the name's monogram, on a phone): no decode.
+      const changed = text !== from;
+      if (changed) {
+        decodeTo(text, clock());
+        if (staticOnly && !stillRaf) stillRaf = requestAnimationFrame(stillFrame);
+      }
+      scheduleWord(changed);
+    };
+    scheduleWord(false);
+
     const onVisibility = () => (document.hidden ? pause() : play());
     document.addEventListener("visibilitychange", onVisibility);
 
@@ -643,6 +860,8 @@ export function GlyphField({
 
     return () => {
       pause();
+      window.clearTimeout(wordTimer);
+      if (stillRaf) cancelAnimationFrame(stillRaf);
       io.disconnect();
       ro.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
