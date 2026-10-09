@@ -31,8 +31,9 @@ import * as React from "react";
  * `targetRef`, so the art tracks the layout at any viewport instead of carrying
  * its own duplicate idea of where the title sits.
  *
- * Touch and reduced-motion have no mouse to move, so rather than an empty black
- * band they get one composed still frame with the name already legible.
+ * Touch screens run exactly the same animation, words and decodes; they only
+ * have no torch, since there is no pointer to hover with. Reduced motion gets
+ * one composed still frame with the name already legible, and no decodes.
  *
  * Every few seconds the name *decodes* into something else and back — the
  * surname, then what the name is attached to (robotics, vision, the PhD). A
@@ -106,15 +107,13 @@ const NAME_FAMILY = '"Bebas Neue", ui-sans-serif, system-ui, sans-serif';
  *
  * `hold` is seconds the word stays fully up, not counting the decode into it.
  *
- * A letterform needs a certain number of columns before it reads as a letter
- * rather than as texture. Words that don't get that on a narrow viewport fall
- * back to `short` (the name becomes the monogram the nav already uses), or are
- * skipped when they have none.
+ * Every viewport spells the same words; a long one is scaled down to fit the
+ * band's width, and narrow screens get finer cells to keep it legible.
  */
-type Word = { text: string; short?: string; hold: number };
-const NAME: Word = { text: "ALBERTO", short: "AR", hold: 7 };
+type Word = { text: string; hold: number };
+const NAME: Word = { text: "ALBERTO", hold: 7 };
 const INTRO: Word[] = [
-  { text: "WHO AM I", short: "WHO?", hold: 2.5 },
+  { text: "WHO AM I", hold: 2.5 },
   { ...NAME, hold: 2 },
   { text: "ROTA", hold: 1 },
 ];
@@ -124,7 +123,6 @@ const TOPICS: Word[] = [
   { text: "VISION", hold: 3.2 },
   { text: "AWARENESS", hold: 3.2 },
 ];
-const MIN_COLS_PER_LETTER = 14;
 /** A little tracking, matching the display type elsewhere on the site. */
 const NAME_TRACKING = 0.04;
 /** Bebas Neue's caps sit about this fraction of an em tall. */
@@ -136,6 +134,12 @@ const CAP_RATIO = 0.73;
  * letterforms span, so a shorter band needs proportionally smaller cells.
  */
 const CELL_SIZE = 7;
+/**
+ * Below `NARROW` px of field width the cells shrink, so that the longest word,
+ * squeezed to a phone's width, still spans enough cells to read.
+ */
+const CELL_SIZE_NARROW = 4.5;
+const NARROW = 640;
 const LINE_RATIO = 1.22; // cell height as a multiple of the font size
 
 const LEVELS = 10; // alpha buckets → one fillStyle switch each
@@ -287,11 +291,6 @@ type Grid = {
   decodeEnd: Float64Array;
 };
 
-/** `word` if it gets enough columns per letter in a box this wide, else its short form. */
-function fitWord(word: Word, boxW: number, cellW: number): string | null {
-  if (boxW / cellW / word.text.length >= MIN_COLS_PER_LETTER) return word.text;
-  return word.short ?? null;
-}
 
 /**
  * Rasterise the name into one alpha value per cell.
@@ -388,10 +387,9 @@ export function GlyphField({
     if (!ctx) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // No mouse means no torch, but the rest of the animation runs regardless.
     const noMouse = !window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    // Nothing here is driven by anything but the mouse, so without one there is
-    // nothing to animate: compose a single frame instead.
-    const staticOnly = reduced || noMouse;
+    const staticOnly = reduced;
 
     let grid: Grid | null = null;
     let width = 0;
@@ -433,21 +431,21 @@ export function GlyphField({
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.font = `${CELL_SIZE}px ${MONO_FAMILY}`;
+      const cellSize = width < NARROW ? CELL_SIZE_NARROW : CELL_SIZE;
+      ctx.font = `${cellSize}px ${MONO_FAMILY}`;
       ctx.textBaseline = "middle";
       ctx.textAlign = "left";
 
-      const cellW = Math.max(5, ctx.measureText("M").width);
-      const cellH = CELL_SIZE * LINE_RATIO;
+      const cellW = Math.max(cellSize * 0.7, ctx.measureText("M").width);
+      const cellH = cellSize * LINE_RATIO;
       const cols = Math.max(1, Math.ceil(width / cellW) + 1);
       const rows = Math.max(1, Math.ceil(height / cellH) + 1);
       const chars = new Array<string>(cols * rows);
       for (let i = 0; i < chars.length; i++) chars[i] = pickGlyph();
       const box = nameBox();
-      // A resize lands mid-word: cut whatever is up now, or the name if the
-      // current word doesn't fit any more. Any decode in flight is dropped.
-      const text = fitWord(word, box.w, cellW) ?? fitWord(NAME, box.w, cellW)!;
-      const mask = renderMask(cols, rows, cellW, cellH, box, text);
+      // A resize lands mid-word: cut whatever is up now. Any decode in flight
+      // is dropped.
+      const mask = renderMask(cols, rows, cellW, cellH, box, word.text);
       // The word starts fully lit, the way a decode lands one, so the opening
       // question reads before anyone moves the mouse. It then drains at the
       // name's slow rate like any other.
@@ -508,7 +506,7 @@ export function GlyphField({
         decodeStart[i] = start;
         decodeEnd[i] = start + SCRAMBLE * (0.6 + Math.random() * 0.8);
         // Spray: wake a few noise cells around the edit so it reads as a burst.
-        if (!staticOnly && Math.random() < SPRAY) {
+        if (Math.random() < SPRAY) {
           const j = i + ((Math.random() * 7) | 0) - 3 + (((Math.random() * 5) | 0) - 2) * cols;
           if (j >= 0 && j < lit.length && next[j] <= 0.02 && !decodeEnd[j]) {
             lit[j] = Math.max(lit[j], 0.5 + Math.random() * 0.5);
@@ -543,7 +541,7 @@ export function GlyphField({
       queued = { x, y };
     };
 
-    if (!staticOnly) {
+    if (!staticOnly && !noMouse) {
       window.addEventListener("pointermove", onPointerMove, { passive: true });
       window.addEventListener("pointerdown", onPointerMove, { passive: true });
     }
@@ -604,7 +602,7 @@ export function GlyphField({
           decodeStart[i] = decodeEnd[i] = 0;
           chars[i] = pickGlyph();
           const m = mask[i];
-          lit[i] = m > 0.02 ? (staticOnly ? m : 1) : staticOnly ? 0 : 0.6;
+          lit[i] = m > 0.02 ? 1 : 0.6;
           continue;
         }
         decoding = true;
@@ -787,34 +785,17 @@ export function GlyphField({
     );
     io.observe(host);
 
-    /**
-     * The still frame has no loop of its own, so a decode there runs one at
-     * zero `dt`: nothing fades, only the cells being rewritten change.
-     */
-    let stillRaf = 0;
-    const stillFrame = () => {
-      stillRaf = 0;
-      render(0, clock());
-      if (grid?.decodeEnd.some(Boolean)) stillRaf = requestAnimationFrame(stillFrame);
-    };
-
-    /** The word after `word`, among those that fit a box `boxW` wide. */
-    const pickNext = (boxW: number, cellW: number): Word => {
-      while (introAt < INTRO.length - 1) {
-        const w = INTRO[++introAt];
-        if (fitWord(w, boxW, cellW)) return w;
-      }
+    /** The word after `word`. */
+    const pickNext = (): Word => {
+      if (introAt < INTRO.length - 1) return INTRO[++introAt];
       introAt = INTRO.length;
       // After the intro or a topic, back to the name; after the name, a topic.
       if (word !== NAME) return NAME;
-      let pool = TOPICS.filter((w) => fitWord(w, boxW, cellW));
-      if (pool.length > 1) pool = pool.filter((w) => w !== lastTopic);
-      if (!pool.length) return NAME;
+      const pool = TOPICS.length > 1 ? TOPICS.filter((w) => w !== lastTopic) : TOPICS;
       return (lastTopic = pool[(Math.random() * pool.length) | 0]);
     };
 
-    // Step through the words on a timer rather than the render clock, so the
-    // still frame morphs too. Off screen or in a background tab the word just
+    // Step through the words on a timer rather than the render clock. Off screen or in a background tab the word just
     // waits: there is no point decoding into a page nobody is looking at.
     /** Worst case for a decode to finish, so `hold` counts from a settled word. */
     const DECODE_TIME = SWEEP + JITTER + SCRAMBLE * 1.4;
@@ -829,17 +810,9 @@ export function GlyphField({
         scheduleWord(false);
         return;
       }
-      const box = nameBox();
-      const from = fitWord(word, box.w, g.cellW);
-      word = pickNext(box.w, g.cellW);
-      const text = fitWord(word, box.w, g.cellW) ?? fitWord(NAME, box.w, g.cellW)!;
-      // Same text as what is already up (the name's monogram, on a phone): no decode.
-      const changed = text !== from;
-      if (changed) {
-        decodeTo(text, clock());
-        if (staticOnly && !stillRaf) stillRaf = requestAnimationFrame(stillFrame);
-      }
-      scheduleWord(changed);
+      word = pickNext();
+      decodeTo(word.text, clock());
+      scheduleWord(true);
     };
     scheduleWord(false);
 
@@ -861,7 +834,6 @@ export function GlyphField({
     return () => {
       pause();
       window.clearTimeout(wordTimer);
-      if (stillRaf) cancelAnimationFrame(stillRaf);
       io.disconnect();
       ro.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
