@@ -12,9 +12,53 @@
     }
   ],
   "announcements": [
+     {
+      "enabled": true,
+      "accent": "#A62275",
+      "label": "OVIT ⋅ Nature Women health",
+      "image": "/images/announcements/nature.png",
+      "imageAlt": "Nature WH",
+      "imageAspect": "auto",
+      "title": "OVIT accepted at Nature Women Health",
+      "body": "Francesca Fati's manuscript on <b> predicting ovarian cancer resectability at diagnosis </b> got accepted on <b>Nature</b>! OVIT is a decision support system predicting residual tumor after primary debulking surgery from clinical and imaging data available at diagnosis",
+      "actions": [
+        {
+          "label": "Get in touch",
+          "href": "mailto:alberto_rota@outlook.com?subject=CVPR%202026%20-%20meet%20at%20Denver",
+          "icon": "Mail"
+        },
+        {
+          "label": "Read the paper",
+          "href": "https://doi.org/10.48550/arXiv.2512.09583",
+          "icon": "FileText"
+        }
+      ]
+    },
     {
       "enabled": true,
-      "accent": "#d08656",
+      "accent": "#D8361D",
+      "label": "OpenShot-Y for MacOS",
+      "imageAlt": "Openshot",
+      "image": "/images/announcements/openshot.png",
+      "imageAspect": "1x1",
+      "title": "Check out Openshot-y for better screenshots on MacOS",
+      "body": "Francesca Fati's manuscript on <b> predicting ovarian cancer resectability at diagnosis </b> got accepted on <b>Nature</b>! OVIT is a decision support system predicting residual tumor after primary debulking surgery from clinical and imaging data available at diagnosis",
+      "actions": [
+        {
+          "label": "Read the paper",
+          "href": "https://doi.org/10.48550/arXiv.2512.09583",
+          "icon": "FileText"
+        },
+        {
+          "label": "UnderXAI webpage",
+          "href": "https://doi.org/10.48550/arXiv.2512.09583",
+          "icon": "FileText"
+        }
+      ]
+    },
+    {
+      "enabled": true,
+      "accent": "#D9783A",
       "label": "CVPR 2026 · Denver",
       "image": "/images/announcements/cvpr.webp",
       "imageAlt": "CVPR 2026",
@@ -37,9 +81,10 @@
     },
     {
       "enabled": true,
-      "accent": "#7ebb9a",
+      "accent": "#82B92F",
       "label": "Award · Hamlyn Symposium",
       "imageAlt": "Best Poster: Coverage-Optimal Robotic Colonoscopy",
+      "image": "/images/announcements/elcap.jpg",
       "title": "Best Poster at Hamlyn Symposium",
       "body": "Our poster <b>Coverage-Optimal Robotic Colonoscopy via Patient-Specific Digital-Twin World Models</b> received the <b>Best Poster Award</b> at the Hamlyn workshop on Physics- and AI-Driven Digital Twins for Patient-Specific Robotic Diagnosis, Interventions and Therapies. The prize, an <b>NVIDIA DGX Spark</b>, was generously sponsored by NVIDIA.",
       "dates": "Hamlyn Symposium 2026",

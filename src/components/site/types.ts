@@ -197,6 +197,12 @@ export type Announcement = {
   /** Optional image shown to the left of the text (e.g. `/images/figures/announcement/cvpr.png`). */
   image?: string;
   imageAlt?: string;
+  /**
+   * Optional crop for the image, as "W/H", "WxH" or "W:H" (e.g. "1x1", "16/9"),
+   * or "auto" for the image's own ratio (no crop). The frame height stays
+   * fixed; only the width changes. When omitted, the image fills its column.
+   */
+  imageAspect?: string;
 };
 
 export type HeroConfig = {

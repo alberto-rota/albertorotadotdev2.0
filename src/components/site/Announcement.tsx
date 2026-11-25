@@ -87,17 +87,63 @@ function renderRichText(input: string): React.ReactNode {
   return <>{stack[0].children}</>;
 }
 
-function AnnouncementImage({ src, alt }: { src: string; alt: string }) {
+function AnnouncementImage({
+  src,
+  alt,
+  aspect,
+}: {
+  src: string;
+  alt: string;
+  /**
+   * CSS aspect-ratio (e.g. "1 / 1"). The frame height never changes; the
+   * aspect only sets the image width. Omitted: the image fills its column.
+   */
+  aspect?: string;
+}) {
+  // "auto": use the file's own ratio, known only once it has loaded. Until
+  // then hold a 4/3 frame so the image column never collapses to zero width.
+  const [natural, setNatural] = React.useState<string | null>(null);
+  const resolved = aspect === "auto" ? natural ?? "4 / 3" : aspect;
+
+  const image = (
+    <NextImage
+      src={src}
+      alt={alt}
+      fill
+      className="object-cover"
+      sizes="(max-width: 768px) 100vw, 22rem"
+      unoptimized={shouldBypassImageOptimization(src)}
+      onLoad={
+        aspect === "auto"
+          ? (e) => {
+              const img = e.currentTarget;
+              if (img.naturalWidth && img.naturalHeight) {
+                setNatural(`${img.naturalWidth} / ${img.naturalHeight}`);
+              }
+            }
+          : undefined
+      }
+    />
+  );
+
+  if (!resolved) {
+    return (
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-white/10 md:aspect-auto md:h-full md:min-h-[12rem]">
+        {image}
+      </div>
+    );
+  }
+
+  // Same height as the default frame (4/3 of the width on mobile, the card's
+  // inner height on desktop); the width follows the requested aspect.
   return (
-    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-white/10 md:aspect-auto md:h-full md:min-h-[12rem]">
-      <NextImage
-        src={src}
-        alt={alt}
-        fill
-        className="object-cover"
-        sizes="(max-width: 768px) 100vw, 22rem"
-        unoptimized={shouldBypassImageOptimization(src)}
-      />
+    <div className="flex aspect-[4/3] w-full justify-center md:aspect-auto md:h-[17rem] md:w-auto md:self-center">
+      <div
+        className="relative h-full max-w-full overflow-hidden rounded-2xl border border-white/10"
+        style={{ aspectRatio: resolved }}
+      >
+        {image}
+      </div>
     </div>
   );
 }
@@ -162,11 +208,14 @@ function AnnouncementCard({
       <div
         className={cn(
           "relative grid gap-5 p-5 sm:p-6",
-          hasImage && "md:grid-cols-[minmax(10rem,1fr)_minmax(0,1.6fr)] md:items-stretch",
+          hasImage &&
+            (data.imageAspect
+              ? "md:grid-cols-[auto_minmax(0,1fr)] md:items-stretch"
+              : "md:grid-cols-[minmax(10rem,1fr)_minmax(0,1.6fr)] md:items-stretch"),
           !hasImage && hasActions && "md:grid-cols-[1.5fr_1fr] md:items-center"
         )}
       >
-        {imageSrc ? <AnnouncementImage src={imageSrc} alt={imageAlt} /> : null}
+        {imageSrc ? <AnnouncementImage src={imageSrc} alt={imageAlt} aspect={data.imageAspect} /> : null}
 
         <div>
           {data.label ? (

@@ -84,7 +84,20 @@ function parseAnnouncementItem(raw: unknown): Announcement | undefined {
     actions: parseActions(r.actions),
     image: typeof r.image === "string" ? r.image : undefined,
     imageAlt: typeof r.imageAlt === "string" ? r.imageAlt : undefined,
+    imageAspect: parseAspect(r.imageAspect),
   };
+}
+
+/**
+ * Normalise "1x1" / "1:1" / "1/1" into a CSS aspect-ratio ("1 / 1").
+ * "auto" is kept as-is: the image's own ratio, read once it loads.
+ */
+function parseAspect(raw: unknown): string | undefined {
+  if (typeof raw !== "string") return undefined;
+  if (raw.trim().toLowerCase() === "auto") return "auto";
+  const m = /^\s*(\d+(?:\.\d+)?)\s*[x:/×]\s*(\d+(?:\.\d+)?)\s*$/i.exec(raw);
+  if (!m || !Number(m[1]) || !Number(m[2])) return undefined;
+  return `${m[1]} / ${m[2]}`;
 }
 
 function parseAnnouncements(raw: {
