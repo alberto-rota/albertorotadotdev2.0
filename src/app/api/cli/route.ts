@@ -8,8 +8,9 @@ import productsData from "@/data/products.json";
  * no "designs" section.
  * ------------------------------------------------------------------ */
 
-type Action = { label?: string; href?: string; icon?: string };
+type Action = { label?: string; href?: string; icon?: string; copy?: string };
 type Product = {
+  slug?: string;
   title?: string;
   subtitle?: string;
   description?: string;
@@ -19,10 +20,13 @@ type Product = {
   tech?: string[];
   meta?: Record<string, string>;
   actions?: Action[];
+  pinned?: boolean;
+  details?: { citation?: string };
 };
 type SectionCfg = { title?: string; subtitle?: string };
 type SiteData = {
   hero?: { tagline?: string };
+  contacts?: Array<{ id?: string; label?: string; href?: string; pinned?: boolean }>;
   announcement?: {
     enabled?: boolean;
     accent?: string;
@@ -328,15 +332,41 @@ function wrapAnsi(text: string, width: number): string[] {
 
 /* ------------------------- links & symbols ------------------------ */
 
+const SITE = "https://albertorota.dev";
+/** Sections that have their own page (mirrors INDEXABLE_SECTIONS in lib/site). */
+const PAGE_SECTIONS = ["research", "terminal-tools", "builds", "designs"];
+
+/** Terminals can only open absolute URLs — resolve site-relative paths. */
+function absUrl(url: string): string {
+  if (/^[a-z][a-z0-9+.-]*:/i.test(url)) return url;
+  return SITE + (url.startsWith("/") ? url : "/" + url);
+}
+
 /** OSC 8 hyperlink — Ctrl/Cmd-click opens the URL in supporting terminals. */
 function hyperlink(url: string, text: string): string {
-  return `\x1b]8;;${url}\x1b\\${text}\x1b]8;;\x1b\\`;
+  return `\x1b]8;;${absUrl(url)}\x1b\\${text}\x1b]8;;\x1b\\`;
+}
+
+/** Detail page of a product, as the site's "Details" button / card click. */
+function productPath(p: Product): string | null {
+  if (!p.slug || !p.tag || !PAGE_SECTIONS.includes(p.tag)) return null;
+  return `/${p.tag}/${p.slug}`;
+}
+
+/** BibTeX file behind the site's "Cite" button. */
+function citationPath(p: Product): string | null {
+  const c = p.details?.citation;
+  if (!c) return null;
+  return c.startsWith("/") ? c : `/bibtex/${c.replace(/\.(txt|bib)$/i, "")}.bib`;
 }
 
 /** Pick an emoji for an action by its icon name or label. */
 function iconSymbol(icon?: string, label?: string): string {
   const k = (icon ?? "") + " " + (label ?? "");
   const s = k.toLowerCase();
+  if (/detail/.test(s)) return "🔎";
+  if (/cite|bib/.test(s)) return "📑";
+  if (/linkedin/.test(s)) return "💼";
   if (/github/.test(s)) return "🐙";
   if (/file|paper|news|pdf|\bcv\b/.test(s)) return "📄";
   if (/download|pip|install|pypi|market/.test(s)) return "⬇\uFE0F";
@@ -355,11 +385,11 @@ function linkChip(a: Action, accent: string): string {
 
 /* --------------------------- data access -------------------------- */
 
-const SECTION_ORDER = ["research", "terminal-tools", "vsc-extensions"];
+const SECTION_ORDER = ["research", "terminal-tools", "builds"];
 const SECTION_ACCENT: Record<string, string> = {
   research: PALETTE.teal,
   "terminal-tools": PALETTE.orange,
-  "vsc-extensions": PALETTE.sky,
+  "builds": PALETTE.sky,
 };
 
 function getData(): SiteData {
@@ -399,25 +429,42 @@ function buildHero(data: SiteData): string[] {
   ];
   out.push(center(meta.join(color(PALETTE.grey, "    "))));
 
-  // CTA pills
+  // CTA pills — same buttons as the on-site hero, each one a link.
   out.push("");
-  const webPill = hyperlink(
-    "https://albertorota.dev",
-    `${fg(PALETTE.white)}${BOLD}[ 🌐 albertorota.dev ]${RESET}`
-  );
-  const cvPill = hyperlink(
-    "https://albertorota.dev/pdfs/CV_Alberto_Rota.pdf",
-    `${fg(PALETTE.grey)}[ ⬇ Download my CV ]${RESET}`
-  );
-  out.push(center(webPill + "   " + cvPill));
+  const pills = [
+    hyperlink("/#research", `${fg(PALETTE.white)}${BOLD}[ ↓ View my work ]${RESET}`),
+    hyperlink("/pdfs/CV_Alberto_Rota.pdf", `${fg(PALETTE.grey)}[ ⬇ Download my CV ]${RESET}`),
+    hyperlink(SITE, `${fg(PALETTE.grey)}[ 🌐 Open in browser ]${RESET}`),
+  ];
+  for (const ln of wrapChips(pills, W - 4, "   ")) out.push(center(ln));
+
+  // Pinned contacts / profiles (the round icon buttons on the site).
+  const circles = [
+    ...(data.contacts ?? [])
+      .filter((c) => c.pinned && c.href)
+      .map((c) => ({ label: c.label ?? c.id ?? "Link", href: c.href! })),
+    ...(data.products ?? [])
+      .filter((p) => p.pinned && p.link && p.link !== "#")
+      .map((p) => ({ label: (p.title ?? "Link").trim(), href: p.link! })),
+  ];
+  if (circles.length) {
+    const chips = circles.map((c) =>
+      hyperlink(c.href, `${fg(PALETTE.sand)}${UNDERLINE}${c.label}${RESET}`)
+    );
+    for (const ln of wrapChips(chips, W - 4, color(PALETTE.grey, "  ·  ")))
+      out.push(center(ln));
+  }
 
   // curl pill (matches the on-site hero / footer)
   out.push("");
   out.push(
     center(
-      `${fg(PALETTE.green)}${BOLD}${"$"}${RESET} ${fg(PALETTE.amber)}curl${RESET} ${fg(
-        PALETTE.sky
-      )}-L${RESET} ${fg(PALETTE.white)}albertorota.dev${RESET}`
+      hyperlink(
+        SITE,
+        `${fg(PALETTE.green)}${BOLD}${"$"}${RESET} ${fg(PALETTE.amber)}curl${RESET} ${fg(
+          PALETTE.sky
+        )}-L${RESET} ${fg(PALETTE.white)}albertorota.dev${RESET}`
+      )
     )
   );
 
@@ -433,67 +480,67 @@ function getAnnouncements(data: SiteData): NonNullable<SiteData["announcement"]>
   return data.announcement ? [data.announcement] : [];
 }
 
-function buildAnnouncementBlock(a: NonNullable<SiteData["announcement"]>): string[] {
-  if (a.enabled === false || (!a.title && !a.body)) return [];
+/** Strip HTML-ish markup and collapse whitespace. */
+function plainText(s: string): string {
+  return s.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+}
 
-  const accent = a.accent || PALETTE.green;
-  const side = fg(accent) + "│" + RESET;
+/**
+ * Compact digest of all announcements in one box: two lines per item
+ * (title + label, then its links) instead of the full on-site cards, which
+ * would otherwise take up most of the terminal.
+ */
+function buildAnnouncements(data: SiteData): string[] {
+  const items = getAnnouncements(data).filter(
+    (a) => a.enabled !== false && (a.title || a.body)
+  );
+  if (!items.length) return [];
+
+  const frame = PALETTE.grey;
+  const side = fg(frame) + "│" + RESET;
   const inner = W - 4; // "│ " + content + " │"
-  const out: string[] = [];
-  out.push("");
+  const out: string[] = [""];
 
-  // Top border with inline label.
-  const label = (a.label ?? "Announcement").trim();
-  const head = `${fg(accent)}┌─ ${fg(PALETTE.white)}${BOLD}● ${label}${RESET}${fg(accent)} `;
-  const fill = Math.max(0, W - displayWidth(head) - 1); // -1 for the ┐ corner
-  out.push(padLine(head + "─".repeat(fill) + "┐" + RESET));
-
-  // Each content line is padded to the inner width so the right border aligns.
+  const head = `${fg(frame)}┌─ ${fg(PALETTE.white)}${BOLD}● Latest${RESET}${fg(frame)} `;
+  out.push(padLine(head + "─".repeat(Math.max(0, W - displayWidth(head) - 1)) + "┐" + RESET));
   const row = (s = "") => out.push(padLine(`${side} ${padTo(s, inner)} ${side}`));
 
-  if (a.title) row(`${BOLD}${fg(PALETTE.white)}${a.title.trim().toUpperCase()}${RESET}`);
-  if (a.body) {
-    row();
-    const body = a.body
-      .replace(/<b>([\s\S]*?)<\/b>/gi, `${BOLD}${fg(PALETTE.white)}$1${RESET}${fg(PALETTE.sand)}`)
-      .replace(/<i>([\s\S]*?)<\/i>/gi, `${ITALIC}$1${RESET}${fg(PALETTE.sand)}`)
-      .replace(/<[^>]+>/g, "");
-    for (const ln of wrapAnsi(color(PALETTE.sand, body), inner)) row(ln);
-  }
-  if (a.dates || a.location) {
-    row();
-    if (a.dates)
-      for (const ln of wrapPlain(`📅 ${a.dates}`, inner)) row(color(PALETTE.grey, ln));
-    if (a.location)
-      for (const ln of wrapPlain(`📍 ${a.location}`, inner)) row(color(PALETTE.grey, ln));
-  }
-  const actions = (a.actions ?? []).filter((x) => x.href);
-  if (actions.length) {
-    row();
-    const chips = actions.map((x) => linkChip(x, accent));
-    for (const ln of wrapChips(chips, inner, "    ")) row(ln);
-  }
+  items.forEach((a) => {
+    const accent = a.accent || PALETTE.green;
+    const actions = (a.actions ?? []).filter((x) => x.href);
 
-  out.push(padLine(fg(accent) + "└" + "─".repeat(W - 2) + "┘" + RESET));
+    // Line 1: ● Title (linked to the first action) ……… label
+    const label = plainText(a.label ?? "");
+    const labelW = label ? Math.min(displayWidth(label), Math.floor(inner * 0.4)) : 0;
+    const titleMax = inner - 2 - (labelW ? labelW + 2 : 0);
+    const title = truncatePlain(plainText(a.title || a.body || ""), Math.max(8, titleMax));
+    let titleStr = `${BOLD}${fg(PALETTE.white)}${title}${RESET}`;
+    if (actions[0]?.href) titleStr = hyperlink(actions[0].href, titleStr);
+    const left = `${fg(accent)}●${RESET} ${titleStr}`;
+    row(label ? spreadW(left, color(PALETTE.grey, truncatePlain(label, labelW)), inner) : left);
+
+    // Line 2: every button as a link
+    if (actions.length) {
+      const chips = actions.map((x) => linkChip(x, accent));
+      for (const ln of wrapChips(chips, inner - 2, "   ")) row("  " + ln);
+    }
+  });
+
+  out.push(padLine(fg(frame) + "└" + "─".repeat(W - 2) + "┘" + RESET));
   return out;
 }
 
-function buildAnnouncements(data: SiteData): string[] {
-  return getAnnouncements(data).flatMap((a, i) => {
-    const block = buildAnnouncementBlock(a);
-    if (!block.length) return [];
-    return i > 0 ? ["", ...block] : block;
-  });
-}
-
-function buildSectionHeader(title: string, subtitle: string | undefined, accent: string): string[] {
+function buildSectionHeader(
+  title: string,
+  subtitle: string | undefined,
+  accent: string,
+  href?: string
+): string[] {
   const out: string[] = [];
   out.push("");
-  out.push(
-    padLine(
-      `${fg(accent)}▍ ${BOLD}${fg(PALETTE.white)}${title.toUpperCase().split("").join(" ")}${RESET}`
-    )
-  );
+  let t = `${BOLD}${fg(PALETTE.white)}${title.toUpperCase().split("").join(" ")}${RESET}`;
+  if (href) t = hyperlink(href, t) + color(PALETTE.grey, "  ↗");
+  out.push(padLine(`${fg(accent)}▍ ${RESET}${t}`));
   if (subtitle)
     for (const ln of wrapPlain(subtitle, W - 2)) out.push(padLine(color(PALETTE.grey, "  " + ln)));
   out.push(gradientRule([accent, PALETTE.sand, accent]));
@@ -508,7 +555,9 @@ function buildProductCard(p: Product, accent: string, cw: number): string[] {
   const maxTitleW = cw - 3 - (venue ? venueW + 1 : 0); // "▌ " + title (+ space + venue)
   const title = truncatePlain((p.title ?? "Untitled").trim(), Math.max(8, maxTitleW));
 
-  const titleStr = `${fg(accent)}▌${RESET} ${BOLD}${fg(PALETTE.white)}${title}${RESET}`;
+  const detail = productPath(p);
+  const titleText = `${BOLD}${fg(PALETTE.white)}${title}${RESET}`;
+  const titleStr = `${fg(accent)}▌${RESET} ${detail ? hyperlink(detail, titleText) : titleText}`;
   out.push(venue ? spreadW(titleStr, `${fg(accent)}${venue}${RESET}`, cw) : titleStr);
 
   const desc = (p.subtitle || p.description || "").trim();
@@ -523,9 +572,19 @@ function buildProductCard(p: Product, accent: string, cw: number): string[] {
   let actions = (p.actions ?? []).filter((a) => a.href && a.href !== "#");
   if (!actions.length && p.link && p.link !== "#")
     actions = [{ label: "Project", href: p.link, icon: "globe" }];
+  const cite = citationPath(p);
+  if (cite) actions = [...actions, { label: "Cite", href: cite, icon: "cite" }];
+  if (detail) actions = [...actions, { label: "Details", href: detail, icon: "details" }];
   if (actions.length) {
     const chips = actions.map((a) => linkChip(a, PALETTE.sky));
     for (const ln of wrapChips(chips, cw - 2, "   ")) out.push("  " + ln);
+  }
+
+  // "Copy" buttons can't copy from a terminal — show the command instead.
+  for (const a of p.actions ?? []) {
+    if (!a.copy || a.href) continue;
+    const cmd = truncatePlain(a.copy.trim(), Math.max(8, cw - 4));
+    out.push(`  ${fg(PALETTE.green)}${BOLD}$${RESET} ${fg(PALETTE.amber)}${cmd}${RESET}`);
   }
   return out;
 }
@@ -559,7 +618,8 @@ function buildContact(data: SiteData): string[] {
     ...buildSectionHeader(
       "Get in touch",
       "Open to research collaborations, talks and consulting around medical AI, surgical robotics and developer tooling.",
-      PALETTE.red
+      PALETTE.red,
+      "/#contact"
     )
   );
 
@@ -592,8 +652,17 @@ function buildContact(data: SiteData): string[] {
         ? hyperlink(p.link, `${fg(PALETTE.sand)}${UNDERLINE}${t}${RESET}`)
         : color(PALETTE.sand, t);
     });
-    out.push(padLine("  " + chips.join(color(PALETTE.grey, "   ·   "))));
+    for (const ln of wrapChips(chips, W - 4, color(PALETTE.grey, "   ·   ")))
+      out.push(padLine("  " + ln));
   }
+
+  // The two CTA buttons under the contact card.
+  out.push("");
+  const ctas = [
+    hyperlink("mailto:alberto_rota@outlook.com", `${fg(PALETTE.white)}${BOLD}[ ✉ Send me an email ]${RESET}`),
+    hyperlink("/pdfs/CV_Alberto_Rota.pdf", `${fg(PALETTE.grey)}[ ⬇ Download CV ]${RESET}`),
+  ];
+  for (const ln of wrapChips(ctas, W - 4, "   ")) out.push(padLine("  " + ln));
   return out;
 }
 
@@ -610,11 +679,22 @@ function buildFooter(): string[] {
       )
     )
   );
+  const nav = [
+    ["Research", "/#research"],
+    ["Tools", "/#terminal-tools"],
+    ["Builds", "/#builds"],
+    ["Contact", "/#contact"],
+    ["Sitemap", "/sitemap.xml"],
+  ].map(([l, h]) => hyperlink(h, `${fg(PALETTE.grey)}${UNDERLINE}${l}${RESET}`));
+  out.push(padLine(nav.join(color(PALETTE.grey, "  ·  "))));
   out.push(
     padLine(
-      `${fg(PALETTE.green)}${BOLD}${"$"}${RESET} ${fg(PALETTE.amber)}curl${RESET} ${fg(
-        PALETTE.grey
-      )}-L albertorota.dev${RESET}`
+      hyperlink(
+        SITE,
+        `${fg(PALETTE.green)}${BOLD}${"$"}${RESET} ${fg(PALETTE.amber)}curl${RESET} ${fg(
+          PALETTE.grey
+        )}-L albertorota.dev${RESET}`
+      )
     )
   );
   out.push("");
@@ -644,7 +724,8 @@ export async function GET(request: Request) {
     if (!items.length) continue;
     const cfg = data.sections?.[tag] ?? {};
     const accent = SECTION_ACCENT[tag] ?? PALETTE.white;
-    lines.push(...buildSectionHeader(cfg.title ?? tag, cfg.subtitle, accent));
+    const page = PAGE_SECTIONS.includes(tag) ? `/${tag}` : `/#${tag}`;
+    lines.push(...buildSectionHeader(cfg.title ?? tag, cfg.subtitle, accent, page));
     lines.push(...buildSectionBody(items, accent));
   }
 

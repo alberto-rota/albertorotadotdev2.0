@@ -12,7 +12,7 @@ export const SITE_DESCRIPTION =
 export const INDEXABLE_SECTIONS: SectionId[] = [
   "research",
   "terminal-tools",
-  "vsc-extensions",
+  "builds",
   "designs",
 ];
 

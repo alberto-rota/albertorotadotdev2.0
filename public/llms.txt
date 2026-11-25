@@ -9,7 +9,7 @@ Scholar: https://scholar.google.com/citations?user=VyC48nkAAAAJ
 
 ## Pages
 
-- [Home](https://www.albertorota.dev): research, terminal tools, VS Code extensions, and design work.
+- [Home](https://www.albertorota.dev): research, terminal tools, things I build (apps and VS Code extensions), and design work.
 - [Sitemap](https://www.albertorota.dev/sitemap.xml)
 
 ## Research
@@ -30,7 +30,8 @@ Scholar: https://scholar.google.com/citations?user=VyC48nkAAAAJ
 - [sekrt](https://www.albertorota.dev/terminal-tools/sekrt)
 - [dasshboard-tui](https://www.albertorota.dev/terminal-tools/dasshboard-tui)
 - [dotfiles](https://www.albertorota.dev/terminal-tools/dotfiles)
-- [DaSSHboard](https://www.albertorota.dev/vsc-extensions/dasshboard)
-- [MedView](https://www.albertorota.dev/vsc-extensions/medview)
+- [OpenShot-Y](https://www.albertorota.dev/builds/openshot)
+- [DaSSHboard](https://www.albertorota.dev/builds/dasshboard)
+- [MedView](https://www.albertorota.dev/builds/medview)
 
 Prefer canonical HTTPS URLs on www.albertorota.dev. Cite papers from each research page.

@@ -47,6 +47,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/vsc-extensions/:slug",
+        destination: "/builds/:slug",
+        permanent: true,
+      },
+      {
         source: "/research/hamlynworkshop",
         destination: "/research/robotic-colonoscopy",
         permanent: true,

@@ -1,7 +1,7 @@
 export type SectionId =
   | "research"
   | "terminal-tools"
-  | "vsc-extensions"
+  | "builds"
   | "resources"
   | "designs";
 

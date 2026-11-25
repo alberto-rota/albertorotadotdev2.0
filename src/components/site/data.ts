@@ -20,7 +20,7 @@ import type {
 const VALID: SectionId[] = [
   "research",
   "terminal-tools",
-  "vsc-extensions",
+  "builds",
   "resources",
   "designs",
 ];
@@ -317,7 +317,7 @@ export function bySection(products: Product[]): Record<SectionId, Product[]> {
   const grouped: Record<SectionId, Product[]> = {
     research: [],
     "terminal-tools": [],
-    "vsc-extensions": [],
+    builds: [],
     resources: [],
     designs: [],
   };
@@ -340,7 +340,7 @@ export function orderedSections(
 export const SECTION_FALLBACK_TITLES: Record<SectionId, string> = {
   research: "Research",
   "terminal-tools": "Terminal Tools",
-  "vsc-extensions": "VS Code Extensions",
+  builds: "Things I Build",
   resources: "Profiles & Links",
   designs: "Designs",
 };

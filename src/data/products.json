@@ -19,18 +19,19 @@
       "image": "/images/announcements/nature.png",
       "imageAlt": "Nature WH",
       "imageAspect": "auto",
+      "dates": "November 25th 2026",
       "title": "OVIT accepted at Nature Women Health",
-      "body": "Francesca Fati's manuscript on <b> predicting ovarian cancer resectability at diagnosis </b> got accepted on <b>Nature</b>! OVIT is a decision support system predicting residual tumor after primary debulking surgery from clinical and imaging data available at diagnosis",
+      "body": "Francesca Fati's manuscript on <b> predicting ovarian cancer resectability</b> got accepted on <b>Nature</b>! OVIT is a decision support system predicting residual tumor after primary debulking surgery from clinical and imaging data available at diagnosis",
       "actions": [
         {
-          "label": "Get in touch",
-          "href": "mailto:alberto_rota@outlook.com?subject=CVPR%202026%20-%20meet%20at%20Denver",
-          "icon": "Mail"
+          "label": "Read the paper",
+          "href": "https://doi.org/10.21203/rs.3.rs-7434368/v1",
+          "icon": "FileText"
         },
         {
-          "label": "Read the paper",
-          "href": "https://doi.org/10.48550/arXiv.2512.09583",
-          "icon": "FileText"
+          "label": "Get the code",
+          "href": "https://github.com/FrancescaFati/UnderXAI-OVIT",
+          "icon": "Github"
         }
       ]
     },
@@ -38,21 +39,22 @@
       "enabled": true,
       "accent": "#D8361D",
       "label": "OpenShot-Y for MacOS",
+      "dates": "November 14th 2026",
       "imageAlt": "Openshot",
       "image": "/images/announcements/openshot.png",
       "imageAspect": "1x1",
       "title": "Check out Openshot-y for better screenshots on MacOS",
-      "body": "Francesca Fati's manuscript on <b> predicting ovarian cancer resectability at diagnosis </b> got accepted on <b>Nature</b>! OVIT is a decision support system predicting residual tumor after primary debulking surgery from clinical and imaging data available at diagnosis",
+      "body": "Screenshots on a Mac are tricky, but a good screenshot tool on your Mac shouldn't cost 35$/year. OpenShot-Y is a free, open source alternative to the most popular screenshot tool for Mac, with its same features and more. ",
       "actions": [
         {
-          "label": "Read the paper",
-          "href": "https://doi.org/10.48550/arXiv.2512.09583",
-          "icon": "FileText"
+          "label": "Install OpenShot",
+          "href": "https://www.albertorota.dev/openshot/downloads/OpenShot-Y-1.0.0.dmg",
+          "icon": "Download"
         },
         {
-          "label": "UnderXAI webpage",
-          "href": "https://doi.org/10.48550/arXiv.2512.09583",
-          "icon": "FileText"
+          "label": "Webpage and docs",
+          "href": "https://albertorota.dev/openshot",
+          "icon": "Globe"
         }
       ]
     },
@@ -86,8 +88,8 @@
       "imageAlt": "Best Poster: Coverage-Optimal Robotic Colonoscopy",
       "image": "/images/announcements/elcap.jpg",
       "title": "Best Poster at Hamlyn Symposium",
-      "body": "Our poster <b>Coverage-Optimal Robotic Colonoscopy via Patient-Specific Digital-Twin World Models</b> received the <b>Best Poster Award</b> at the Hamlyn workshop on Physics- and AI-Driven Digital Twins for Patient-Specific Robotic Diagnosis, Interventions and Therapies. The prize, an <b>NVIDIA DGX Spark</b>, was generously sponsored by NVIDIA.",
-      "dates": "Hamlyn Symposium 2026",
+      "body": "Our poster <b>Coverage-Optimal Robotic Colonoscopy via Patient-Specific Digital-Twin World Models</b> received the <b>Best Poster Award</b> at the Hamlyn workshop on Physics- and AI-Driven Digital Twins for Patient-Specific Robotic Diagnosis, Interventions and Therapies. NVIDIA awarded us with a <b>DGX Spark</b>!",
+      "dates": "Hamlyn Symposium 2026 ⋅ June 2026",
       "location": "Workshop on Physics- and AI-Driven Digital Twins · Imperial College London",
       "actions": [
         {
@@ -101,20 +103,22 @@
   "sections": {
     "research": {
       "title": "Research",
-      "subtitle": "Peer-reviewed work and ongoing projects",
+      "subtitle": "Peer-reviewed work and academic research work",
       "order": 1
     },
     "terminal-tools": {
       "title": "Terminal Tools",
-      "subtitle": "Stuff I needed and build for myself, shared for the community",
+      "subtitle": "Stuff I needed and built for optimizing my terminal workflow",
       "order": 2,
       "layout": "grid",
       "cardInset": true
     },
-    "vsc-extensions": {
-      "title": "VS Code Extensions",
-      "subtitle": "Extensions that make the editor feel like home",
+    "builds": {
+      "title": "Things I Build",
+      "subtitle": "Apps, plugins and extensions",
       "order": 3,
+      "layout": "grid",
+      "cardAspect": "16/9",
       "cardInset": true
     },
     "resources": {
@@ -221,7 +225,7 @@
         }
       ],
       "details": {
-        "doi": "https://doi.org/10.48550/arXiv.2512.09583",
+        "doi": "https://openaccess.thecvf.com/content/CVPR2026/papers/Rota_UnReflectAnything_RGB-Only_Highlight_Removal_by_Rendering_Synthetic_Specular_Supervision_CVPR_2026_paper.pdf",
         "pdf": "/pdfs/UnReflectAnything%20-%20RGB-Only%20Highlight%20Removal%20by%20Rendering%20Synthetic%20Specular%20Supervision.pdf",
         "citation": "unreflect-anything",
         "sections": [
@@ -412,6 +416,241 @@
               {
                 "type": "paragraph",
                 "text": "SCALE-EM shows that self-supervised contrastive adaptation of foundation-model features can yield precise endoscopic correspondences without manual labels. The approach is most suitable for applications requiring high-precision sparse matching; conservative rejection of ambiguous matches limits density compared to some baselines. Performance depends on the quality of depth maps used for novel-view synthesis, suggesting future work on more robust geometric priors for surgical scenes."
+              }
+            ]
+          }
+        ]
+      }
+    },
+        {
+      "slug": "underxai-ovit",
+      "title": "OVIT",
+      "subtitle": "Decision support in ovarian cancer treatment",
+      "description": "Deep Learning for decision support in ovarian cancer treatment planning.",
+      "tag": "research",
+      "thumbnail": "/images/thumbnails/underxai-ovit.webp",
+      "accent": "#A62275",
+      "tech": [
+        "PyTorch",
+        "Explainable AI",
+        "Medical Imaging"
+      ],
+      "meta": {
+        "venue": "Nature Women Health",
+        "year": "2025"
+      },
+      "collaborators": [
+        {
+          "name": "Francesca Fati",
+          "href": "https://github.com/FrancescaFati",
+          "role": "Co-author"
+        },
+        {
+          "name": "Marina Rosanu",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Luigi De Vitis",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Alice Traversa",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Lucia Ribero",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Gabriella Schivardi",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Giuseppe Petralia",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Giovanni Damiano Aletti",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Nicoletta Colombo",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Michele Peiretti",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Stefano Angioni",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Jvan Casarin",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Roberto Veraldi",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Paolo Zaffino",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Maria Francesca Spadea",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Francesco Multinu",
+          "href": "",
+          "role": "Co-author"
+        },
+        {
+          "name": "Elena De Momi",
+          "href": "",
+          "role": "Co-author"
+        }
+      ],
+      "institutions": [
+        {
+          "name": "European Institute of Oncology (IEO)",
+          "href": "https://www.ieo.it/"
+        },
+        {
+          "name": "Politecnico di Milano",
+          "href": "https://www.polimi.it/"
+        },
+        {
+          "name": "Mayo Clinic",
+          "href": "https://www.mayoclinic.org/"
+        },
+        {
+          "name": "Azienda Ospedaliero-Universitaria di Cagliari",
+          "href": "https://www.aoucagliari.it/"
+        },
+        {
+          "name": "Università degli Studi dell'Insubria",
+          "href": "https://www.uninsubria.it/"
+        },
+        {
+          "name": "Università degli Studi Magna Graecia di Catanzaro",
+          "href": "https://www.unicz.it/"
+        },
+        {
+          "name": "Karlsruhe Institute of Technology",
+          "href": "https://www.kit.edu/"
+        },
+        {
+          "name": "University of Milan",
+          "href": "https://www.unimi.it/"
+        },
+        {
+          "name": "University of Milan-Bicocca",
+          "href": "https://www.unimib.it/"
+        }
+      ],
+      "actions": [
+        {
+          "label": "GitHub",
+          "href": "https://github.com/FrancescaFati/UnderXAI-OVIT",
+          "icon": "Github"
+        },
+        {
+          "label": "Project",
+          "href": "https://nearlab.polimi.it/underxai/",
+          "icon": "Globe"
+        },
+        {
+          "label": "Paper",
+          "href": "https://doi.org/10.21203/rs.3.rs-7434368/v1",
+          "icon": "FileText"
+        }
+      ],
+      "details": {
+        "pdf": "/pdfs/Deep%20Learning%20for%20Decision%20Support%20in%20Ovarian%20Cancer%20Treatment%20Planning.pdf",
+        "citation": "underxai-ovit",
+        "sections": [
+          {
+            "title": "Abstract",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Ovarian cancer is the deadliest gynecologic malignancy, with complete resection after primary debulking surgery associated with the most favorable prognosis, yet assessing resectability at diagnosis remains challenging. We propose OVIT, a fully automated decision support system predicting residual tumor after primary debulking from preoperative CT and clinical variables, without manual segmentation or expert radiological scoring. On an independent test cohort of 75 patients from a 465-patient retrospective HGSOC cohort, the best model achieves AUC 0.80 (95% CI: 0.68–0.89) and recall 0.86 (95% CI: 0.71–0.97), correctly identifying 24 of 28 non-resectable cases including 13 of 14 intraoperatively aborted surgeries."
+              }
+            ]
+          },
+          {
+            "title": "Introduction",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "High-grade serous ovarian carcinoma is often diagnosed at advanced FIGO stage III–IV with widespread abdominal dissemination. The choice between primary debulking surgery (PDS) and neoadjuvant chemotherapy followed by interval debulking is made in multidisciplinary tumor boards using criteria on anatomical dissemination and surgical feasibility, yet unforeseen unresectability discovered intraoperatively remains a critical failure mode. Automated prediction from routinely available preoperative CT and biomarkers could flag patients unlikely to benefit from PDS before surgery."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/underxai-ovit/fig1.webp",
+                "alt": "UnderXAI-OVIT, Figure 1",
+                "caption": "Fig. 1. Segmentation masks for two subjects in each resectability group: pelvic and ovarian lesions in yellow, omental disease in green, across the three anatomical planes.",
+                "width": 1053,
+                "height": 531
+              }
+            ]
+          },
+          {
+            "title": "Methodology",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Preoperative contrast-enhanced CT volumes are automatically segmented into pelvic/ovarian and omental lesion masks by an open-source model, converted to 2D slices, and encoded slice-by-slice with a frozen pretrained Vision Transformer. Per-slice classification tokens are aggregated with an attention module and fused with clinical variables (age, CA125, HE4) through a lightweight MLP classification head; only the fusion and classification layers are trained. Four ViT backbones (DINOv2-small/base, Google-16/32) are compared with and without clinical fusion on a 390/75 train/test split from the European Institute of Oncology cohort."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/underxai-ovit/fig4.webp",
+                "alt": "UnderXAI-OVIT, Figure 4",
+                "caption": "Fig. 4. OVIT architecture: CT volumes are cut into 2D slices, a frozen ViT encodes each slice, an attention module pools the slice tokens, and clinical variables are fused before the MLP classifier.",
+                "width": 1053,
+                "height": 737
+              }
+            ]
+          },
+          {
+            "title": "Results",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "The Google-32 ViT encoder with clinical fusion achieves the best test performance: AUC 0.80, recall 0.86, correctly flagging 86% of non-resectable patients including 93% of surgeries aborted intraoperatively for unforeseen unresectable disease. Ablations show clinical-variable benefit is architecture-dependent: Google-32 gains most from multimodal fusion on recall-oriented metrics. Misclassifications link false negatives to older, lower-biomarker patients and false positives to elevated HE4 and higher surgical complexity scores."
+              },
+              {
+                "type": "image",
+                "src": "/images/figures/underxai-ovit/fig2.webp",
+                "alt": "UnderXAI-OVIT, Figure 2",
+                "caption": "Fig. 2. Resectability classification against the previously proposed model: confusion counts on the left, AUC / accuracy / precision / recall / F1 on the right.",
+                "width": 1053,
+                "height": 458
+              }
+            ]
+          },
+          {
+            "title": "Conclusion",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "OVIT demonstrates that frozen ViT encoders with attention pooling and clinical fusion can predict ovarian cancer resectability without manual radiological scoring. High recall on non-resectable cases supports its role as a decision-support tool to identify patients who may not benefit from primary surgery, pending prospective validation and integration into multidisciplinary workflows as part of the Under-XAI project."
               }
             ]
           }
@@ -1013,241 +1252,6 @@
               {
                 "type": "paragraph",
                 "text": "Haptic-enhanced VR training on a surgical robot simulator improves task performance during assisted practice and may transfer to unassisted clinical-like scenarios. Extensions include adaptive visco-elastic parameters, larger cohorts, and long-term retention studies. STEVE provides an open hardware/software stack for replicating augmented surgical robotics curricula."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "slug": "underxai-ovit",
-      "title": "UnderXAI-OVIT",
-      "subtitle": "Decision support in ovarian cancer treatment",
-      "description": "Deep Learning for decision support in ovarian cancer treatment planning.",
-      "tag": "research",
-      "thumbnail": "/images/thumbnails/underxai-ovit.webp",
-      "accent": "#78dce8",
-      "tech": [
-        "PyTorch",
-        "Explainable AI",
-        "Medical Imaging"
-      ],
-      "meta": {
-        "venue": "Nature WH ⋅ Preprint",
-        "year": "2025"
-      },
-      "collaborators": [
-        {
-          "name": "Francesca Fati",
-          "href": "https://github.com/FrancescaFati",
-          "role": "Co-author"
-        },
-        {
-          "name": "Marina Rosanu",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Luigi De Vitis",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Alice Traversa",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Lucia Ribero",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Gabriella Schivardi",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Giuseppe Petralia",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Giovanni Damiano Aletti",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Nicoletta Colombo",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Michele Peiretti",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Stefano Angioni",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Jvan Casarin",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Roberto Veraldi",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Paolo Zaffino",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Maria Francesca Spadea",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Francesco Multinu",
-          "href": "",
-          "role": "Co-author"
-        },
-        {
-          "name": "Elena De Momi",
-          "href": "",
-          "role": "Co-author"
-        }
-      ],
-      "institutions": [
-        {
-          "name": "European Institute of Oncology (IEO)",
-          "href": "https://www.ieo.it/"
-        },
-        {
-          "name": "Politecnico di Milano",
-          "href": "https://www.polimi.it/"
-        },
-        {
-          "name": "Mayo Clinic",
-          "href": "https://www.mayoclinic.org/"
-        },
-        {
-          "name": "Azienda Ospedaliero-Universitaria di Cagliari",
-          "href": "https://www.aoucagliari.it/"
-        },
-        {
-          "name": "Università degli Studi dell'Insubria",
-          "href": "https://www.uninsubria.it/"
-        },
-        {
-          "name": "Università degli Studi Magna Graecia di Catanzaro",
-          "href": "https://www.unicz.it/"
-        },
-        {
-          "name": "Karlsruhe Institute of Technology",
-          "href": "https://www.kit.edu/"
-        },
-        {
-          "name": "University of Milan",
-          "href": "https://www.unimi.it/"
-        },
-        {
-          "name": "University of Milan-Bicocca",
-          "href": "https://www.unimib.it/"
-        }
-      ],
-      "actions": [
-        {
-          "label": "GitHub",
-          "href": "https://github.com/FrancescaFati/UnderXAI-OVIT",
-          "icon": "Github"
-        },
-        {
-          "label": "Project",
-          "href": "https://nearlab.polimi.it/underxai/",
-          "icon": "Globe"
-        },
-        {
-          "label": "Paper",
-          "href": "https://doi.org/10.21203/rs.3.rs-7434368/v1",
-          "icon": "FileText"
-        }
-      ],
-      "details": {
-        "pdf": "/pdfs/Deep%20Learning%20for%20Decision%20Support%20in%20Ovarian%20Cancer%20Treatment%20Planning.pdf",
-        "citation": "underxai-ovit",
-        "sections": [
-          {
-            "title": "Abstract",
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "Ovarian cancer is the deadliest gynecologic malignancy, with complete resection after primary debulking surgery associated with the most favorable prognosis, yet assessing resectability at diagnosis remains challenging. We propose OVIT, a fully automated decision support system predicting residual tumor after primary debulking from preoperative CT and clinical variables, without manual segmentation or expert radiological scoring. On an independent test cohort of 75 patients from a 465-patient retrospective HGSOC cohort, the best model achieves AUC 0.80 (95% CI: 0.68–0.89) and recall 0.86 (95% CI: 0.71–0.97), correctly identifying 24 of 28 non-resectable cases including 13 of 14 intraoperatively aborted surgeries."
-              }
-            ]
-          },
-          {
-            "title": "Introduction",
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "High-grade serous ovarian carcinoma is often diagnosed at advanced FIGO stage III–IV with widespread abdominal dissemination. The choice between primary debulking surgery (PDS) and neoadjuvant chemotherapy followed by interval debulking is made in multidisciplinary tumor boards using criteria on anatomical dissemination and surgical feasibility, yet unforeseen unresectability discovered intraoperatively remains a critical failure mode. Automated prediction from routinely available preoperative CT and biomarkers could flag patients unlikely to benefit from PDS before surgery."
-              },
-              {
-                "type": "image",
-                "src": "/images/figures/underxai-ovit/fig1.webp",
-                "alt": "UnderXAI-OVIT, Figure 1",
-                "caption": "Fig. 1. Segmentation masks for two subjects in each resectability group: pelvic and ovarian lesions in yellow, omental disease in green, across the three anatomical planes.",
-                "width": 1053,
-                "height": 531
-              }
-            ]
-          },
-          {
-            "title": "Methodology",
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "Preoperative contrast-enhanced CT volumes are automatically segmented into pelvic/ovarian and omental lesion masks by an open-source model, converted to 2D slices, and encoded slice-by-slice with a frozen pretrained Vision Transformer. Per-slice classification tokens are aggregated with an attention module and fused with clinical variables (age, CA125, HE4) through a lightweight MLP classification head; only the fusion and classification layers are trained. Four ViT backbones (DINOv2-small/base, Google-16/32) are compared with and without clinical fusion on a 390/75 train/test split from the European Institute of Oncology cohort."
-              },
-              {
-                "type": "image",
-                "src": "/images/figures/underxai-ovit/fig4.webp",
-                "alt": "UnderXAI-OVIT, Figure 4",
-                "caption": "Fig. 4. OVIT architecture: CT volumes are cut into 2D slices, a frozen ViT encodes each slice, an attention module pools the slice tokens, and clinical variables are fused before the MLP classifier.",
-                "width": 1053,
-                "height": 737
-              }
-            ]
-          },
-          {
-            "title": "Results",
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "The Google-32 ViT encoder with clinical fusion achieves the best test performance: AUC 0.80, recall 0.86, correctly flagging 86% of non-resectable patients including 93% of surgeries aborted intraoperatively for unforeseen unresectable disease. Ablations show clinical-variable benefit is architecture-dependent: Google-32 gains most from multimodal fusion on recall-oriented metrics. Misclassifications link false negatives to older, lower-biomarker patients and false positives to elevated HE4 and higher surgical complexity scores."
-              },
-              {
-                "type": "image",
-                "src": "/images/figures/underxai-ovit/fig2.webp",
-                "alt": "UnderXAI-OVIT, Figure 2",
-                "caption": "Fig. 2. Resectability classification against the previously proposed model: confusion counts on the left, AUC / accuracy / precision / recall / F1 on the right.",
-                "width": 1053,
-                "height": 458
-              }
-            ]
-          },
-          {
-            "title": "Conclusion",
-            "blocks": [
-              {
-                "type": "paragraph",
-                "text": "OVIT demonstrates that frozen ViT encoders with attention pooling and clinical fusion can predict ovarian cancer resectability without manual radiological scoring. High recall on non-resectable cases supports its role as a decision-support tool to identify patients who may not benefit from primary surgery, pending prospective validation and integration into multidisciplinary workflows as part of the Under-XAI project."
               }
             ]
           }
@@ -2150,11 +2154,41 @@
       "detailComponent": "ground-control-terminal"
     },
     {
+      "slug": "openshot",
+      "title": "OpenShot-Y",
+      "subtitle": "Free, open-source screenshots for macOS",
+      "description": "A free, open-source alternative to paid macOS screenshot tools, with the same features and more.",
+      "tag": "builds",
+      "thumbnail": "/images/announcements/openshot.png",
+      "cardAspect": "16/9",
+      "cardFit": "contain",
+      "icon": "/images/announcements/openshot.png",
+      "accent": "#D8361D",
+      "tech": [
+        "macOS"
+      ],
+      "actions": [
+        {
+          "label": "Webpage and docs",
+          "href": "https://www.albertorota.dev/openshot",
+          "icon": "Globe"
+        },
+        {
+          "label": "Install OpenShot",
+          "href": "https://www.albertorota.dev/openshot/downloads/OpenShot-Y-1.0.0.dmg",
+          "icon": "Download"
+        }
+      ],
+      "details": {
+        "body": "Screenshots on a Mac are tricky, but a good screenshot tool shouldn't cost $35 a year. OpenShot-Y is a free, open-source alternative to the most popular screenshot tool for Mac, with the same features and more.\n\nThe full feature list, docs and downloads live at [albertorota.dev/openshot](https://www.albertorota.dev/openshot)."
+      }
+    },
+    {
       "slug": "dasshboard",
       "title": "DaSSHboard",
       "subtitle": "A stylish SSH dashboard for VS Code",
       "description": "One-click access to your SSH hosts, WSL distros and running Docker containers, from a customizable VS Code panel.",
-      "tag": "vsc-extensions",
+      "tag": "builds",
       "thumbnail": "https://raw.githubusercontent.com/alberto-rota/DaSSHboard/master/overview.png",
       "cardAspect": "16/9",
       "cardFit": "cover",
@@ -2285,9 +2319,9 @@
       "title": "MedView",
       "subtitle": "NIfTI / DICOM viewer for VS Code",
       "description": "A NIfTI and DICOM viewer that runs inside VS Code, with multi-planar reconstruction and segmentation overlays.",
-      "tag": "vsc-extensions",
+      "tag": "builds",
       "thumbnail": "/images/medview.webp",
-      "cardAspect": "16/10",
+      "cardAspect": "16/9",
       "cardFit": "cover",
       "icon": "/icons/medview_icon.webp",
       "accent": "#ff6188",
