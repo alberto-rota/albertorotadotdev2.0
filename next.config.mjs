@@ -24,6 +24,16 @@ const nextConfig = {
       },
     ];
   },
+  // albertorota.dev/openshot serves the OpenShot site (Vercel project "openshot") without leaving this domain.
+  // beforeFiles so it wins over the [section] route.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: "/openshot", destination: "https://openshot-eight.vercel.app/openshot" },
+        { source: "/openshot/:path*", destination: "https://openshot-eight.vercel.app/openshot/:path*" },
+      ],
+    };
+  },
   async redirects() {
     return [
       {
