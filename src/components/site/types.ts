@@ -53,6 +53,15 @@ export type DetailBlock =
        *  instead of being letterboxed into a fixed aspect box. */
       width?: number;
       height?: number;
+    }
+  | {
+      /** A compact results table. Copy numbers exactly from the source. */
+      type: "table";
+      columns: string[];
+      rows: string[][];
+      caption?: string;
+      /** Index of the row to emphasise (usually the work being presented). */
+      highlightRow?: number;
     };
 
 /** Named section on a research detail page (Abstract, Overview, …). */
@@ -198,15 +207,32 @@ export type Announcement = {
   image?: string;
   imageAlt?: string;
   /**
-   * Optional crop for the image, as "W/H", "WxH" or "W:H" (e.g. "1x1", "16/9"),
-   * or "auto" for the image's own ratio (no crop). The frame height stays
-   * fixed; only the width changes. When omitted, the image fills its column.
+   * The image always fills the space left of the text (on mobile, a banner of
+   * fixed height above it), so it gets cropped. "cover" (default) crops it;
+   * "contain" shows it whole over a blurred copy of itself, for figures and
+   * diagrams that must not be cut.
+   */
+  imageFit?: "cover" | "contain";
+  /** CSS object-position for the crop, e.g. "center top" or "30% 50%". */
+  imagePosition?: string;
+  /**
+   * Fixed frame ratio, as "W/H", "WxH" or "W:H" (e.g. "1/1"). The frame keeps
+   * the full height and its width follows the ratio; the text moves up next
+   * to it. Omitted: the image fills the whole column.
    */
   imageAspect?: string;
 };
 
+/** One word of the hero's glyph animation. `hold` is seconds it stays up. */
+export type GlyphWord = { text: string; hold: number };
+
 export type HeroConfig = {
   tagline?: string;
+  /**
+   * What the glyph band behind the hero spells. It plays `intro` once, in
+   * order, then loops: `name`, a random pick from `topics`, `name`, …
+   */
+  glyph?: { name: GlyphWord; intro: GlyphWord[]; topics: GlyphWord[] };
 };
 
 export type SiteData = {

@@ -44,7 +44,12 @@ export function SitePage() {
     <>
       <CustomScrollbar />
       <Nav />
-      <Hero tagline={data.hero?.tagline} pinned={pinned} contacts={pinnedContacts} />
+      <Hero
+        tagline={data.hero?.tagline}
+        glyphWords={data.hero?.glyph}
+        pinned={pinned}
+        contacts={pinnedContacts}
+      />
       <Announcements items={data.announcements} />
 
       <main>

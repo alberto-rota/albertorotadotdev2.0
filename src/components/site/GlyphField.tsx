@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { DEFAULT_GLYPH_WORDS, type GlyphWords } from "./glyph-words";
 
 /**
  * The hero title, spelled out of terminal characters.
@@ -111,18 +112,6 @@ const NAME_FAMILY = '"Bebas Neue", ui-sans-serif, system-ui, sans-serif';
  * band's width, and narrow screens get finer cells to keep it legible.
  */
 type Word = { text: string; hold: number };
-const NAME: Word = { text: "ALBERTO", hold: 7 };
-const INTRO: Word[] = [
-  { text: "WHO AM I", hold: 2.5 },
-  { ...NAME, hold: 2 },
-  { text: "ROTA", hold: 1 },
-];
-const TOPICS: Word[] = [
-  { text: "SURGICAL AI", hold: 3.2 },
-  { text: "ROBOTICS", hold: 3.2 },
-  { text: "VISION", hold: 3.2 },
-  { text: "AWARENESS", hold: 3.2 },
-];
 /** A little tracking, matching the display type elsewhere on the site. */
 const NAME_TRACKING = 0.04;
 /** Bebas Neue's caps sit about this fraction of an em tall. */
@@ -350,8 +339,11 @@ function renderMask(
 export function GlyphField({
   className,
   targetRef,
+  words = DEFAULT_GLYPH_WORDS,
 }: {
   className?: string;
+  /** What the band spells; see `DEFAULT_GLYPH_WORDS`. */
+  words?: GlyphWords;
   /** Element whose box the name is fitted to — the hero's `<h1>`. */
   targetRef?: React.RefObject<HTMLElement | null>;
 }) {
@@ -390,6 +382,10 @@ export function GlyphField({
     // No mouse means no torch, but the rest of the animation runs regardless.
     const noMouse = !window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     const staticOnly = reduced;
+
+    const NAME = words.name;
+    const INTRO = words.intro.length ? words.intro : [NAME];
+    const TOPICS = words.topics.length ? words.topics : [NAME];
 
     let grid: Grid | null = null;
     let width = 0;
@@ -840,7 +836,7 @@ export function GlyphField({
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerdown", onPointerMove);
     };
-  }, [fontsReady, targetRef]);
+  }, [fontsReady, targetRef, words]);
 
   return (
     <div ref={hostRef} className={className} aria-hidden>

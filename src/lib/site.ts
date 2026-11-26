@@ -4,7 +4,7 @@ import type { Product, SectionId } from "@/components/site/types";
 export const SITE_URL = "https://www.albertorota.dev";
 export const SITE_NAME = "Alberto Rota";
 export const SITE_TITLE =
-  "Alberto Rota — Surgical Robotics, Medical AI, and Open Source";
+  "Alberto Rota";
 export const SITE_DESCRIPTION =
   "PhD candidate in Bioengineering at Politecnico di Milano. Research, open-source tools, and visual systems for surgical robotics and medical AI.";
 

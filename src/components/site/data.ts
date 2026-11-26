@@ -5,6 +5,7 @@ import type {
   ContactLink,
   DetailBlock,
   DetailSection,
+  GlyphWord,
   HeroConfig,
   Institution,
   Product,
@@ -16,6 +17,7 @@ import type {
   SiteData,
   TerminalLine,
 } from "./types";
+import { DEFAULT_GLYPH_WORDS } from "./glyph-words";
 
 const VALID: SectionId[] = [
   "research",
@@ -84,6 +86,8 @@ function parseAnnouncementItem(raw: unknown): Announcement | undefined {
     actions: parseActions(r.actions),
     image: typeof r.image === "string" ? r.image : undefined,
     imageAlt: typeof r.imageAlt === "string" ? r.imageAlt : undefined,
+    imageFit: r.imageFit === "contain" || r.imageFit === "cover" ? r.imageFit : undefined,
+    imagePosition: typeof r.imagePosition === "string" ? r.imagePosition : undefined,
     imageAspect: parseAspect(r.imageAspect),
   };
 }
@@ -92,9 +96,9 @@ function parseAnnouncementItem(raw: unknown): Announcement | undefined {
  * Normalise "1x1" / "1:1" / "1/1" into a CSS aspect-ratio ("1 / 1").
  * "auto" is kept as-is: the image's own ratio, read once it loads.
  */
+/** "1/1", "1x1", "1:1", "16 / 9" → CSS aspect-ratio. Anything else is ignored. */
 function parseAspect(raw: unknown): string | undefined {
   if (typeof raw !== "string") return undefined;
-  if (raw.trim().toLowerCase() === "auto") return "auto";
   const m = /^\s*(\d+(?:\.\d+)?)\s*[x:/×]\s*(\d+(?:\.\d+)?)\s*$/i.exec(raw);
   if (!m || !Number(m[1]) || !Number(m[2])) return undefined;
   return `${m[1]} / ${m[2]}`;
@@ -153,6 +157,20 @@ function parseDetailBlocks(raw: unknown): DetailBlock[] | undefined {
           height,
         };
       }
+      if (type === "table" && Array.isArray(b.columns) && Array.isArray(b.rows)) {
+        const columns = b.columns.map((c) => String(c));
+        const rows = (b.rows as unknown[])
+          .filter((r): r is unknown[] => Array.isArray(r))
+          .map((r) => r.map((cell) => String(cell)));
+        if (!columns.length || !rows.length) return null;
+        return {
+          type: "table",
+          columns,
+          rows,
+          caption: typeof b.caption === "string" ? b.caption : undefined,
+          highlightRow: typeof b.highlightRow === "number" ? b.highlightRow : undefined,
+        };
+      }
       return null;
     })
     .filter((b): b is DetailBlock => b !== null);
@@ -192,12 +210,53 @@ function parseTerminal(raw: unknown): ProductDetails["terminal"] {
   return { title: typeof r.title === "string" ? r.title : undefined, lines };
 }
 
+/**
+ * A glyph word is either `"TEXT"` or `{ "text": "TEXT", "hold": seconds }`.
+ * Text is upper-cased: the band is cut from a caps-only face.
+ */
+function parseGlyphWord(raw: unknown, fallbackHold: number): GlyphWord | undefined {
+  if (typeof raw === "string" && raw.trim()) {
+    return { text: raw.trim().toUpperCase(), hold: fallbackHold };
+  }
+  if (raw && typeof raw === "object") {
+    const r = raw as Record<string, unknown>;
+    if (typeof r.text !== "string" || !r.text.trim()) return undefined;
+    const hold = typeof r.hold === "number" && r.hold > 0 ? r.hold : fallbackHold;
+    return { text: r.text.trim().toUpperCase(), hold };
+  }
+  return undefined;
+}
+
+function parseGlyphWords(raw: unknown, fallbackHold: number): GlyphWord[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const words = raw
+    .map((w) => parseGlyphWord(w, fallbackHold))
+    .filter((w): w is GlyphWord => w !== undefined);
+  return words.length ? words : undefined;
+}
+
+function parseGlyph(raw: unknown): HeroConfig["glyph"] {
+  if (!raw || typeof raw !== "object") return undefined;
+  const r = raw as Record<string, unknown>;
+  const name = parseGlyphWord(r.name, 7);
+  const intro = parseGlyphWords(r.intro, 2);
+  const topics = parseGlyphWords(r.topics, 3.2);
+  if (!name && !intro && !topics) return undefined;
+  // Any part left out keeps its default.
+  return {
+    name: name ?? DEFAULT_GLYPH_WORDS.name,
+    intro: intro ?? DEFAULT_GLYPH_WORDS.intro,
+    topics: topics ?? DEFAULT_GLYPH_WORDS.topics,
+  };
+}
+
 function parseHero(raw: unknown): HeroConfig | undefined {
   if (!raw || typeof raw !== "object") return undefined;
   const r = raw as Record<string, unknown>;
   const tagline = typeof r.tagline === "string" ? r.tagline : undefined;
-  if (!tagline) return undefined;
-  return { tagline };
+  const glyph = parseGlyph(r.glyph);
+  if (!tagline && !glyph) return undefined;
+  return { tagline, glyph };
 }
 
 /** Parse the products.json blob into a strongly-typed `SiteData`. */

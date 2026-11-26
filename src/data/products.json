@@ -1,6 +1,20 @@
 {
   "hero": {
-    "tagline": "PhD candidate in Bioengineering at Politecnico di Milano. I research visual systems for enhanced awareness in surgical robotics and medical AI."
+    "tagline": "PhD candidate in Bioengineering at Politecnico di Milano. I research visual systems for enhanced awareness in surgical robotics and medical AI.",
+    "glyph": {
+      "name": { "text": "ALBERTO", "hold": 7 },
+      "intro": [
+        { "text": "WHO AM I", "hold": 2.5 },
+        { "text": "ALBERTO", "hold": 2 },
+        { "text": "ROTA", "hold": 1 }
+      ],
+      "topics": [
+        { "text": "SURGICAL AI", "hold": 3.2 },
+        { "text": "ROBOTICS", "hold": 3.2 },
+        { "text": "VISION", "hold": 3.2 },
+        { "text": "AWARENESS", "hold": 3.2 }
+      ]
+    }
   },
   "contacts": [
     {
@@ -12,13 +26,13 @@
     }
   ],
   "announcements": [
-     {
+    {
       "enabled": true,
       "accent": "#A62275",
       "label": "OVIT ⋅ Nature Women health",
       "image": "/images/announcements/nature.png",
       "imageAlt": "Nature WH",
-      "imageAspect": "auto",
+      "imageFit": "cover",
       "dates": "November 25th 2026",
       "title": "OVIT accepted at Nature Women Health",
       "body": "Francesca Fati's manuscript on <b> predicting ovarian cancer resectability</b> got accepted on <b>Nature</b>! OVIT is a decision support system predicting residual tumor after primary debulking surgery from clinical and imaging data available at diagnosis",
@@ -42,9 +56,9 @@
       "dates": "November 14th 2026",
       "imageAlt": "Openshot",
       "image": "/images/announcements/openshot.png",
-      "imageAspect": "1x1",
+      "imageAspect": "1/1",
       "title": "Check out Openshot-y for better screenshots on MacOS",
-      "body": "Screenshots on a Mac are tricky, but a good screenshot tool on your Mac shouldn't cost 35$/year. OpenShot-Y is a free, open source alternative to the most popular screenshot tool for Mac, with its same features and more. ",
+      "body": "Screenshots on a Mac are tricky, but a good screenshot tool on your Mac shouldn't cost 35$. OpenShot-Y is a free, open source alternative to the most popular screenshot tool for Mac, with its same features and more.",
       "actions": [
         {
           "label": "Install OpenShot",
@@ -260,7 +274,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "We integrate physically grounded virtual highlight synthesis with token-space inpainting to recover reflection-free images from a single RGB view. Given an input image, monocular geometry is estimated to obtain metric depth, surface normals, and intrinsics; a point light is sampled in camera space and a Blinn–Phong lobe with Fresnel modulation renders synthetic specularities on top of the real image, producing paired supervision without multi-view capture or polarization. A frozen ViT encoder extracts multi-scale features; a DPT-based highlight head localizes specular regions, corrupted tokens are inpainted, and a diffuse decoder reconstructs the reflection-free output. The full pipeline is trained end-to-end on synthetically highlighted images and transfers to unseen real domains at inference."
+                "text": "We integrate physically grounded virtual highlight synthesis with token-space inpainting to recover reflection-free images from a single RGB view. Given an input image, monocular geometry is estimated to obtain metric depth, surface normals, and intrinsics; a point light is sampled in camera space and a Blinn–Phong lobe with Fresnel modulation renders synthetic specularities on top of the real image, producing paired supervision without multi-view capture or polarization. A frozen ViT encoder extracts multi-scale features; a DPT-based highlight head localizes specular regions, corrupted tokens are inpainted, and a diffuse decoder reconstructs the reflection-free output. Training is staged: the encoder stays frozen, the decoder is first pre-trained as an autoencoder and then fine-tuned once inpainting is introduced, all on synthetically highlighted images, and the model transfers to unseen real domains at inference."
               },
               {
                 "type": "image",
@@ -285,7 +299,21 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "UnReflectAnything is evaluated on datasets with paired diffuse-only ground truth (PSD, SHIQ, SSHR) and on surgical endoscopy, where it consistently suppresses and attenuates specular highlights while preserving structure. Across natural-scene benchmarks it matches or exceeds state-of-the-art diffusion and physics-based baselines on MSE, PSNR, and SSIM, and in challenging endoscopic scenes it avoids the over-dimming and residual highlights common to diffusion methods. Ablations confirm the contribution of virtual highlight synthesis, token inpainting, and the Fresnel-aware rendering model. The feedforward architecture runs in real time on a single consumer GPU, making deployment more plausible than iterative diffusion alternatives."
+                "text": "UnReflectAnything is evaluated on datasets with paired diffuse-only ground truth (PSD, SHIQ, SSHR) and on surgical endoscopy, where it consistently suppresses and attenuates specular highlights while preserving structure. It reaches the best SSIM on all three datasets and the lowest masked MSE on PSD, but a lower PSNR than the baselines: it alters less of the image outside the highlights, while classical methods attenuate highlights more aggressively on SHIQ and SSHR. In challenging endoscopic scenes it avoids the over-dimming and residual highlights common to diffusion methods, and its feedforward design makes real-time deployment more plausible than iterative diffusion alternatives."
+              },
+              {
+                "type": "table",
+                "columns": ["Method", "PSD MSEₘ ↓", "PSD PSNR ↑", "PSD SSIM ↑", "SHIQ SSIM ↑"],
+                "rows": [
+                  ["DHAN-SHR", "0.006", "24.863", "0.868", "0.982"],
+                  ["Fu et al.", "0.007", "23.786", "0.838", "0.978"],
+                  ["SpecularityNet", "0.007", "23.675", "0.839", "0.961"],
+                  ["StableDelight", "0.007", "23.384", "0.838", "0.921"],
+                  ["EndoSTTN", "0.009", "22.951", "0.844", "0.955"],
+                  ["UnReflectAnything", "0.004", "17.230", "0.911", "0.988"]
+                ],
+                "highlightRow": 5,
+                "caption": "From Table 1: full-reference metrics on datasets with paired diffuse-only ground truth. MSEₘ is computed inside the highlight masks."
               },
               {
                 "type": "image",
@@ -302,7 +330,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "UnReflectAnything demonstrates that RGB-only highlight removal is feasible when training is driven by physically plausible synthetic supervision rather than paired real captures. The framework generalizes from natural images to surgical endoscopy, where conservative reconstruction over hallucination is clinically desirable. Remaining limitations include reduced reliability on transparent or refractive objects, where diffuse and specular components are difficult to separate; future work may extend the synthesis model to handle such materials."
+                "text": "UnReflectAnything demonstrates that RGB-only highlight removal is feasible when training is driven by physically plausible synthetic supervision rather than paired real captures. The framework generalizes from natural images to surgical endoscopy, where conservative reconstruction over hallucination is clinically desirable. Remaining limitations include reduced reliability on transparent or refractive objects, where diffuse and specular components are difficult to separate; future work points to explicit edge constraints or high-frequency priors, and to relying less on luminance cues and binary highlight masks."
               }
             ]
           }
@@ -398,7 +426,20 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "On the SCARED stereo endoscopy test split, SCALE-EM achieves the lowest mean epipolar error among all tested methods (8.63 px, ~17% better than the next-best classical descriptor) and the fewest spurious matches under a cross-sequence robustness test (160 inliers on non-corresponding images vs. thousands for LoFTR and SIFT variants). Ablation studies confirm gains from the adaptation layer Ψ and sub-pixel refinement. The method remains competitive in runtime with other learning-based matchers while prioritizing precision over match density through a conservative scoring mechanism."
+                "text": "On the SCARED stereo endoscopy test split, SCALE-EM achieves the lowest mean epipolar error among all tested methods (8.63 px, about 17% better than the next-best method, SIFT+AffNet) and the fewest spurious matches under a cross-sequence robustness test (160 inliers on non-corresponding images vs. thousands for LoFTR and SIFT variants). Ablation studies confirm gains from the adaptation layer Ψ and sub-pixel refinement. The method remains competitive in runtime with other learning-based matchers while prioritizing precision over match density through a conservative scoring mechanism."
+              },
+              {
+                "type": "table",
+                "columns": ["Method", "Epipolar err. [px] ↓", "Precision [%] ↑", "Inliers [%] ↑"],
+                "rows": [
+                  ["SIFT+AffNet", "10.42 ± 6.69", "10.08 ± 8.70", "98.14 ± 1.07"],
+                  ["SIFT+HyNet", "10.69 ± 6.91", "9.79 ± 8.17", "96.34 ± 1.96"],
+                  ["SuperGlue", "10.89 ± 7.24", "10.40 ± 8.84", "99.21 ± 0.62"],
+                  ["LoFTR-outdoor", "10.85 ± 7.57", "10.46 ± 9.31", "99.76 ± 0.25"],
+                  ["SCALE-EM", "8.63 ± 4.14", "14.22 ± 4.61", "75.63 ± 2.09"]
+                ],
+                "highlightRow": 4,
+                "caption": "From Table I: matching on the SCARED test split, frame pairs 16 apart, mean ± std. The lower inlier ratio reflects the conservative scoring that rejects ambiguous matches."
               },
               {
                 "type": "image",
@@ -422,7 +463,7 @@
         ]
       }
     },
-        {
+    {
       "slug": "underxai-ovit",
       "title": "OVIT",
       "subtitle": "Decision support in ovarian cancer treatment",
@@ -616,7 +657,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "Preoperative contrast-enhanced CT volumes are automatically segmented into pelvic/ovarian and omental lesion masks by an open-source model, converted to 2D slices, and encoded slice-by-slice with a frozen pretrained Vision Transformer. Per-slice classification tokens are aggregated with an attention module and fused with clinical variables (age, CA125, HE4) through a lightweight MLP classification head; only the fusion and classification layers are trained. Four ViT backbones (DINOv2-small/base, Google-16/32) are compared with and without clinical fusion on a 390/75 train/test split from the European Institute of Oncology cohort."
+                "text": "Preoperative contrast-enhanced CT volumes are automatically segmented into pelvic/ovarian and omental lesion masks by an open-source model, converted to 2D slices, and encoded slice-by-slice with a frozen pretrained Vision Transformer. Per-slice classification tokens are aggregated with an attention module and fused with clinical variables (age, CA125, HE4) through a lightweight MLP classification head; the encoder stays frozen and only the layers after it (attention pooling, clinical encoder and classification head) are trained. Four ViT backbones (DINOv2-small/base, Google-16/32) are compared with and without clinical fusion on a 390/75 train/test split from the European Institute of Oncology cohort."
               },
               {
                 "type": "image",
@@ -633,7 +674,19 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "The Google-32 ViT encoder with clinical fusion achieves the best test performance: AUC 0.80, recall 0.86, correctly flagging 86% of non-resectable patients including 93% of surgeries aborted intraoperatively for unforeseen unresectable disease. Ablations show clinical-variable benefit is architecture-dependent: Google-32 gains most from multimodal fusion on recall-oriented metrics. Misclassifications link false negatives to older, lower-biomarker patients and false positives to elevated HE4 and higher surgical complexity scores."
+                "text": "The Google-32 ViT encoder with clinical fusion is the selected configuration: AUC 0.80 and the highest recall (0.86) and F1 (0.71), correctly flagging 86% of non-resectable patients including 93% of surgeries aborted intraoperatively for unforeseen unresectable disease. DINOv2-small reaches a slightly higher AUC (0.81) and precision but misses more non-resectable cases. Ablations show clinical-variable benefit is architecture-dependent: Google-32 gains most from multimodal fusion on recall-oriented metrics. Misclassifications link false negatives to older, lower-biomarker patients and false positives to elevated HE4 and higher surgical complexity scores."
+              },
+              {
+                "type": "table",
+                "columns": ["Encoder", "ROC-AUC", "Precision", "Recall", "F1"],
+                "rows": [
+                  ["DINOv2-small", "0.81 (0.69–0.91)", "0.69 (0.50–0.86)", "0.61 (0.42–0.79)", "0.64 (0.48–0.78)"],
+                  ["DINOv2-base", "0.79 (0.67–0.88)", "0.59 (0.42–0.75)", "0.76 (0.58–0.90)", "0.66 (0.52–0.78)"],
+                  ["Google-16", "0.78 (0.67–0.88)", "0.63 (0.44–0.82)", "0.63 (0.43–0.78)", "0.62 (0.44–0.76)"],
+                  ["Google-32 (OVIT)", "0.80 (0.68–0.89)", "0.60 (0.44–0.76)", "0.86 (0.71–0.97)", "0.71 (0.57–0.82)"]
+                ],
+                "highlightRow": 3,
+                "caption": "From Table 5: held-out test set of 75 patients, encoders with clinical variables; median with 95% bootstrap CI over 1,000 resamples."
               },
               {
                 "type": "image",
@@ -650,7 +703,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "OVIT demonstrates that frozen ViT encoders with attention pooling and clinical fusion can predict ovarian cancer resectability without manual radiological scoring. High recall on non-resectable cases supports its role as a decision-support tool to identify patients who may not benefit from primary surgery, pending prospective validation and integration into multidisciplinary workflows as part of the Under-XAI project."
+                "text": "OVIT demonstrates that frozen ViT encoders with attention pooling and clinical fusion can predict ovarian cancer resectability without manual radiological scoring. High recall on non-resectable cases supports its role as a decision-support tool to identify patients who may not benefit from primary surgery, pending external validation on larger, more diverse cohorts and integration into multidisciplinary workflows as part of the Under-XAI project."
               }
             ]
           }
@@ -774,7 +827,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "Adnexal masses are common in gynecological practice, where the central objective is to distinguish benign from malignant lesions. Diagnostic performance depends on acquisition quality and operator expertise, leading to substantial variability. Ultrasound images are further challenged by speckle noise, acoustic shadowing, and low contrast. Accurate segmentation is a prerequisite for quantitative assessment pipelines including the IOTA ADNEX model and O-RADS risk stratification. Foundation models pretrained on large-scale natural-image corpora offer semantic priors that may transfer to medical ultrasound with minimal task-specific pretraining."
+                "text": "Adnexal masses are common in gynecological practice, where the central objective is to distinguish benign from malignant lesions. Diagnostic performance depends on acquisition quality and operator expertise, leading to substantial variability. Ultrasound images are further challenged by speckle noise, acoustic shadowing, and low contrast. Accurate segmentation enables reproducible morphology measurements, radiomics feature extraction and downstream malignancy risk prediction. Foundation models pretrained on large-scale natural-image corpora offer semantic priors that may transfer to medical ultrasound with minimal task-specific training."
               },
               {
                 "type": "image",
@@ -808,7 +861,19 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "MESA reaches Dice 0.945 and the best boundary-sensitive metrics across resolutions 224×224 and 512×512, outperforming all convolutional baselines on IoU, sensitivity, and Hausdorff distance. Under data starvation, CNN architectures degrade sharply at 25% of labels while the DINOv3-based model retains substantially higher Dice and lower HD95. Ablations across DINOv3 scales (Small, Base, Large, Giant) reveal early performance saturation and overfitting at extreme scales, with moderately sized backbones offering the best accuracy–efficiency trade-off for boundary-sensitive ovarian ultrasound segmentation."
+                "text": "MESA reaches Dice 0.945 and the best boundary-sensitive metrics across resolutions 224×224 and 512×512, outperforming all convolutional baselines on IoU, sensitivity, and Hausdorff distance. Under data starvation, CNN architectures degrade sharply at 25% of labels while the DINOv3-based model retains substantially higher Dice and lower HD95. Ablations across DINOv3 scales (Small, Base, Large) show performance saturating early, with signs of overfitting at the largest scale, with moderately sized backbones offering the best accuracy–efficiency trade-off for boundary-sensitive ovarian ultrasound segmentation."
+              },
+              {
+                "type": "table",
+                "columns": ["Method", "Dice ↑", "IoU ↑", "HD95 ↓", "MSD ↓"],
+                "rows": [
+                  ["U-Net", "0.939", "0.884", "11.13", "2.664"],
+                  ["U-Net++", "0.935", "0.878", "10", "2.703"],
+                  ["MAnet", "0.924", "0.859", "10.851", "3.18"],
+                  ["MESA (DINOv3 + DPT)", "0.945", "0.897", "8.861", "2.288"]
+                ],
+                "highlightRow": 3,
+                "caption": "From Table 1: test-set segmentation at 224×224; HD95 and MSD in pixels."
               },
               {
                 "type": "image",
@@ -953,7 +1018,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "On specimens SB019 and SB020, 2D reprojection error stays below 0.02 mm (mean ± std: 0.017 ± 0.009 and 0.013 ± 0.003 mm over 16 corners). Median 3D registration error is 0.945 mm [IQR 0.731–1.378] for SB019 and 0.974 mm [IQR 0.753–1.088] for SB020. End-to-end processing completes in under 4 minutes per specimen (3D reconstruction ~3 min; 2D–3D registration ~24 s on an NVIDIA A100), supporting intraoperative timing constraints."
+                "text": "On specimens SB019 and SB020, 2D reprojection error stays below 0.02 mm (mean ± std: 0.017 ± 0.009 and 0.013 ± 0.003 mm over 16 corners). Median 3D registration error is 0.945 mm [IQR 0.731–1.378] for SB019 and 0.974 mm [IQR 0.753–1.088] for SB020. End-to-end processing completes in under 4 minutes per specimen (3D reconstruction 178–210 s; 2D–3D registration under 25 s on an NVIDIA A100), supporting intraoperative timing constraints."
               },
               {
                 "type": "image",
@@ -1076,7 +1141,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "Three-dimensional imaging (e.g., confocal microscopy) is commonly used to visualize microvasculature-on-a-chip models, yet 3D analysis is not standard for extracting quantitative metrics. We developed μVES to compute morphological parameters (radius, length, tortuosity, eccentricity) and intravascular flow velocity from segmented 3D volumes. Applied to fibrin-gel microvascular networks, the tool reproduces literature-consistent capillary morphology and, combined with bead-tracking velocimetry, estimates flow velocities and wall shear stresses that agree with experiments under imposed pressure gradients."
+                "text": "Three-dimensional imaging (e.g., confocal microscopy) is commonly used to visualize microvasculature-on-a-chip models, yet 3D analysis is not standard for extracting quantitative metrics. We developed μVES to compute morphological parameters (radius, length, tortuosity, eccentricity) and intravascular flow velocity from segmented 3D volumes. Applied to fibrin-gel microvascular networks, the tool shows where in vitro networks resemble in vivo capillaries (vessel length, tortuosity) and where they do not (radius, surface-to-volume ratio), and its computed flow velocities are compared with bead-tracking measurements under imposed pressure gradients."
               }
             ]
           },
@@ -1111,7 +1176,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "Validated against REAVER on 2D projections, μVES matches established length estimates before exploiting the full volume, where mean vessel eccentricity is 0.833 ± 0.125, revealing markedly non-circular cross-sections invisible to 2D analysis (2D mean radius 41.3 μm vs. 3D 28.5 μm on a representative network). Across 30 microvascular networks, mean capillary diameter is 31.4 ± 16.2 μm and tortuosity 1.18, consistent with in vitro literature. Flow velocities under 100/200/400 Pa pressure gradients agree with bead-tracking measurements; wall shear stress remains lower than in vivo references but approaches physiological values at higher imposed gradients. Deep-learning segmentation cuts computation time substantially with comparable morphological output."
+                "text": "Validated against REAVER on 2D projections, μVES matches established length estimates before exploiting the full volume, where 2D projection overestimates vessel radius (41.3 μm in 2D vs. 28.5 μm in 3D on a representative network). Across 30 microvascular networks, mean vessel eccentricity is 0.833 ± 0.125, showing markedly non-circular cross-sections; mean capillary diameter is 31.4 ± 16.2 μm, consistent with previous in vitro reports but above the 6–10 μm of in vivo capillaries, while tortuosity (mean 1.18) agrees with in vivo data. Computed velocities follow bead-tracking measurements under 100, 200 and 400 Pa; wall shear stress stays well below in vivo values, and physiological velocity and shear stress cannot be reached at the same time. Deep-learning segmentation cuts computation time substantially with comparable morphological output."
               },
               {
                 "type": "image",
@@ -1125,9 +1190,19 @@
                 "type": "image",
                 "src": "/images/figures/muves/fig5.webp",
                 "alt": "muVES, Figure 5",
-                "caption": "Fig. 5. Functional velocity evaluation on a perfused network: flowrate, fluid velocity and wall shear stresses solved over the vascular graph, against experimental measurements.",
+                "caption": "Fig. 5. Functional velocity evaluation on a perfused network: flow rate, fluid velocity and wall shear stress solved over the vascular graph, with velocity compared against in vitro measurements.",
                 "width": 1027,
                 "height": 1130
+              },
+              {
+                "type": "table",
+                "columns": ["Pressure drop", "Measured median [μm/s]", "Measured mean [μm/s]", "μVES median [μm/s]"],
+                "rows": [
+                  ["100 Pa", "126.4", "155", "171.3"],
+                  ["200 Pa", "303.1", "354", "342.6"],
+                  ["400 Pa", "545.5", "596", "685.2"]
+                ],
+                "caption": "From Section 2.6: intravascular velocity from bead tracking against the velocity computed by μVES."
               }
             ]
           },
@@ -1242,7 +1317,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "During training, the assisted group consistently outperformed controls across all four training tasks with improving trends over repetitions. On day-7 evaluation tasks, executed without assistance by both groups, assisted subjects achieved higher median performance on Thymectomy (+13.07%), Liver Resection (+21.54%), and Suturing (+8.44%), with only Nephrectomy showing a slight decrease (−2.71%). The results suggest HA during training improves unassisted performance on novel surgical-like tasks, supporting skill transfer through integrated visuo-haptic feedback during teleoperation."
+                "text": "During training, the assisted group scored higher on the training tasks, although the learning curves of the two groups show no significant difference. On day-7 evaluation tasks, executed without assistance by both groups, assisted subjects performed better on Thymectomy (+13.07%), Liver Resection (+21.54%), and Suturing (+8.44%), with only Nephrectomy showing a slight decrease in median (−2.71%). The results suggest HA during training improves unassisted performance on novel surgical-like tasks, supporting skill transfer through integrated visuo-haptic feedback during teleoperation."
               }
             ]
           },
@@ -1251,7 +1326,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "Haptic-enhanced VR training on a surgical robot simulator improves task performance during assisted practice and may transfer to unassisted clinical-like scenarios. Extensions include adaptive visco-elastic parameters, larger cohorts, and long-term retention studies. STEVE provides an open hardware/software stack for replicating augmented surgical robotics curricula."
+                "text": "Haptic-enhanced VR training on a surgical robot simulator improves task performance during assisted practice and may transfer to unassisted clinical-like scenarios. Extensions include adaptive visco-elastic parameters, larger cohorts, and long-term retention studies. The setup is built on the dVRK with ROS and Unity."
               }
             ]
           }
@@ -1365,11 +1440,23 @@
             ]
           },
           {
-            "title": "Results",
+            "title": "Evaluation and expected impact",
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "The framework is evaluated by mucosal coverage percentage, ADR, and number of missed lesions, metrics aligned with the clinical failure mode of inadequate inspection. Beyond aggregate scores, the digital twin yields per-patient blind-spot maps localizing hard-to-visualize regions and coverage-optimal inspection plans tailored to each colon's anatomy, standardizing inspection quality and reducing operator dependence."
+                "text": "The framework is to be evaluated by mucosal coverage percentage, ADR, and number of missed lesions, metrics aligned with the clinical failure mode of inadequate inspection. Beyond aggregate scores, the digital twin is expected to yield per-patient blind-spot maps localizing hard-to-visualize regions and coverage-optimal inspection plans tailored to each colon's anatomy, standardizing inspection quality and reducing operator dependence."
+              },
+              {
+                "type": "paragraph",
+                "text": "Next steps are integration with physical robotic colonoscopy platforms and uncertainty-aware coverage mapping, to flag regions seen with low confidence for re-inspection."
+              },
+              {
+                "type": "image",
+                "src": "/images/hamlynposter.webp",
+                "width": 1000,
+                "height": 1453,
+                "alt": "Poster: Coverage-Optimal Robotic Colonoscopy via Patient-Specific Digital-Twin World Models",
+                "caption": "The poster presented at the Hamlyn Symposium 2026 workshop."
               }
             ]
           },
@@ -1494,7 +1581,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "The survey follows a structured literature review across two domains. Medical robotics is organized into four themes: (1) preoperative and surgical task planning with CT/MRI registration and port placement optimization; (2) image-guided robotic surgery with rigid and deformable registration on da Vinci and custom platforms; (3) surgical training and simulation including AR-guided curricula and haptic augmentation; and (4) telesurgery covering remote visualization, teleoperation, and latency mitigation via predictive displays and digital twins. Industrial robotics is reviewed across human–robot collaboration, path planning, training/simulation, and teleoperation, spanning HMD, projector-, and tablet-based AR on platforms from HoloLens to KUKA and Universal Robots."
+                "text": "The survey reviews recent work across two domains, organized by application theme. Medical robotics is organized into four themes: (1) preoperative and surgical task planning with CT/MRI registration and port placement optimization; (2) image-guided robotic surgery with rigid and deformable registration on da Vinci and custom platforms; (3) surgical training and simulation including AR-guided curricula and haptic augmentation; and (4) telesurgery covering remote visualization, teleoperation, and latency mitigation via predictive displays and digital twins. Industrial robotics is reviewed across human–robot collaboration, path planning, training/simulation, and teleoperation, spanning HMD, projector-, and tablet-based AR on platforms from HoloLens to KUKA and Universal Robots."
               }
             ]
           },
@@ -1503,7 +1590,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "Across medical AR robotics, preoperative planning applications improve target localization and robot configuration; image-guided surgery overlays span rigid orthopedics to deformable abdominal procedures; training systems demonstrate skill acquisition benefits with AR feedback; and telesurgery work addresses latency through predictive displays. In industrial settings, AR assists gesture-, gaze-, and BCI-driven collaboration, intuitive path planning and programming, mixed-reality training, and teleoperation with virtual fixtures. Common findings include trade-offs between registration accuracy, field of view, hardware ergonomics, and cognitive load across both domains."
+                "text": "Across medical AR robotics, preoperative planning applications improve target localization and robot configuration; image-guided surgery overlays span rigid orthopedics to deformable abdominal procedures; training systems report benefits with AR feedback, mostly through questionnaires and task times; and telesurgery work addresses latency through predictive displays. In industrial settings, AR assists gesture-, gaze-, and BCI-driven collaboration, intuitive path planning and programming, mixed-reality training, and AR or haptic assistance for teleoperation. Recurring limitations in both domains are registration accuracy, field of view, hardware comfort and computation, and cognitive load."
               }
             ]
           },
@@ -1512,7 +1599,7 @@
             "blocks": [
               {
                 "type": "paragraph",
-                "text": "AR holds promise for improving operator awareness in robotic applications, but immersion, hardware comfort, registration accuracy, safety, communication latency, and simulation-to-real transfer remain open challenges. Future directions include more ergonomic displays, multimodal interaction (haptic, audio, gaze), reduced hardware cost as consumer AR matures, and tighter integration of digital twins for predictive assistance in both surgical and industrial teleoperation."
+                "text": "AR holds promise for improving operator awareness in robotic applications, but immersion, hardware comfort, registration accuracy, safety, communication latency, and simulation-to-real transfer remain open challenges. Future directions centre on the hardware system, interaction modalities (haptic, audio, gaze) and multimodal perception."
               }
             ]
           }
@@ -2161,7 +2248,7 @@
       "tag": "builds",
       "thumbnail": "/images/announcements/openshot.png",
       "cardAspect": "16/9",
-      "cardFit": "contain",
+      "cardFit": "cover",
       "icon": "/images/announcements/openshot.png",
       "accent": "#D8361D",
       "tech": [
@@ -2180,7 +2267,83 @@
         }
       ],
       "details": {
-        "body": "Screenshots on a Mac are tricky, but a good screenshot tool shouldn't cost $35 a year. OpenShot-Y is a free, open-source alternative to the most popular screenshot tool for Mac, with the same features and more.\n\nThe full feature list, docs and downloads live at [albertorota.dev/openshot](https://www.albertorota.dev/openshot)."
+        "body": "OpenShot-Y is a menu-bar app for macOS that takes care of what happens after the screenshot: it adds an even margin while you select, names the file after what you captured, and blacks out emails and API keys before you paste. It is free, needs no account, and makes no network connections at all.\n\nThe full manual and downloads live at [albertorota.dev/openshot](https://www.albertorota.dev/openshot).",
+        "highlights": [
+          "Detect mode outlines the paragraph, button, card or window under the pointer; scroll to step up a size, click to capture",
+          "Redaction finds emails, phone and card numbers, IBANs and API keys with on-device text recognition",
+          "Scrolling capture stitches a whole page into one image and keeps a sticky header only once",
+          "Screen recording to MP4 or GIF, with clicks, keystrokes and a webcam bubble",
+          "2.7 MB, macOS 15 or later, Apple silicon and Intel"
+        ],
+        "sections": [
+          {
+            "title": "Detect",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Instead of dragging a rectangle, move the pointer and OpenShot-Y outlines what is underneath it. Scrolling steps up to the next enclosing element, so getting the exact edge of a dialog takes one click instead of pixel-hunting. Bound to `⌥⇧9` by default."
+              },
+              {
+                "type": "image",
+                "src": "/openshot/media/detect.jpg",
+                "width": 1280,
+                "height": 800,
+                "alt": "OpenShot-Y detect mode outlining an element under the pointer",
+                "caption": "Detect mode: the element under the pointer is outlined before capture."
+              }
+            ]
+          },
+          {
+            "title": "Editor",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Redact (`⇧⌘R`) covers sensitive text it recognises on the device. Arrows, boxes, text and numbered steps can be added on top, and Background puts the shot on a gradient, a colour or your wallpaper, with rounded corners and a shadow."
+              },
+              {
+                "type": "image",
+                "src": "/openshot/media/editor.jpg",
+                "width": 1280,
+                "height": 586,
+                "alt": "The OpenShot-Y editor with redaction and annotations",
+                "caption": "The editor, with redaction and annotations."
+              }
+            ]
+          },
+          {
+            "title": "Scrolling capture",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Select the part of the window that scrolls and scroll it. The page is stitched together as you go and shown growing at the side. Bound to `⌥⇧4`."
+              },
+              {
+                "type": "image",
+                "src": "/openshot/media/scrolling.jpg",
+                "width": 1280,
+                "height": 690,
+                "alt": "OpenShot-Y stitching a scrolling capture",
+                "caption": "A scrolling capture being stitched while the page scrolls."
+              }
+            ]
+          },
+          {
+            "title": "Also in the menu",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Useful file names such as `Safari – Pull requests 2026-11-18.png`, optionally sorted into folders by day, month or app",
+                  "Copy the text in any area to the clipboard, even from images and videos",
+                  "Pin a screenshot above your windows while you copy values from it",
+                  "History of the last 100 captures",
+                  "Self-timer of 3, 5 or 10 seconds, for capturing open menus",
+                  "Hide desktop icons for clean full-screen shots"
+                ]
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -2466,7 +2629,15 @@
         }
       ],
       "details": {
-        "body": "Identity work for the NEARLab medical-robotics group at Politecnico di Milano, a system of marks rooted in the group's surgical and imaging research."
+        "body": "Identity work for the NEARLab medical-robotics group at Politecnico di Milano, a system of marks rooted in the group's surgical and imaging research.",
+        "media": [
+          {
+            "type": "image",
+            "src": "/images/nearlab.png",
+            "alt": "NEARLab monogram",
+            "caption": "The standalone monogram."
+          }
+        ]
       }
     },
     {

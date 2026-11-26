@@ -87,63 +87,68 @@ function renderRichText(input: string): React.ReactNode {
   return <>{stack[0].children}</>;
 }
 
+/**
+ * The image fills all the space it is given: on mobile a banner of fixed
+ * height above the text, side by side the whole column left of the text, from
+ * the top padding to the bottom padding. The file's own ratio is never kept,
+ * so "cover" crops (steered by `position`) and "contain" shows the image whole
+ * over a blurred copy of itself, so the frame still reads as filled.
+ */
 function AnnouncementImage({
   src,
   alt,
+  fit = "cover",
+  position,
   aspect,
 }: {
   src: string;
   alt: string;
+  fit?: "cover" | "contain";
+  position?: string;
   /**
-   * CSS aspect-ratio (e.g. "1 / 1"). The frame height never changes; the
-   * aspect only sets the image width. Omitted: the image fills its column.
+   * Fixed frame ratio ("1 / 1"). The frame keeps the full height and its width
+   * follows the ratio: centred in the banner on mobile, and side by side the
+   * text moves up to it instead of starting at the usual column.
    */
   aspect?: string;
 }) {
-  // "auto": use the file's own ratio, known only once it has loaded. Until
-  // then hold a 4/3 frame so the image column never collapses to zero width.
-  const [natural, setNatural] = React.useState<string | null>(null);
-  const resolved = aspect === "auto" ? natural ?? "4 / 3" : aspect;
+  const unoptimized = shouldBypassImageOptimization(src);
+  const sizes = "(max-width: 900px) 100vw, 45vw";
+  // A fixed-ratio frame can still be clamped (45% of the card on desktop when
+  // the card is very tall); showing the image whole then beats cropping it.
+  // While the frame has its exact ratio, contain and cover look the same.
+  if (aspect) fit = "contain";
 
-  const image = (
-    <NextImage
-      src={src}
-      alt={alt}
-      fill
-      className="object-cover"
-      sizes="(max-width: 768px) 100vw, 22rem"
-      unoptimized={shouldBypassImageOptimization(src)}
-      onLoad={
-        aspect === "auto"
-          ? (e) => {
-              const img = e.currentTarget;
-              if (img.naturalWidth && img.naturalHeight) {
-                setNatural(`${img.naturalWidth} / ${img.naturalHeight}`);
-              }
-            }
-          : undefined
-      }
-    />
-  );
-
-  if (!resolved) {
-    return (
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-white/10 md:aspect-auto md:h-full md:min-h-[12rem]">
-        {image}
-      </div>
-    );
-  }
-
-  // Same height as the default frame (4/3 of the width on mobile, the card's
-  // inner height on desktop); the width follows the requested aspect.
   return (
-    <div className="flex aspect-[4/3] w-full justify-center md:aspect-auto md:h-[17rem] md:w-auto md:self-center">
-      <div
-        className="relative h-full max-w-full overflow-hidden rounded-2xl border border-white/10"
-        style={{ aspectRatio: resolved }}
-      >
-        {image}
-      </div>
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] max-[639px]:h-52 min-[640px]:max-[899px]:h-64 min-[900px]:min-h-[18rem]",
+        aspect
+          ? "mx-auto max-w-full min-[900px]:mx-0 min-[900px]:max-w-[45%] min-[900px]:shrink-0 min-[900px]:self-stretch"
+          : "w-full"
+      )}
+      style={aspect ? { aspectRatio: aspect } : undefined}
+    >
+      {fit === "contain" ? (
+        <NextImage
+          src={src}
+          alt=""
+          aria-hidden
+          fill
+          className="scale-125 object-cover opacity-50 blur-2xl"
+          sizes={sizes}
+          unoptimized={unoptimized}
+        />
+      ) : null}
+      <NextImage
+        src={src}
+        alt={alt}
+        fill
+        className={fit === "contain" ? "object-contain" : "object-cover"}
+        style={position ? { objectPosition: position } : undefined}
+        sizes={sizes}
+        unoptimized={unoptimized}
+      />
     </div>
   );
 }
@@ -194,7 +199,7 @@ function AnnouncementCard({
       transition={{ duration: 0.5, delay }}
       className={cn(
         "relative w-full overflow-hidden rounded-3xl border border-white/12 bg-white/[0.04] backdrop-blur",
-        uniformSize && "min-h-[280px] sm:min-h-[320px] flex flex-col justify-center"
+        uniformSize && "flex h-full min-h-[280px] flex-col sm:min-h-[320px] min-[900px]:min-h-[22rem]"
       )}
     >
       <div
@@ -207,17 +212,41 @@ function AnnouncementCard({
       />
       <div
         className={cn(
-          "relative grid gap-5 p-5 sm:p-6",
+          "relative grid flex-1 grid-cols-[minmax(0,1fr)] gap-5 p-5 sm:p-6",
+          // Stacked: banner on top, text fills the rest. Side by side: the image
+          // column is a fixed share of the card and stretches to its full
+          // height, so the text starts at the same x on every slide.
+          hasImage && "grid-rows-[auto_1fr]",
+          // Fixed-ratio image: a flex row instead, so the image takes exactly
+          // the width its ratio gives at the card's height and the text takes
+          // the rest.
+          hasImage && data.imageAspect && "min-[900px]:flex min-[900px]:gap-8",
           hasImage &&
-            (data.imageAspect
-              ? "md:grid-cols-[auto_minmax(0,1fr)] md:items-stretch"
-              : "md:grid-cols-[minmax(10rem,1fr)_minmax(0,1.6fr)] md:items-stretch"),
-          !hasImage && hasActions && "md:grid-cols-[1.5fr_1fr] md:items-center"
+            !data.imageAspect &&
+            "min-[900px]:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)] xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] min-[900px]:grid-rows-1 min-[900px]:items-stretch min-[900px]:gap-8",
+          !hasImage && hasActions && "md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] md:items-center"
         )}
       >
-        {imageSrc ? <AnnouncementImage src={imageSrc} alt={imageAlt} aspect={data.imageAspect} /> : null}
+        {imageSrc ? (
+          <AnnouncementImage
+            src={imageSrc}
+            alt={imageAlt}
+            fit={data.imageFit}
+            position={data.imagePosition}
+            aspect={data.imageAspect}
+          />
+        ) : null}
 
-        <div>
+        <div
+          className={cn(
+            "min-w-0",
+            // Text from the top, buttons pinned to the bottom. Side by side, that
+            // lines the label up with the image's top edge and the buttons with
+            // its bottom edge, so nothing moves vertically between slides.
+            hasImage && "flex flex-col items-start",
+            hasImage && data.imageAspect && "min-[900px]:flex-1"
+          )}
+        >
           {data.label ? (
             <div
               className="inline-flex items-center gap-2 rounded-full border bg-white/[0.05] px-3 py-1 text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-white/80"
@@ -238,8 +267,9 @@ function AnnouncementCard({
           ) : null}
 
           {data.title ? (
-            <h2 className="mt-3 font-display tracking-[0.03em] uppercase text-2xl sm:text-3xl md:text-4xl leading-[0.95] text-white">
-              {data.title}
+            <h2 className="mt-3 font-display tracking-[0.03em] uppercase text-2xl sm:text-3xl xl:text-4xl leading-[0.95] text-white text-balance">
+              {/* Non-breaking hyphens: never split "OpenShot-Y" across lines */}
+              {data.title.replace(/-/g, "\u2011")}
             </h2>
           ) : null}
 
@@ -270,7 +300,9 @@ function AnnouncementCard({
             </div>
           )}
 
-          {hasImage && actionButtons ? <div className="mt-4">{actionButtons}</div> : null}
+          {hasImage && actionButtons ? (
+            <div className="mt-auto pt-5">{actionButtons}</div>
+          ) : null}
         </div>
 
         {!hasImage && actionButtons ? (
@@ -452,14 +484,14 @@ function AnnouncementCarousel({ items }: { items: AnnouncementData[] }) {
 
   return (
     <div className="mx-auto max-w-[96rem] px-4 sm:px-8 -mt-4 sm:-mt-2 pb-4 sm:pb-6">
-      <div className="grid gap-4 md:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)] md:gap-6">
+      <div className="grid gap-4 lg:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)] lg:gap-6">
         {/* Vertical rail — desktop */}
         <div
           ref={navRef}
           role="tablist"
           aria-label="All announcements"
           aria-orientation="vertical"
-          className="relative hidden md:flex md:flex-col md:self-center"
+          className="relative hidden lg:flex lg:flex-col lg:self-center"
         >
           {/* Spine + the segment that tracks the pager */}
           <div
@@ -506,7 +538,7 @@ function AnnouncementCarousel({ items }: { items: AnnouncementData[] }) {
         </div>
 
         {/* Compact rail — mobile */}
-        <div className="flex items-center gap-3 md:hidden" role="tablist" aria-label="All announcements">
+        <div className="flex items-center gap-3 lg:hidden" role="tablist" aria-label="All announcements">
           <div className="flex items-center gap-1.5">
             {items.map((a, i) => {
               const itemAccent = parseHex(a.accent || "#34d399");
@@ -565,7 +597,7 @@ function AnnouncementCarousel({ items }: { items: AnnouncementData[] }) {
                       "cursor-pointer opacity-[0.06] blur-[4px] hover:opacity-[0.12]"
                   )}
                 >
-                  <div className="w-full">
+                  <div className="flex w-full">
                     <AnnouncementCard data={data} animate={i === 0} uniformSize />
                   </div>
                 </div>

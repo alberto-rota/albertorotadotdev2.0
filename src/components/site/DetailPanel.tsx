@@ -19,34 +19,12 @@ import { PaperMorphButton } from "./PaperMorphButton";
 import type { Collaborator, DetailBlock, DetailSection, Institution, Product, ProductAction, ProductMedia } from "./types";
 import { getDetailComponent } from "./detail-components/registry";
 import { getPaperLinks, getResearchSections, hasPaperMorph } from "./paper-utils";
+import { InlineText, DetailTable } from "./rich-text";
+import { SECTION_FALLBACK_TITLES } from "./data";
 import { shouldBypassImageOptimization } from "@/lib/utils";
 
 const bodyTextClass =
   "text-white/80 text-[15px] sm:text-base leading-relaxed [font-family:var(--font-body)]";
-
-/**
- * Renders a string with `backtick` spans as inline code. Content in
- * `products.json` is written in plain text, so this is the only markup it gets.
- */
-function InlineText({ text }: { text: string }) {
-  const parts = text.split(/`([^`]+)`/g);
-  return (
-    <>
-      {parts.map((part, i) =>
-        i % 2 === 1 ? (
-          <code
-            key={i}
-            className="rounded-[5px] bg-white/[0.08] px-1.5 py-0.5 text-[0.875em] text-white/90 [font-family:var(--font-mono)]"
-          >
-            {part}
-          </code>
-        ) : (
-          <React.Fragment key={i}>{part}</React.Fragment>
-        )
-      )}
-    </>
-  );
-}
 
 function useMediaQuery(query: string) {
   const get = React.useCallback(() => {
@@ -241,7 +219,7 @@ function PanelHeader({
         <div className="flex items-center gap-2 min-w-0">
           <span className="h-2 w-2 rounded-full" style={{ background: accent }} aria-hidden />
           <span className="text-[11px] uppercase tracking-[0.2em] text-white/55 truncate" style={{ fontFamily: "var(--font-body)" }}>
-            {product.tag ?? "Detail"}
+            {product.tag ? SECTION_FALLBACK_TITLES[product.tag] : "Detail"}
             {product.meta?.venue ? ` · ${product.meta.venue}` : ""}
           </span>
         </div>
@@ -423,9 +401,12 @@ function Highlights({ details, accent }: { details: Product["details"]; accent: 
   return (
     <ul className="space-y-2.5">
       {details.highlights.map((h, i) => (
-        <li key={i} className="flex items-start gap-3">
-          <span aria-hidden className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: accent }} />
-          <span className="text-white/80 leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
+        <li key={i} className="flex items-start gap-3 leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
+          {/* One line tall, so the dot centres on the first line of text */}
+          <span aria-hidden className="flex h-[1lh] shrink-0 items-center">
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: accent }} />
+          </span>
+          <span className="text-white/80">
             <InlineText text={h} />
           </span>
         </li>
@@ -526,7 +507,7 @@ function PaperCover({ product }: { product: Product }) {
           alt={`${product.title} paper preview`}
           fill
           sizes="(min-width: 768px) 224px, 100vw"
-          className="object-contain object-top"
+          className="object-cover object-top"
           unoptimized={shouldBypassImageOptimization(product.thumbnail)}
           priority
         />
@@ -548,38 +529,32 @@ function SectionImageBlock({
   accent: string;
 }) {
   const bypass = shouldBypassImageOptimization(block.src);
-  // With intrinsic dimensions the figure takes the image's own aspect ratio, so
-  // wide diagrams do not sit inside letterbox bands. Without them, fall back to
-  // a fixed box and fit the image into it.
+  // Every figure frame spans the full column so figures line up with the text
+  // and with each other. The image itself keeps its ratio, capped in height so
+  // a tall figure never fills the panel, and sits centred in the frame.
   const intrinsic = block.width && block.height ? { w: block.width, h: block.height } : null;
-  // Cap the rendered height so a figure never fills the panel. Bounding the
-  // *figure* by `ratio * FIGURE_MAX_H` rather than the image keeps it snug on
-  // both axes: the box shrinks with the image instead of letterboxing it.
-  const maxWidth = intrinsic
-    ? `calc(${(intrinsic.w / intrinsic.h).toFixed(4)} * ${FIGURE_MAX_H})`
-    : undefined;
   return (
-    <figure
-      className="mx-auto overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
-      style={{ maxWidth }}
-    >
+    <figure className="w-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
       {intrinsic ? (
-        <NextImage
-          src={block.src}
-          alt={block.alt ?? block.caption ?? ""}
-          width={intrinsic.w}
-          height={intrinsic.h}
-          sizes="(min-width: 768px) 640px, 90vw"
-          className="block h-auto w-full"
-          unoptimized={bypass}
-        />
+        <div className="flex justify-center">
+          <NextImage
+            src={block.src}
+            alt={block.alt ?? block.caption ?? ""}
+            width={intrinsic.w}
+            height={intrinsic.h}
+            sizes="(min-width: 768px) 960px, 90vw"
+            className="block h-auto w-auto max-w-full"
+            style={{ maxHeight: FIGURE_MAX_H }}
+            unoptimized={bypass}
+          />
+        </div>
       ) : (
         <div className="relative aspect-[16/10] w-full">
           <NextImage
             src={block.src}
             alt={block.alt ?? block.caption ?? ""}
             fill
-            sizes="(min-width: 768px) 640px, 90vw"
+            sizes="(min-width: 768px) 960px, 90vw"
             className="object-contain"
             unoptimized={bypass}
           />
@@ -613,15 +588,15 @@ function SectionListBlock({
       {items.map((item, i) => (
         <li
           key={i}
-          className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5"
+          className={`rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5 ${
+            items.length % 2 === 1 && i === items.length - 1 ? "sm:col-span-2" : ""
+          }`}
         >
-          <div className="flex items-start gap-3">
-            <span
-              aria-hidden
-              className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0"
-              style={{ background: accent }}
-            />
-            <span className={bodyTextClass}>
+          <div className={`flex items-start gap-3 ${bodyTextClass}`}>
+            <span aria-hidden className="flex h-[1lh] shrink-0 items-center">
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: accent }} />
+            </span>
+            <span>
               <InlineText text={item} />
             </span>
           </div>
@@ -647,6 +622,9 @@ function DetailBlockView({
   }
   if (block.type === "list") {
     return <SectionListBlock items={block.items} accent={accent} />;
+  }
+  if (block.type === "table") {
+    return <DetailTable block={block} accent={accent} />;
   }
   return <SectionImageBlock block={block} accent={accent} />;
 }

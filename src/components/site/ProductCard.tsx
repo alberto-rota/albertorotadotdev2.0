@@ -328,22 +328,16 @@ export function ProductCard({
               Papers get a deeper falloff that stays dark through the whole
               title/subtitle/tech block, since their figures are often bright. */}
           <div
-            className={cn(
-              "absolute inset-0 pointer-events-none",
-              isResearch
-                ? undefined
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: isResearch
+                ? "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.88) 22%, rgba(0,0,0,0.65) 40%, rgba(0,0,0,0.25) 62%, rgba(0,0,0,0) 82%)"
                 : isContain
-                  ? "bg-gradient-to-t from-black/85 via-black/10 to-transparent"
-                  : "bg-gradient-to-t from-black/85 via-black/30 to-black/10"
-            )}
-            style={
-              isResearch
-                ? {
-                    background:
-                      "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.88) 22%, rgba(0,0,0,0.65) 40%, rgba(0,0,0,0.25) 62%, rgba(0,0,0,0) 82%)",
-                  }
-                : undefined
-            }
+                  ? "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 22%, rgba(0,0,0,0.25) 42%, rgba(0,0,0,0) 60%)"
+                  : // Screenshots are busy right down to the edge, so the scrim
+                    // stays dense through the whole title/subtitle/tech block.
+                    "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.82) 24%, rgba(0,0,0,0.5) 44%, rgba(0,0,0,0.15) 66%, rgba(0,0,0,0.05) 100%)",
+            }}
           />
 
           {/* Accent line — top */}

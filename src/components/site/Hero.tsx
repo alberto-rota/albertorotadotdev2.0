@@ -14,6 +14,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { GlyphField } from "./GlyphField";
+import type { GlyphWords } from "./glyph-words";
 import { Icon } from "./Icon";
 import type { ContactLink, Product } from "./types";
 
@@ -64,8 +65,11 @@ export function Hero({
   tagline = DEFAULT_TAGLINE,
   pinned = [],
   contacts = [],
+  glyphWords,
 }: {
   tagline?: string;
+  /** What the glyph band spells (`hero.glyph` in products.json). */
+  glyphWords?: GlyphWords;
   pinned?: Product[];
   contacts?: ContactLink[];
 }) {
@@ -92,7 +96,7 @@ export function Hero({
       {/* Terminal glyph field: cascading Nerd Font output that decodes around
           the pointer. It shapes its own edge fades and keeps a pocket clear
           behind this copy — see `GlyphField.tsx`. */}
-      <GlyphField className="pointer-events-none absolute inset-0 -z-10" targetRef={nameRef} />
+      <GlyphField className="pointer-events-none absolute inset-0 -z-10" targetRef={nameRef} words={glyphWords} />
 
       {/* Subtle bottom fade so the field eases into the page below */}
       <div

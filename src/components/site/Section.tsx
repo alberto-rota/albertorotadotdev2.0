@@ -138,7 +138,7 @@ export function Section({
           {isGrid ? (
             /* Horizontally scrolling two-line grid: items fill columns
                left-to-right, new products extend the row to the right */
-            <div className="mx-auto grid w-max grid-flow-col grid-rows-2 auto-cols-[min(22rem,calc(100vw-2rem))] md:auto-cols-[40rem] gap-4 sm:gap-5 px-4 sm:px-6 py-2">
+            <div className="mx-auto grid w-max grid-flow-col grid-rows-2 auto-cols-[min(22rem,calc(100vw-2rem))] md:auto-cols-[28rem] lg:auto-cols-[min(33.875rem,calc(50vw-2.625rem))] gap-4 sm:gap-5 px-4 sm:px-6 py-2">
               {products.map((p, i) => (
                 <ProductCard
                   key={p.slug || `${p.title}-${i}`}
@@ -178,8 +178,8 @@ export function Section({
           )}
         </div>
 
-        {/* Mobile swipe hint shown only when there are >1 items */}
-        {products.length > 1 ? (
+        {/* Mobile swipe hint, only when the row actually overflows */}
+        {canLeft || canRight ? (
           <div className="md:hidden mt-3 px-6 text-[10px] uppercase tracking-[0.22em] text-white/35" style={{ fontFamily: "var(--font-body)" }}>
             Swipe →
           </div>

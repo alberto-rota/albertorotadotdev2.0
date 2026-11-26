@@ -14,26 +14,7 @@ import { getDetailComponent } from "./detail-components/registry";
 import { shouldBypassImageOptimization } from "@/lib/utils";
 import { productPath, relatedProducts } from "@/lib/site";
 import type { DetailBlock, Product } from "./types";
-
-function InlineText({ text }: { text: string }) {
-  const parts = text.split(/`([^`]+)`/g);
-  return (
-    <>
-      {parts.map((part, i) =>
-        i % 2 === 1 ? (
-          <code
-            key={i}
-            className="rounded-[5px] bg-white/[0.08] px-1.5 py-0.5 text-[0.875em] text-white/90 [font-family:var(--font-mono)]"
-          >
-            {part}
-          </code>
-        ) : (
-          <React.Fragment key={i}>{part}</React.Fragment>
-        )
-      )}
-    </>
-  );
-}
+import { InlineText, DetailTable } from "./rich-text";
 
 function BlockView({ block }: { block: DetailBlock }) {
   if (block.type === "paragraph") {
@@ -53,6 +34,10 @@ function BlockView({ block }: { block: DetailBlock }) {
         ))}
       </ul>
     );
+  }
+
+  if (block.type === "table") {
+    return <DetailTable block={block} />;
   }
 
   const intrinsic = block.width && block.height ? { w: block.width, h: block.height } : null;
