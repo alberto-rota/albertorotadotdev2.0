@@ -48,9 +48,14 @@ const nextConfig = {
       },
       {
         source: "/vsc-extensions/:slug",
-        destination: "/builds/:slug",
+        destination: "/workshop/:slug",
         permanent: true,
       },
+      // Terminal Tools + Things I Build were merged into The Workshop.
+      { source: "/terminal-tools", destination: "/#workshop", permanent: true },
+      { source: "/terminal-tools/:slug", destination: "/workshop/:slug", permanent: true },
+      { source: "/builds", destination: "/#workshop", permanent: true },
+      { source: "/builds/:slug", destination: "/workshop/:slug", permanent: true },
       {
         source: "/research/hamlynworkshop",
         destination: "/research/robotic-colonoscopy",

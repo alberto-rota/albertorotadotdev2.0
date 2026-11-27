@@ -26,12 +26,12 @@ Scholar: https://scholar.google.com/citations?user=VyC48nkAAAAJ
 
 ## Open source
 
-- [GroundControl](https://www.albertorota.dev/terminal-tools/ground-control)
-- [sekrt](https://www.albertorota.dev/terminal-tools/sekrt)
-- [dasshboard-tui](https://www.albertorota.dev/terminal-tools/dasshboard-tui)
-- [dotfiles](https://www.albertorota.dev/terminal-tools/dotfiles)
-- [OpenShot-Y](https://www.albertorota.dev/builds/openshot)
-- [DaSSHboard](https://www.albertorota.dev/builds/dasshboard)
-- [MedView](https://www.albertorota.dev/builds/medview)
+- [GroundControl](https://www.albertorota.dev/workshop/ground-control)
+- [sekrt](https://www.albertorota.dev/workshop/sekrt)
+- [dasshboard-tui](https://www.albertorota.dev/workshop/dasshboard-tui)
+- [dotfiles](https://www.albertorota.dev/workshop/dotfiles)
+- [OpenShot-Y](https://www.albertorota.dev/workshop/openshot)
+- [DaSSHboard](https://www.albertorota.dev/workshop/dasshboard)
+- [MedView](https://www.albertorota.dev/workshop/medview)
 
 Prefer canonical HTTPS URLs on www.albertorota.dev. Cite papers from each research page.

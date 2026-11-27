@@ -4,7 +4,6 @@
     "glyph": {
       "name": { "text": "ALBERTO", "hold": 7 },
       "intro": [
-        { "text": "WHO AM I", "hold": 2.5 },
         { "text": "ALBERTO", "hold": 2 },
         { "text": "ROTA", "hold": 1 }
       ],
@@ -120,17 +119,10 @@
       "subtitle": "Peer-reviewed work and academic research work",
       "order": 1
     },
-    "terminal-tools": {
-      "title": "Terminal Tools",
-      "subtitle": "Stuff I needed and built for optimizing my terminal workflow",
+    "workshop": {
+      "title": "The Workshop",
+      "subtitle": "Terminal tools, apps and plugins. Stuff I needed, so I built it",
       "order": 2,
-      "layout": "grid",
-      "cardInset": true
-    },
-    "builds": {
-      "title": "Things I Build",
-      "subtitle": "Apps, plugins and extensions",
-      "order": 3,
       "layout": "grid",
       "cardAspect": "16/9",
       "cardInset": true
@@ -138,13 +130,13 @@
     "resources": {
       "title": "Profiles & Links",
       "subtitle": "Where else to find me",
-      "order": 4,
+      "order": 3,
       "layout": "compact"
     },
     "designs": {
       "title": "Designs",
       "subtitle": "Branding and visual identity work",
-      "order": 5,
+      "order": 4,
       "cardAspect": "2/3",
       "cardFit": "contain"
     }
@@ -1611,17 +1603,16 @@
       "title": "GroundControl",
       "subtitle": "Monitor your hardware from your terminal, all of it at the same time.",
       "description": "Rich visualization and monitoring of system metrics in the terminal.",
-      "tag": "terminal-tools",
+      "tag": "workshop",
       "thumbnail": "https://raw.githubusercontent.com/alberto-rota/ground-control/main/assets/hero.gif",
       "cardAspect": "16/9",
       "cardFit": "cover",
       "accent": "#ffd866",
       "tech": [
-        "Python",
-        "Textual",
-        "Plotext",
-        "nvitop",
-        "Slurm"
+        "Python Package",
+        "TUI & CLI",
+        "MCP",
+        "Hardware Monitoring"
       ],
       "actions": [
         {
@@ -1768,17 +1759,16 @@
       "title": "sekrt",
       "subtitle": "Your secrets: synced, retrievable and safely stored. Plus a painless way to keep .env files out of your repos.",
       "description": "An AES-256 secret manager with a Textual TUI, first-class .env and SSH-key workflows, and sync through any private git remote.",
-      "tag": "terminal-tools",
+      "tag": "workshop",
       "thumbnail": "https://raw.githubusercontent.com/alberto-rota/sekrt/main/docs/hero.gif",
       "cardAspect": "16/9",
       "cardFit": "cover",
       "accent": "#ff0000",
       "tech": [
-        "Python",
-        "Textual",
-        "Click",
-        "AES-256-GCM",
-        "git"
+        "Python Package",
+        "TUI & CLI",
+        "MCP",
+        "Secrets Manager"
       ],
       "actions": [
         {
@@ -1933,16 +1923,16 @@
       "title": "dasshboard-tui",
       "subtitle": "Moving between SSH hosts just got a whole lot easier.",
       "description": "A home screen for your terminal: every host in your SSH config becomes a tile you can open with one key.",
-      "tag": "terminal-tools",
+      "tag": "workshop",
       "thumbnail": "https://raw.githubusercontent.com/alberto-rota/dasshboard-tui/main/docs/board.gif",
       "cardAspect": "16/9",
       "cardFit": "cover",
       "accent": "#ffd866",
       "tech": [
+        "Terminal tool",
         "Rust",
         "ratatui",
-        "SSH",
-        "TOML"
+        "SSH portal"
       ],
       "actions": [
         {
@@ -2084,17 +2074,15 @@
       "title": "dotfiles",
       "subtitle": "This is what you install if you want your terminal to look like mine.",
       "description": "One line to set up a new machine: tmux, oh-my-posh, Claude Code, Neovim and a pile of portable shell additions.",
-      "tag": "terminal-tools",
+      "tag": "workshop",
       "thumbnail": "https://raw.githubusercontent.com/alberto-rota/dotfiles/main/demo/setup.gif",
       "cardAspect": "16/9",
       "cardFit": "cover",
       "accent": "#ffd866",
       "tech": [
-        "Bash",
-        "uv",
-        "tmux",
-        "oh-my-posh",
-        "Neovim"
+        "Terminal tool",
+        "Dotfiles",
+        "Box Setup"
       ],
       "actions": [
         {
@@ -2245,14 +2233,16 @@
       "title": "OpenShot-Y",
       "subtitle": "Free, open-source screenshots for macOS",
       "description": "A free, open-source alternative to paid macOS screenshot tools, with the same features and more.",
-      "tag": "builds",
+      "tag": "workshop",
       "thumbnail": "/images/announcements/openshot.png",
       "cardAspect": "16/9",
       "cardFit": "cover",
       "icon": "/images/announcements/openshot.png",
       "accent": "#D8361D",
       "tech": [
-        "macOS"
+        "MacOS App",
+        "Binary",
+        "Screenshots"
       ],
       "actions": [
         {
@@ -2351,18 +2341,15 @@
       "title": "DaSSHboard",
       "subtitle": "A stylish SSH dashboard for VS Code",
       "description": "One-click access to your SSH hosts, WSL distros and running Docker containers, from a customizable VS Code panel.",
-      "tag": "builds",
+      "tag": "workshop",
       "thumbnail": "https://raw.githubusercontent.com/alberto-rota/DaSSHboard/master/overview.png",
       "cardAspect": "16/9",
       "cardFit": "cover",
       "icon": "/icons/dasshboard_icon.png",
       "accent": "#fc9867",
       "tech": [
-        "TypeScript",
-        "VS Code API",
-        "SSH",
-        "WSL",
-        "Docker"
+        "VSC Extension",
+        "SSH Portal"
       ],
       "actions": [
         {
@@ -2482,17 +2469,15 @@
       "title": "MedView",
       "subtitle": "NIfTI / DICOM viewer for VS Code",
       "description": "A NIfTI and DICOM viewer that runs inside VS Code, with multi-planar reconstruction and segmentation overlays.",
-      "tag": "builds",
+      "tag": "workshop",
       "thumbnail": "/images/medview.webp",
       "cardAspect": "16/9",
       "cardFit": "cover",
       "icon": "/icons/medview_icon.webp",
       "accent": "#ff6188",
       "tech": [
-        "TypeScript",
-        "VS Code API",
-        "NIfTI",
-        "DICOM"
+        "VSC Extension",
+        "Dicom Viewer"
       ],
       "actions": [
         {

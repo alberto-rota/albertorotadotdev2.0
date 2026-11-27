@@ -106,8 +106,8 @@ export function Section({
             ) : null}
           </div>
 
-          {/* Desktop arrow controls */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Desktop arrow controls (carousels only; the grid flows vertically) */}
+          <div className={cn("hidden items-center gap-2", !isGrid && "md:flex")}>
             <button
               type="button"
               onClick={() => scrollBy(-1)}
@@ -132,13 +132,17 @@ export function Section({
 
       <div className="relative">
         <div
-          ref={scrollerRef}
-          className="snap-row no-scrollbar fade-x overflow-x-auto overflow-y-hidden"
+          ref={isGrid ? undefined : scrollerRef}
+          className={
+            isGrid
+              ? undefined
+              : "snap-row no-scrollbar fade-x overflow-x-auto overflow-y-hidden"
+          }
         >
           {isGrid ? (
-            /* Horizontally scrolling two-line grid: items fill columns
-               left-to-right, new products extend the row to the right */
-            <div className="mx-auto grid w-max grid-flow-col grid-rows-2 auto-cols-[min(22rem,calc(100vw-2rem))] md:auto-cols-[28rem] lg:auto-cols-[min(33.875rem,calc(50vw-2.625rem))] gap-4 sm:gap-5 px-4 sm:px-6 py-2">
+            /* Two-column grid aligned to the page grid like the carousels;
+               new products add rows, so the section grows downward. */
+            <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 px-4 sm:px-6 py-2 mx-auto", bound)}>
               {products.map((p, i) => (
                 <ProductCard
                   key={p.slug || `${p.title}-${i}`}

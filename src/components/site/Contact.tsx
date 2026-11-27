@@ -617,7 +617,7 @@ function Footer() {
           <span>© {new Date().getFullYear()} Alberto Rota</span>
           <nav aria-label="Footer" className="flex flex-wrap gap-3 text-white/55">
             <a href="/#research" className="hover:text-white">Research</a>
-            <a href="/#terminal-tools" className="hover:text-white">Tools</a>
+            <a href="/#workshop" className="hover:text-white">Workshop</a>
             <a href="/#contact" className="hover:text-white">Contact</a>
             <a href="/sitemap.xml" className="hover:text-white">Sitemap</a>
           </nav>

@@ -334,7 +334,7 @@ function wrapAnsi(text: string, width: number): string[] {
 
 const SITE = "https://albertorota.dev";
 /** Sections that have their own page (mirrors INDEXABLE_SECTIONS in lib/site). */
-const PAGE_SECTIONS = ["research", "terminal-tools", "builds", "designs"];
+const PAGE_SECTIONS = ["research", "workshop", "designs"];
 
 /** Terminals can only open absolute URLs — resolve site-relative paths. */
 function absUrl(url: string): string {
@@ -385,11 +385,10 @@ function linkChip(a: Action, accent: string): string {
 
 /* --------------------------- data access -------------------------- */
 
-const SECTION_ORDER = ["research", "terminal-tools", "builds"];
+const SECTION_ORDER = ["research", "workshop"];
 const SECTION_ACCENT: Record<string, string> = {
   research: PALETTE.teal,
-  "terminal-tools": PALETTE.orange,
-  "builds": PALETTE.sky,
+  workshop: PALETTE.orange,
 };
 
 function getData(): SiteData {
@@ -681,8 +680,7 @@ function buildFooter(): string[] {
   );
   const nav = [
     ["Research", "/#research"],
-    ["Tools", "/#terminal-tools"],
-    ["Builds", "/#builds"],
+    ["Workshop", "/#workshop"],
     ["Contact", "/#contact"],
     ["Sitemap", "/sitemap.xml"],
   ].map(([l, h]) => hyperlink(h, `${fg(PALETTE.grey)}${UNDERLINE}${l}${RESET}`));

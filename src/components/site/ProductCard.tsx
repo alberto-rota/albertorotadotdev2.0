@@ -376,15 +376,36 @@ export function ProductCard({
 
             {product.tech && product.tech.length > 0 ? (
               <div className="mt-3 flex flex-wrap gap-1.5">
-                {product.tech.slice(0, 4).map((t) => (
-                  <span
-                    key={t}
-                    className="rounded-full border border-white/15 bg-white/[0.06] px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-white/80"
-                    style={{ fontFamily: "var(--font-body)" }}
-                  >
-                    {t}
-                  </span>
-                ))}
+                {product.tech.slice(0, 4).map((t, i) =>
+                  // Workshop: the first tech tag is the primary one — tint it
+                  // with the product accent so it reads ahead of the rest.
+                  i === 0 && sectionId === "workshop" ? (
+                    <span
+                      key={t}
+                      className="inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white"
+                      style={{
+                        fontFamily: "var(--font-body)",
+                        borderColor: `${accent}99`,
+                        background: `${accent}26`,
+                      }}
+                    >
+                      <span
+                        aria-hidden
+                        className="h-1.5 w-1.5 shrink-0 rounded-full"
+                        style={{ background: accent, boxShadow: `0 0 8px ${accent}` }}
+                      />
+                      {t}
+                    </span>
+                  ) : (
+                    <span
+                      key={t}
+                      className="rounded-full border border-white/15 bg-white/[0.06] px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-white/80"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {t}
+                    </span>
+                  )
+                )}
               </div>
             ) : null}
           </div>

@@ -12,8 +12,7 @@ type NavItem = { id: SectionId | "contact"; label: string };
 
 const ITEMS: NavItem[] = [
   { id: "research", label: "Research" },
-  { id: "terminal-tools", label: "Terminal" },
-  { id: "builds", label: "Things I Build" },
+  { id: "workshop", label: "Workshop" },
   { id: "designs", label: "Designs" },
   { id: "contact", label: "Contact" },
 ];

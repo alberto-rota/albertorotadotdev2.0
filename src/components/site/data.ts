@@ -21,8 +21,7 @@ import { DEFAULT_GLYPH_WORDS } from "./glyph-words";
 
 const VALID: SectionId[] = [
   "research",
-  "terminal-tools",
-  "builds",
+  "workshop",
   "resources",
   "designs",
 ];
@@ -375,8 +374,7 @@ export function loadSiteData(): SiteData {
 export function bySection(products: Product[]): Record<SectionId, Product[]> {
   const grouped: Record<SectionId, Product[]> = {
     research: [],
-    "terminal-tools": [],
-    builds: [],
+    workshop: [],
     resources: [],
     designs: [],
   };
@@ -398,8 +396,7 @@ export function orderedSections(
 
 export const SECTION_FALLBACK_TITLES: Record<SectionId, string> = {
   research: "Research",
-  "terminal-tools": "Terminal Tools",
-  builds: "Things I Build",
+  workshop: "The Workshop",
   resources: "Profiles & Links",
   designs: "Designs",
 };

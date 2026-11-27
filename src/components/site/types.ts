@@ -1,7 +1,6 @@
 export type SectionId =
   | "research"
-  | "terminal-tools"
-  | "builds"
+  | "workshop"
   | "resources"
   | "designs";
 

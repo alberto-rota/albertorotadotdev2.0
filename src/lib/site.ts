@@ -11,8 +11,7 @@ export const SITE_DESCRIPTION =
 /** Sections that get their own indexable URLs. */
 export const INDEXABLE_SECTIONS: SectionId[] = [
   "research",
-  "terminal-tools",
-  "builds",
+  "workshop",
   "designs",
 ];
 
